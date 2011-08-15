@@ -16,3 +16,4 @@ D:\miditool\NiceWindow\bin\Debug\Sanford.Multimedia.dll
 D:\miditool\NiceWindow\bin\Debug\Sanford.Multimedia.Midi.dll
 D:\miditool\NiceWindow\bin\Debug\Sanford.Multimedia.Timers.dll
 D:\miditool\NiceWindow\bin\Debug\Sanford.Threading.dll
+D:\miditool\NiceWindow\bin\Debug\NAudio.dll

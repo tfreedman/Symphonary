@@ -1,4 +1,7 @@
-﻿using Sanford.Collections;
+﻿using NAudio;
+using NAudio.Midi;
+using NAudio.CoreAudioApi;
+using Sanford.Collections;
 using Sanford.Multimedia;
 using Sanford.Multimedia.Midi;
 using Sanford.Multimedia.Timers;
@@ -21,50 +24,147 @@ using System.Windows.Threading;
 
 namespace NiceWindow
 {
+    public class MidiInfo
+    {
+        public int i_BPM;
+        public int i_DeltaTicksPerQuarterNote;
+        public int i_NumMusicTracks;
+        public List<NAudio.Midi.MidiEvent> l_Metadata = new List<NAudio.Midi.MidiEvent>();
+        public List<Note> l_Notes = new List<Note>();
+        public MidiEventCollection midiEventCollection;
+
+        public MidiInfo(MidiEventCollection midiEventCollection, int i_Channel)
+        {
+            this.i_BPM = 120; // this will be changed later
+            this.i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
+            this.i_NumMusicTracks = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
+            
+            for (int i = 0; i < midiEventCollection[0].Count; i++)
+            {
+                this.l_Metadata.Add(midiEventCollection[0][i]);
+            }
+
+            this.midiEventCollection = midiEventCollection;
+
+            Dictionary<int, long> d_NoteOnTimes = new Dictionary<int, long>();
+            for (int i = 0; i < midiEventCollection[i_Channel].Count; i++)
+            {
+                if (midiEventCollection[i_Channel][i].CommandCode == MidiCommandCode.NoteOn)
+                {
+                    NoteOnEvent noteOn = (NoteOnEvent)midiEventCollection[i_Channel][i];
+                    d_NoteOnTimes.Add(noteOn.NoteNumber, noteOn.AbsoluteTime);
+                }
+                else if (midiEventCollection[i_Channel][i].CommandCode == MidiCommandCode.NoteOff)
+                {
+                    NoteEvent noteOff = (NoteEvent)midiEventCollection[i_Channel][i];
+                    long noteOnTime;
+                    if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime))
+                    {
+                        l_Notes.Add(new Note(noteOff.NoteNumber, noteOnTime, noteOff.AbsoluteTime));
+                        d_NoteOnTimes.Remove(noteOff.NoteNumber);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+                    }
+                }
+                else
+                {
+                    
+                }
+            }
+            if (d_NoteOnTimes.Count != 0)
+            {
+                MessageBox.Show("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
+            }
+        }
+    }
+
+
+    public class Note
+    {
+        public int i_NoteNumber;
+        public long li_BeginTime;
+        public long li_EndTime;
+
+        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime)
+        {
+            this.i_NoteNumber = i_NoteNumber;
+            this.li_BeginTime = li_BeginTime;
+            this.li_EndTime = li_EndTime;
+        }
+    }
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        string s_Filename = "BL_kotw_weepingkaral.mid";
+        public delegate void ChangeTextDelegate(string text);
+
+        int i_PersistentTrack = 0; // select the track to always play (begins at 0)
+        string s_Filename = "Test1.mid";
+
         
+        // variables used strictly for playback
         bool b_FinishedLoading = false;
+        bool b_MuteOtherTracks = false;
         bool b_Playing = false;
+        bool b_ProgramClosing = false;
+        ChannelStopper channelStopper = new ChannelStopper();
         OutputDevice outputDevice = new OutputDevice(0);
         Sequence sequence = new Sequence();
         Sequencer sequencer = new Sequencer();
-
-        bool b_ProgramClosing = false;
-
-        public delegate void ChangeTextDelegate(string text);
-
-        int i_PersistentTrack = 3; // select the track to always play (begins at 0)
-        bool b_MuteOtherTracks = false;
-
-        ChannelStopper channelStopper = new ChannelStopper();
+        
+        // variables used strictly for storing data
+        MidiEventCollection midiEventCollection;
+        MidiFile midiFile;
+        MidiInfo midiInfo;
+        
 
         public MainWindow()
         {
+            InitializeComponent();
+            
             sequence.Format = 1;
             sequence.LoadCompleted += handleLoadCompleted;
             sequence.LoadAsync(s_Filename);
-
             sequencer.Position = 0;
             sequencer.Sequence = sequence;
             sequencer.ChannelMessagePlayed += handleChannelMessagePlayed;
             sequencer.Chased += handleChased;
             sequencer.Stopped += handleStopped;
-
-            //channelStopper.
             
-            InitializeComponent();
+            midiFile = new MidiFile(s_Filename);
+            midiEventCollection = midiFile.Events;
+
+            midiInfo = new MidiInfo(midiEventCollection, i_PersistentTrack + 1);
+
+            foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata)
+            {
+                textbox1.Text += metadata.ToString() + Environment.NewLine;
+            }
+
+            textbox1.Text += Environment.NewLine;
+
+            foreach (Note note in midiInfo.l_Notes)
+            {
+                textbox1.Text += note.i_NoteNumber + ", " + note.li_BeginTime + ", " + note.li_EndTime + Environment.NewLine;
+            }
+
+            textbox1.Text += Environment.NewLine;
+
+            textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote;
         }
 
 
         public void changeText(string text)
         {
             textbox1.Text = text;
+            textbox1.ScrollToEnd();
         }
+
 
 
         public void muteOtherTracks()
@@ -230,7 +330,7 @@ namespace NiceWindow
             if (e.Key.ToString() == "M")
             {
                 b_MuteOtherTracks = false;
-                changeText("All tracks are playing...");
+                //changeText("All tracks are playing...");
             }
         }
 
@@ -243,7 +343,7 @@ namespace NiceWindow
             {
                 b_MuteOtherTracks = true;
                 muteOtherTracks();
-                changeText("Tracks are muted, only track #" + i_PersistentTrack + " is playing...");
+                //changeText("Tracks are muted, only track #" + i_PersistentTrack + " is playing...");
             }
 
             
