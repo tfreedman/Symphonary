@@ -49,14 +49,13 @@ namespace NiceWindow
             Dictionary<int, long> d_NoteOnTimes = new Dictionary<int, long>();
             for (int i = 0; i < midiEventCollection[i_Channel].Count; i++)
             {
-                if (midiEventCollection[i_Channel][i].CommandCode == MidiCommandCode.NoteOn)
+                //MessageBox.Show("aha");
+                NAudio.Midi.MidiEvent midiEvent = midiEventCollection[i_Channel][i];
+
+                if (midiEvent.CommandCode == MidiCommandCode.NoteOff ||
+                    midiEvent.CommandCode == MidiCommandCode.NoteOn && ((NoteOnEvent)midiEvent).Velocity == 0)
                 {
-                    NoteOnEvent noteOn = (NoteOnEvent)midiEventCollection[i_Channel][i];
-                    d_NoteOnTimes.Add(noteOn.NoteNumber, noteOn.AbsoluteTime);
-                }
-                else if (midiEventCollection[i_Channel][i].CommandCode == MidiCommandCode.NoteOff)
-                {
-                    NoteEvent noteOff = (NoteEvent)midiEventCollection[i_Channel][i];
+                    NoteEvent noteOff = (NoteEvent)midiEvent;
                     long noteOnTime;
                     if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime))
                     {
@@ -66,6 +65,18 @@ namespace NiceWindow
                     else
                     {
                         MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+                    }
+                }
+                else if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
+                {
+                    NoteOnEvent noteOn = (NoteOnEvent)midiEvent;
+                    try
+                    {
+                        d_NoteOnTimes.Add(noteOn.NoteNumber, noteOn.AbsoluteTime);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                     }
                 }
                 else
@@ -103,8 +114,8 @@ namespace NiceWindow
     {
         public delegate void ChangeTextDelegate(string text);
 
-        int i_PersistentTrack = 0; // select the track to always play (begins at 0)
-        string s_Filename = "Test1.mid";
+        int i_PersistentTrack = 3; // select the track to always play (begins at 0)
+        string s_Filename = "BL_kotw_weepingkaral.mid";//"Test1.mid";
 
         
         // variables used strictly for playback
@@ -140,6 +151,11 @@ namespace NiceWindow
             midiEventCollection = midiFile.Events;
 
             midiInfo = new MidiInfo(midiEventCollection, i_PersistentTrack + 1);
+
+            /*for (int i = 0; i < midiEventCollection[1].Count; i++)
+            {
+                textbox1.Text += midiEventCollection[1][i].ToString();
+            }*/
 
             foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata)
             {
