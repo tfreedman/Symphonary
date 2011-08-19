@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\miditool\NiceWindow\obj\x86\Debug\
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\
 NiceWindow
 none
 false
 DEBUG;TRACE
-D:\miditool\NiceWindow\App.xaml
-11151548125
+C:\Users\Tyler\NiceWindow\NiceWindow\App.xaml
+21365071980
 
-6-1556209713
-18-1251557012
-MainWindow.xaml;
+7-1654936119
+18-2062865442
+MainWindow.xaml;NWGUI.xaml;
 
 False
 

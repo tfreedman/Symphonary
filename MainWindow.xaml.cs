@@ -166,7 +166,7 @@ namespace NiceWindow
 
             foreach (Note note in midiInfo.l_Notes)
             {
-                textbox1.Text += note.i_NoteNumber + ", " + note.li_BeginTime + ", " + note.li_EndTime + Environment.NewLine;
+               textbox1.Text += note.i_NoteNumber + ", " + note.li_BeginTime + ", " + note.li_EndTime + Environment.NewLine;
             }
 
             textbox1.Text += Environment.NewLine;
