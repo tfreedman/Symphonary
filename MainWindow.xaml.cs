@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -171,7 +172,11 @@ namespace NiceWindow
 
             textbox1.Text += Environment.NewLine;
 
-            textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote;
+            textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote + Environment.NewLine;
+
+            //NWGUI nwGUI = new NWGUI();
+            //nwGUI.Show();
+            initializeCanvas();
         }
 
 
@@ -182,6 +187,35 @@ namespace NiceWindow
         }
 
 
+        private void initializeCanvas()
+        {
+            canvas1.Background = new SolidColorBrush(Colors.Black);
+            Rectangle rect1 = new Rectangle();
+            rect1.Height = 320;
+            rect1.Width = 50;
+            rect1.Fill = new SolidColorBrush(Colors.Blue);
+            rect1.SetValue(Canvas.LeftProperty, (double)50);
+
+            Rectangle rect2 = new Rectangle();
+            rect2.Height = 30;
+            rect2.Width = 80;
+            rect2.Fill = new SolidColorBrush(Colors.Red);
+            rect2.SetValue(Canvas.LeftProperty, (double)350);
+            rect2.SetValue(Canvas.TopProperty, (double)100);
+
+            Rectangle rect3 = new Rectangle();
+            rect3.Height = 30;
+            rect3.Width = 80;
+            rect3.Fill = new SolidColorBrush(Colors.Green);
+            rect3.SetValue(Canvas.LeftProperty, (double)200);
+            rect3.SetValue(Canvas.TopProperty, (double)200);
+
+            canvas2.Children.Add(rect2);
+            canvas2.Children.Add(rect3);
+
+            canvas1.Children.Add(rect1);
+            
+        }
 
         public void muteOtherTracks()
         {
@@ -252,6 +286,7 @@ namespace NiceWindow
             }
         }
 
+        
 
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close
 
@@ -335,6 +370,38 @@ namespace NiceWindow
             sequencer.Start();
             b_Playing = true;
         }
+
+
+        private void animateButton_Clicked(object sender, EventArgs e)
+        {
+            DispatcherTimer dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
+            dispatcherTimer.Tick += new EventHandler(moveCanvas);
+            dispatcherTimer.Start();
+            
+            //DoubleAnimation doubleAnimation// need to investigate more about this 
+
+            animateButton.IsEnabled = false;
+        }
+
+
+        // DispatcherTimer event
+
+        int i_Direction = -1;
+        void moveCanvas(object sender, EventArgs e)
+        {
+            double i_CurPosX = (double)(canvas2.GetValue(Canvas.LeftProperty));
+
+            textbox1.Text += canvas2.GetValue(Canvas.LeftProperty)/*i_CurPosX*/ + Environment.NewLine;
+            textbox1.ScrollToEnd();
+
+            if ((i_Direction == -1 && i_CurPosX <= -400) || (i_Direction == 1 && i_CurPosX >= 0))
+                i_Direction = -i_Direction;
+
+            canvas2.SetValue(Canvas.LeftProperty, i_CurPosX + 2 * i_Direction);
+            
+        }
+
 
         // keyboard events
 

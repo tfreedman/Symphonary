@@ -38,3 +38,5 @@ C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\NWGUI.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\NWGUI.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\NWGUI.baml
+D:\miditool\NiceWindow\obj\x86\Debug\NWGUI.g.cs
