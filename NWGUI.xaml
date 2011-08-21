@@ -4,45 +4,27 @@
         Title="NiceWindow" Height="700" Width="1024" ResizeMode="NoResize"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown">
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_New..." />
-                    <Separator />
-                    <MenuItem Header="_Open..." Click="open_Clicked"/>
-                    <Separator />
-                    <MenuItem Header="_Save" />
-                    <MenuItem Header="_Save As..." />
-                    <Separator />
-                    <MenuItem Header="_Exit" />
-                </MenuItem>
-                <!--
-                <MenuItem Header="_Setup">
-                    <MenuItem Header="_New..." />
-                    <Separator />
-                    <MenuItem Header="_Open..."/>
-                    <Separator />
-                    <MenuItem Header="_Save" />
-                    <MenuItem Header="_Save As..." />
-                    <Separator />
-                    <MenuItem Header="_Exit" />
-                </MenuItem>
-                -->
-                <MenuItem Header="_Debug" HorizontalAlignment="Right" Click="debug_Clicked"/>
-                
-                <MenuItem Header="_Run">
-                    <MenuItem Header="_Animate" Click="animate_Clicked"/>
-                    <MenuItem Header="_Start Music" Click="startMusic_Clicked"/>
-                </MenuItem>
-                    
-                <MenuItem Header="_Help">
-                    <MenuItem Header="_About" Click="about_Clicked"/>
-                </MenuItem>
-            
-            </Menu>
-            <Canvas Name="canv" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="650">
-                <Canvas Name="subcanv" Canvas.Top="0"></Canvas>
+
+        <Canvas Name="canv" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="650" Canvas.ZIndex="1">
+            <StackPanel Orientation="Vertical" Canvas.ZIndex="2">
+                <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top" Width="1024">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Open..." Click="open_Clicked"/>
+                        <Separator />
+                        <MenuItem Header="_Exit" Click="exit_Clicked"/>
+                    </MenuItem>
+                    <MenuItem Header="_Debug" HorizontalAlignment="Right" Click="debug_Clicked"/>
+
+                    <MenuItem Header="_Run" Click="animate_Clicked" />
+
+                    <MenuItem Header="_Help">
+                        <MenuItem Header="_About" Click="about_Clicked"/>
+                    </MenuItem>
+
+                </Menu>
+            </StackPanel>
+            <Canvas Name="subcanv" Canvas.Top="0" Canvas.ZIndex="0"></Canvas>
             </Canvas>
-        </StackPanel>
+
     </Grid>
 </Window>
