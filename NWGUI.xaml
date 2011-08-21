@@ -1,32 +1,48 @@
 ﻿<Window x:Class="NiceWindow.NWGUI"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="NiceWindow" Height="700" Width="1024" ResizeMode="NoResize">
+        Title="NiceWindow" Height="700" Width="1024" ResizeMode="NoResize"
+        KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown">
     <Grid>
-        <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top">
+        <StackPanel Orientation="Vertical">
+            <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_New..." />
                     <Separator />
-                    <MenuItem Header="_Open..." />
+                    <MenuItem Header="_Open..." Click="open_Clicked"/>
                     <Separator />
                     <MenuItem Header="_Save" />
                     <MenuItem Header="_Save As..." />
                     <Separator />
                     <MenuItem Header="_Exit" />
                 </MenuItem>
-            <MenuItem Header="_Setup">
-                <MenuItem Header="_New..." />
-                <Separator />
-                <MenuItem Header="_Open..." />
-                <Separator />
-                <MenuItem Header="_Save" />
-                <MenuItem Header="_Save As..." />
-                <Separator />
-                <MenuItem Header="_Exit" />
-            </MenuItem>
-            <MenuItem Header="_Start" HorizontalAlignment="Right" Click="button1_Click"/>
-            <MenuItem Header="_About" HorizontalAlignment="Right"/>
-        </Menu>
-        <Canvas Name="canv" Height="703" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="1002" />
+                <!--
+                <MenuItem Header="_Setup">
+                    <MenuItem Header="_New..." />
+                    <Separator />
+                    <MenuItem Header="_Open..."/>
+                    <Separator />
+                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_Save As..." />
+                    <Separator />
+                    <MenuItem Header="_Exit" />
+                </MenuItem>
+                -->
+                <MenuItem Header="_Debug" HorizontalAlignment="Right" Click="debug_Clicked"/>
+                
+                <MenuItem Header="_Run">
+                    <MenuItem Header="_Animate" Click="animate_Clicked"/>
+                    <MenuItem Header="_Start Music" Click="startMusic_Clicked"/>
+                </MenuItem>
+                    
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_About" Click="about_Clicked"/>
+                </MenuItem>
+            
+            </Menu>
+            <Canvas Name="canv" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="650">
+                <Canvas Name="subcanv" Canvas.Top="0"></Canvas>
+            </Canvas>
+        </StackPanel>
     </Grid>
 </Window>

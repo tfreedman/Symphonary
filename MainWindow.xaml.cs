@@ -34,8 +34,11 @@ namespace NiceWindow
         public List<Note> l_Notes = new List<Note>();
         public MidiEventCollection midiEventCollection;
 
-        public MidiInfo(MidiEventCollection midiEventCollection, int i_Channel)
+        
+        public MidiInfo(string s_Filename, int i_Channel)
         {
+            this.midiEventCollection = new MidiFile(s_Filename).Events;
+            
             this.i_BPM = 120; // this will be changed later
             this.i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
             this.i_NumMusicTracks = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
@@ -44,8 +47,6 @@ namespace NiceWindow
             {
                 this.l_Metadata.Add(midiEventCollection[0][i]);
             }
-
-            this.midiEventCollection = midiEventCollection;
 
             Dictionary<int, long> d_NoteOnTimes = new Dictionary<int, long>();
             for (int i = 0; i < midiEventCollection[i_Channel].Count; i++)
@@ -65,7 +66,7 @@ namespace NiceWindow
                     }
                     else
                     {
-                        MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+                        //MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
                     }
                 }
                 else if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
@@ -77,7 +78,7 @@ namespace NiceWindow
                     }
                     catch (ArgumentException e)
                     {
-                        MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
+                        //MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                     }
                 }
                 else
@@ -89,6 +90,130 @@ namespace NiceWindow
             {
                 MessageBox.Show("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
             }
+        }
+    }
+
+
+    public class MidiPlayer
+    {
+        bool b_FinishedLoading = false;
+        bool b_MuteOtherTracks = false;
+        bool b_Playing = false;
+        bool b_ProgramClosing = false;
+
+        int i_PersistentTrack = 0;
+
+        ChannelStopper channelStopper = new ChannelStopper();
+        OutputDevice outputDevice = new OutputDevice(0);
+        Sequence sequence = new Sequence();
+        Sequencer sequencer = new Sequencer();
+
+        public MidiPlayer(string s_Filename, 
+            System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
+            System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted)
+        {
+            sequence.Format = 1;
+            sequence.LoadProgressChanged += extHandleLoadProgressChanged;
+            sequence.LoadCompleted += handleLoadCompleted;
+            sequence.LoadCompleted += extHandleLoadCompleted;
+            sequence.LoadAsync(s_Filename);
+            sequencer.Position = 0;
+            sequencer.Sequence = sequence;
+            sequencer.ChannelMessagePlayed += handleChannelMessagePlayed;
+            sequencer.Chased += handleChased;
+            sequencer.Stopped += handleStopped;
+        }
+
+        public bool isFinishedLoading()
+        {
+            return b_FinishedLoading;
+        }
+        
+        public bool isPlaying()
+        {
+            return b_Playing;
+        }
+
+
+        public void muteOtherTracks()
+        {
+            b_MuteOtherTracks = true;
+            for (int i = 0; i < 16; i++)
+            {
+                if (i != i_PersistentTrack)
+                {
+                    // sending all-sounds-off command to channel 
+                    outputDevice.Send(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff, 0));
+                }
+            }
+        }
+
+        public void setPersistentTrack(int i_PersistentTrack)
+        {
+            this.i_PersistentTrack = i_PersistentTrack;
+        }
+
+        public void unmuteOtherTracks()
+        {
+            b_MuteOtherTracks = false;
+        }
+
+        public void OnClosingOperations()
+        {
+            b_ProgramClosing = true;
+        }
+
+        public void OnClosedOperations()
+        {
+            sequencer.Dispose();
+            if (outputDevice != null)
+                outputDevice.Dispose();
+        }
+
+        public void startPlaying()
+        {
+            if (b_FinishedLoading)
+            {
+                sequencer.Start();
+                b_Playing = true;
+                //MessageBox.Show("playing");
+            }
+        }
+
+        private void handleChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
+        {
+            if (b_ProgramClosing) // don't try playing anything if program is closing
+                return;
+
+            if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentTrack)
+                return;
+
+            outputDevice.Send(e.Message);
+        }
+
+
+        private void handleChased(object sender, ChasedEventArgs e)
+        {
+            // I don't know what exactly this handles
+            foreach (ChannelMessage message in e.Messages)
+            {
+                outputDevice.Send(message);
+            }
+        }
+
+        private void handleLoadCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            b_FinishedLoading = true;
+        }
+
+        private void handleStopped(object sender, StoppedEventArgs e)
+        {
+            foreach (ChannelMessage message in e.Messages)
+            {
+                outputDevice.Send(message);
+            }
+
+            b_Playing = false;
         }
     }
 
@@ -118,16 +243,7 @@ namespace NiceWindow
         int i_PersistentTrack = 3; // select the track to always play (begins at 0)
         string s_Filename = "BL_kotw_weepingkaral.mid";//"Test1.mid";
 
-        
-        // variables used strictly for playback
-        bool b_FinishedLoading = false;
-        bool b_MuteOtherTracks = false;
-        bool b_Playing = false;
-        bool b_ProgramClosing = false;
-        ChannelStopper channelStopper = new ChannelStopper();
-        OutputDevice outputDevice = new OutputDevice(0);
-        Sequence sequence = new Sequence();
-        Sequencer sequencer = new Sequencer();
+        MidiPlayer midiPlayer;
         
         // variables used strictly for storing data
         MidiEventCollection midiEventCollection;
@@ -138,26 +254,11 @@ namespace NiceWindow
         public MainWindow()
         {
             InitializeComponent();
+
             
-            sequence.Format = 1;
-            sequence.LoadCompleted += handleLoadCompleted;
-            sequence.LoadAsync(s_Filename);
-            sequencer.Position = 0;
-            sequencer.Sequence = sequence;
-            sequencer.ChannelMessagePlayed += handleChannelMessagePlayed;
-            sequencer.Chased += handleChased;
-            sequencer.Stopped += handleStopped;
+            midiInfo = new MidiInfo(s_Filename, i_PersistentTrack + 1);
+
             
-            midiFile = new MidiFile(s_Filename);
-            midiEventCollection = midiFile.Events;
-
-            midiInfo = new MidiInfo(midiEventCollection, i_PersistentTrack + 1);
-
-            /*for (int i = 0; i < midiEventCollection[1].Count; i++)
-            {
-                textbox1.Text += midiEventCollection[1][i].ToString();
-            }*/
-
             foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata)
             {
                 textbox1.Text += metadata.ToString() + Environment.NewLine;
@@ -174,8 +275,6 @@ namespace NiceWindow
 
             textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote + Environment.NewLine;
 
-            //NWGUI nwGUI = new NWGUI();
-            //nwGUI.Show();
             initializeCanvas();
         }
 
@@ -217,19 +316,7 @@ namespace NiceWindow
             
         }
 
-        public void muteOtherTracks()
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                if (i != i_PersistentTrack) 
-                {
-                    // sending all-sounds-off command to channel 
-                    outputDevice.Send(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff, 0));
-                }
-            }
-        }
-
-
+        
         // this does note-checking for the flute, just ignore this for now as it is not being used
         private bool noteMatches(ref string serialData, int noteNumber)
         {
@@ -288,89 +375,7 @@ namespace NiceWindow
 
         
 
-        // override some program event handlers to ensure extra things are loaded/closed properly on start/close
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            b_ProgramClosing = true;
-
-            base.OnClosing(e);
-        }
-
-
-        protected override void OnClosed(EventArgs e)
-        {
-            sequencer.Dispose();
-            if (outputDevice != null)
-                outputDevice.Dispose();
-            
-            base.OnClosed(e);
-        }
-
-
-        // handlers for the sequence and sequencer (playback components)
-
-        private void handleChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
-        {
-            if (b_ProgramClosing) // don't try playing anything if program is closing
-                return;
-
-
-            if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentTrack)
-                return;
-
-            outputDevice.Send(e.Message);
-            
-            
-            // textbox1.Text = "hello"; // can't do something like this because textbox1 is owned by another thread
-            // do something like this instead
-            // startButton.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new ChangeTextDelegate(changeText), e.Message.Data1.ToString());
-
-            
-        }
-
         
-        private void handleChased(object sender, ChasedEventArgs e) 
-        {
-            // I don't know what exactly this handles
-            foreach (ChannelMessage message in e.Messages)
-            {
-                outputDevice.Send(message);
-            }
-        }
-
-        private void handleLoadCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            b_FinishedLoading = true;
-        }
-
-        private void handleStopped(object sender, StoppedEventArgs e)
-        {
-            foreach (ChannelMessage message in e.Messages)
-            {
-                outputDevice.Send(message);
-            }
-
-            startButton.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                new ChangeTextDelegate(changeText), string.Empty); // clear the contents of the textbox
-            b_Playing = false;
-        }
-
-
-        // button events 
-
-        private void startButton_Clicked(object sender, EventArgs e)
-        {
-            if (!b_FinishedLoading)
-            {
-                MessageBox.Show("Please wait for the MIDI file to finish loading");
-                return;
-            }
-
-            sequencer.Start();
-            b_Playing = true;
-        }
-
 
         private void animateButton_Clicked(object sender, EventArgs e)
         {
@@ -405,32 +410,7 @@ namespace NiceWindow
 
         // keyboard events
 
-        private void window_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (!b_Playing)
-                return;
-
-            if (e.Key.ToString() == "M")
-            {
-                b_MuteOtherTracks = false;
-                //changeText("All tracks are playing...");
-            }
-        }
-
-        private void window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (!b_Playing)
-                return;
-
-            if (e.Key.ToString() == "M")
-            {
-                b_MuteOtherTracks = true;
-                muteOtherTracks();
-                //changeText("Tracks are muted, only track #" + i_PersistentTrack + " is playing...");
-            }
-
-            
-        }
+        
 
     }
 }

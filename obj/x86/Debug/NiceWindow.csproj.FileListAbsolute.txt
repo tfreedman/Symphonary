@@ -40,3 +40,6 @@ C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\NWGUI.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\NWGUI.g.cs
 D:\miditool\NiceWindow\obj\x86\Debug\NWGUI.baml
 D:\miditool\NiceWindow\obj\x86\Debug\NWGUI.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\LoadingScreen.baml
+D:\miditool\NiceWindow\obj\x86\Debug\LoadingScreen.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\NiceWindow.Resource1.resources
