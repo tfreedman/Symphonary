@@ -13,9 +13,16 @@
                         <Separator />
                         <MenuItem Header="_Exit" Click="exit_Clicked"/>
                     </MenuItem>
-                    <MenuItem Header="_Debug" HorizontalAlignment="Right" Click="debug_Clicked"/>
-
-                    <MenuItem Header="_Run" Click="animate_Clicked" />
+                    
+                    <MenuItem Header="_Run">
+                        <MenuItem Header="_Start" Click="start_Clicked"/>
+                        <MenuItem Header="_Stop" Click="stop_Clicked"/>
+                        <MenuItem Header="_Show debug console" Click="debug_Clicked"/>
+                    </MenuItem>
+                    
+                    <MenuItem Header="_Options">
+                        <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
+                    </MenuItem>
 
                     <MenuItem Header="_Help">
                         <MenuItem Header="_About" Click="about_Clicked"/>

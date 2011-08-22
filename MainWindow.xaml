@@ -4,21 +4,10 @@
         Title="Nice Window" Height="500" Width="400">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <TextBox Name="textbox1" Height="120"
+            <TextBox Name="textbox1" Height="460"
                  VerticalScrollBarVisibility="Auto" 
                  TextWrapping="Wrap" 
                  IsReadOnly="True"></TextBox>
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Button Name="startButton" Width="100">Start</Button>
-                <Button Name="animateButton" Width="100"
-                    Click="animateButton_Clicked">Animate
-                </Button>
-            </StackPanel>
-            <Canvas Name="canvas1" Height="320">
-                <Canvas Name="canvas2" Left="0"></Canvas>
-            </Canvas>
-        </StackPanel>
-        
+        </StackPanel>        
     </Grid>
 </Window>

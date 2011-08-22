@@ -46,3 +46,5 @@ D:\miditool\NiceWindow\obj\x86\Debug\NiceWindow.Resource1.resources
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\LoadingScreen.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\LoadingScreen.g.cs
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\NiceWindow.Resource1.resources
+D:\miditool\NiceWindow\obj\x86\Debug\ChannelSelector.baml
+D:\miditool\NiceWindow\obj\x86\Debug\ChannelSelector.g.cs

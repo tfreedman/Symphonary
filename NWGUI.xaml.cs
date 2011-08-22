@@ -17,16 +17,21 @@ using System.Threading;
 using System.Windows.Threading;
 
 
-namespace NiceWindow {
-    public partial class NWGUI : Window {
+namespace NiceWindow 
+{
+    public partial class NWGUI : Window 
+    {
         //int temp = 0;
         //Rectangle r = new Rectangle();
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
 
+        MainWindow debugConsole;
+        ChannelSelector channelSelector;
         LoadingScreen loadingScreen;
 
-        int i_Channel = 3;
+
+        int i_Channel = -1;
         MidiPlayer midiPlayer;
         MidiInfo midiInfo;
 
@@ -34,50 +39,74 @@ namespace NiceWindow {
             InitializeComponent();
         }
 
-        private void animate_Clicked(object sender, RoutedEventArgs e) {
-            initializeCanvas();
+        private void start_Clicked(object sender, RoutedEventArgs e) 
+        {
             if (b_AnimationStarted) {
                 MessageBox.Show("The animation already started");
                 return;
             }
-            int i = 0;
+            
+            try 
+            {
+                if (midiPlayer.isFinishedLoading()) 
+                {
+                    if (i_Channel != -1)
+                        midiPlayer.setPersistentChannel(i_Channel);
 
-            long maxEndTime = 0;
-
-            foreach (Note note in midiInfo.l_Notes) {
-                if (note.li_EndTime > maxEndTime)
-                    maxEndTime = note.li_EndTime;
-            }
-            MessageBox.Show(Convert.ToString(maxEndTime));
-
-            foreach (Note note in midiInfo.l_Notes) {
-                i++;
-                prevTime += (note.li_EndTime - note.li_BeginTime);
-                fingering(note.i_NoteNumber, 41, (long)note.li_BeginTime, (long)note.li_EndTime);
-                string temp = Convert.ToString(note.li_EndTime - note.li_BeginTime) + " " + Convert.ToString(note.li_BeginTime) + " " + Convert.ToString(note.li_EndTime);
-
-                //MessageBox.Show(temp);
-            }
-
-            DispatcherTimer dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
-            dispatcherTimer.Tick += new EventHandler(moveCanvas);
-            dispatcherTimer.Start();
-            try {
-                if (midiPlayer.isFinishedLoading()) {
                     midiPlayer.startPlaying();
+
+                    initializeCanvas();
+
+                    int i = 0;
+
+                    long maxEndTime = 0;
+
+                    foreach (Note note in midiInfo.l_Notes) {
+                        if (note.li_EndTime > maxEndTime)
+                            maxEndTime = note.li_EndTime;
+                    }
+                    //MessageBox.Show(Convert.ToString(maxEndTime));
+
+                    foreach (Note note in midiInfo.l_Notes) {
+                        i++;
+                        prevTime += (note.li_EndTime - note.li_BeginTime);
+                        fingering(note.i_NoteNumber, 41, (long)note.li_BeginTime, (long)note.li_EndTime);
+                        string temp = Convert.ToString(note.li_EndTime - note.li_BeginTime) + " " + Convert.ToString(note.li_BeginTime) + " " + Convert.ToString(note.li_EndTime);
+
+                        //MessageBox.Show(temp);
+                    }
+
+                    DispatcherTimer dispatcherTimer = new DispatcherTimer();
+                    dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
+                    dispatcherTimer.Tick += new EventHandler(moveCanvas);
+                    dispatcherTimer.Start();
+
+                    b_AnimationStarted = true;
                 }
                 else {
                     MessageBox.Show("Please wait for the MIDI file to finish loading");
                 }
+
+
             }
             catch (NullReferenceException ex) {
                 MessageBox.Show("Please load a MIDI file first!");
             }
-            b_AnimationStarted = true;
+            
         }
+
+        private void stop_Clicked(object sender, RoutedEventArgs e)
+        {
+            try {
+                midiPlayer.OnClosingOperations();
+                midiPlayer.OnClosedOperations();
+            }
+            catch (NullReferenceException ex) { }
+        }
+        
         long prevTime = 0;
-        private void fingering(int note, int instrument, long startTime, long endTime) {
+        private void fingering(int note, int instrument, long startTime, long endTime) 
+        {
             if (instrument == 41) {
                 int margin = 300;
                 int noteNumber = note % 7;
@@ -152,7 +181,7 @@ namespace NiceWindow {
             }
         }
 
-        private void startMusic_Clicked(object sender, RoutedEventArgs e) {
+        /*private void startMusic_Clicked(object sender, RoutedEventArgs e) {
             try {
                 if (midiPlayer.isFinishedLoading()) {
                     midiPlayer.startPlaying();
@@ -164,7 +193,7 @@ namespace NiceWindow {
             catch (NullReferenceException ex) {
                 MessageBox.Show("Please load a MIDI file first!");
             }
-        }
+        }*/
 
         private void exit_Clicked(object sender, RoutedEventArgs e) {
             Application.Current.Shutdown();
@@ -189,39 +218,83 @@ namespace NiceWindow {
 
                 loadingScreen = new LoadingScreen();
                 loadingScreen.Show();
+                i_Channel = -1;
                 midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged, handleMIDILoadCompleted);
                 midiInfo = new MidiInfo(openFileDialog.FileName, i_Channel);
             }
         }
 
-        private void debug_Clicked(object sender, RoutedEventArgs e) {
+        private void debug_Clicked(object sender, RoutedEventArgs e)
+        {
+            debugConsole = new MainWindow();
+            debugConsole.Show();
 
+            try {
+                debugConsole.textbox1.Text += midiInfo.i_NumMusicChannels.ToString() + Environment.NewLine;
+
+                for (int i = 0; i < midiInfo.a_UsedChannels.Length; i++) {
+                    if (midiInfo.a_UsedChannels[i])
+                        debugConsole.textbox1.Text += "Channel " + i + " is being used" + Environment.NewLine;
+                }
+
+                debugConsole.textbox1.Text += i_Channel + Environment.NewLine;
+            }
+            catch (NullReferenceException ex) { }
         }
 
-        private void about_Clicked(object sender, RoutedEventArgs e) {
+
+        private void selectChannel_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (midiInfo == null) {
+                MessageBox.Show("Please load a MIDI file first!");
+                return;
+            }
+
+            if (midiPlayer.isPlaying()) {
+                MessageBox.Show("The file is currently being played, please have it finish first.");
+                return;
+            }
+            
+            channelSelector = new ChannelSelector(ref midiInfo, i_Channel, channelSelectorOkClicked);
+            channelSelector.Show();
+        }
+
+
+        private void channelSelectorOkClicked(object sender, RoutedEventArgs e)
+        {
+            i_Channel = channelSelector.getSelectedChannel();
+            midiInfo.loadChannelNotes(i_Channel);
+
+            channelSelector.Close();
+        }
+
+
+        private void about_Clicked(object sender, RoutedEventArgs e) 
+        {
             MessageBox.Show("This will be implemented :D");
         }
 
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e) {
+        private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
+        {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
 
                 if (e.Key.ToString() == "M") {
-                    midiPlayer.unmuteOtherTracks();
+                    midiPlayer.unmuteOtherChannels();
                 }
             }
-            catch (NullReferenceException ex) {
-            }
+            catch (NullReferenceException ex) { }
         }
 
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e) {
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e) 
+        {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
 
                 if (e.Key.ToString() == "M") {
-                    midiPlayer.muteOtherTracks();
+                    midiPlayer.muteOtherChannels();
                 }
             }
             catch (NullReferenceException ex) {

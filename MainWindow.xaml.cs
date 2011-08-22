@@ -25,11 +25,28 @@ using System.Windows.Threading;
 
 namespace NiceWindow
 {
+    public class Note 
+    {
+        public int i_NoteNumber;
+        public long li_BeginTime;
+        public long li_EndTime;
+
+        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime) 
+        {
+            this.i_NoteNumber = i_NoteNumber;
+            this.li_BeginTime = li_BeginTime;
+            this.li_EndTime = li_EndTime;
+        }
+    } // end Note
+    
     public class MidiInfo
     {
         public int i_BPM;
         public int i_DeltaTicksPerQuarterNote;
-        public int i_NumMusicTracks;
+        public int i_NumMusicChannels;
+        
+        public bool[] a_UsedChannels = new bool[16]; // 16 channels from 0 to 15
+
         public List<NAudio.Midi.MidiEvent> l_Metadata = new List<NAudio.Midi.MidiEvent>();
         public List<Note> l_Notes = new List<Note>();
         public MidiEventCollection midiEventCollection;
@@ -37,58 +54,78 @@ namespace NiceWindow
         
         public MidiInfo(string s_Filename, int i_Channel)
         {
-            this.midiEventCollection = new MidiFile(s_Filename).Events;
+            midiEventCollection = new MidiFile(s_Filename).Events;
             
-            this.i_BPM = 120; // this will be changed later
-            this.i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
-            this.i_NumMusicTracks = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
-            
-            for (int i = 0; i < midiEventCollection[0].Count; i++)
-            {
-                this.l_Metadata.Add(midiEventCollection[0][i]);
+            i_BPM = 120; // this will be changed later
+            i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
+            i_NumMusicChannels = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
+
+            findUsedChannels();
+
+            for (int i = 0; i < midiEventCollection[0].Count; i++) {
+                l_Metadata.Add(midiEventCollection[0][i]);
+            }
+        }
+
+        public bool loadChannelNotes(int i_Channel)
+        {
+            if (i_Channel < 0 || i_Channel > 15 || !a_UsedChannels[i_Channel]) {
+                return false;
             }
 
+            l_Notes.Clear();
+
             Dictionary<int, long> d_NoteOnTimes = new Dictionary<int, long>();
-            for (int i = 0; i < midiEventCollection[i_Channel].Count; i++)
-            {
-                //MessageBox.Show("aha");
-                NAudio.Midi.MidiEvent midiEvent = midiEventCollection[i_Channel][i];
+
+            for (int i = 0; i < midiEventCollection[i_Channel + 1].Count; i++) {
+                NAudio.Midi.MidiEvent midiEvent = midiEventCollection[i_Channel + 1][i];
 
                 if (midiEvent.CommandCode == MidiCommandCode.NoteOff ||
-                    midiEvent.CommandCode == MidiCommandCode.NoteOn && ((NoteOnEvent)midiEvent).Velocity == 0)
-                {
+                    midiEvent.CommandCode == MidiCommandCode.NoteOn && ((NoteOnEvent)midiEvent).Velocity == 0) {
                     NoteEvent noteOff = (NoteEvent)midiEvent;
                     long noteOnTime;
-                    if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime))
-                    {
+                    if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime)) {
                         l_Notes.Add(new Note(noteOff.NoteNumber, noteOnTime, noteOff.AbsoluteTime));
                         d_NoteOnTimes.Remove(noteOff.NoteNumber);
                     }
-                    else
-                    {
+                    else {
                         //MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
                     }
                 }
-                else if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
-                {
+                else if (midiEvent.CommandCode == MidiCommandCode.NoteOn) {
                     NoteOnEvent noteOn = (NoteOnEvent)midiEvent;
-                    try
-                    {
+                    try {
                         d_NoteOnTimes.Add(noteOn.NoteNumber, noteOn.AbsoluteTime);
                     }
-                    catch (ArgumentException e)
-                    {
+                    catch (ArgumentException e) {
                         //MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                     }
                 }
-                else
-                {
-                    
+                else {
+
                 }
             }
-            if (d_NoteOnTimes.Count != 0)
-            {
+
+            if (d_NoteOnTimes.Count != 0) {
                 MessageBox.Show("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
+            }
+
+            return true;
+        }
+
+        private void findUsedChannels()
+        {
+            for (int i = 0; i < a_UsedChannels.Length; i++) {
+                a_UsedChannels[i] = false;
+            }
+
+            for (int i = 0; i < i_NumMusicChannels; i++) {
+                for (int j = 0; j < midiEventCollection[i + 1].Count; j++) {
+                    if (midiEventCollection[i + 1][j].CommandCode == MidiCommandCode.NoteOn || midiEventCollection[i + 1][j].CommandCode == MidiCommandCode.NoteOff) {
+                        a_UsedChannels[midiEventCollection[i + 1][j].Channel - 1] = true;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -101,7 +138,7 @@ namespace NiceWindow
         bool b_Playing = false;
         bool b_ProgramClosing = false;
 
-        int i_PersistentTrack = 0;
+        int i_PersistentChannel = -1;
 
         ChannelStopper channelStopper = new ChannelStopper();
         OutputDevice outputDevice = new OutputDevice(0);
@@ -135,25 +172,24 @@ namespace NiceWindow
         }
 
 
-        public void muteOtherTracks()
+        public void setPersistentChannel(int i_PersistentChannel)
+        {
+            this.i_PersistentChannel = i_PersistentChannel;
+        }
+
+        public void muteOtherChannels()
         {
             b_MuteOtherTracks = true;
-            for (int i = 0; i < 16; i++)
-            {
-                if (i != i_PersistentTrack)
-                {
+            for (int i = 0; i < 16; i++) {
+                if (i != i_PersistentChannel) {
                     // sending all-sounds-off command to channel 
                     outputDevice.Send(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff, 0));
                 }
             }
         }
 
-        public void setPersistentTrack(int i_PersistentTrack)
-        {
-            this.i_PersistentTrack = i_PersistentTrack;
-        }
 
-        public void unmuteOtherTracks()
+        public void unmuteOtherChannels()
         {
             b_MuteOtherTracks = false;
         }
@@ -172,8 +208,7 @@ namespace NiceWindow
 
         public void startPlaying()
         {
-            if (b_FinishedLoading)
-            {
+            if (b_FinishedLoading) {
                 sequencer.Start();
                 b_Playing = true;
                 //MessageBox.Show("playing");
@@ -185,7 +220,7 @@ namespace NiceWindow
             if (b_ProgramClosing) // don't try playing anything if program is closing
                 return;
 
-            if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentTrack)
+            if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentChannel)
                 return;
 
             outputDevice.Send(e.Message);
@@ -195,8 +230,7 @@ namespace NiceWindow
         private void handleChased(object sender, ChasedEventArgs e)
         {
             // I don't know what exactly this handles
-            foreach (ChannelMessage message in e.Messages)
-            {
+            foreach (ChannelMessage message in e.Messages) {
                 outputDevice.Send(message);
             }
         }
@@ -208,115 +242,20 @@ namespace NiceWindow
 
         private void handleStopped(object sender, StoppedEventArgs e)
         {
-            foreach (ChannelMessage message in e.Messages)
-            {
+            foreach (ChannelMessage message in e.Messages) {
                 outputDevice.Send(message);
             }
 
             b_Playing = false;
         }
-    }
+    } // end MidiPlayer
 
 
-    public class Note
+
+    public class NoteMatcher
     {
-        public int i_NoteNumber;
-        public long li_BeginTime;
-        public long li_EndTime;
-
-        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime)
-        {
-            this.i_NoteNumber = i_NoteNumber;
-            this.li_BeginTime = li_BeginTime;
-            this.li_EndTime = li_EndTime;
-        }
-    }
-
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public delegate void ChangeTextDelegate(string text);
-
-        int i_PersistentTrack = 3; // select the track to always play (begins at 0)
-        string s_Filename = "BL_kotw_weepingkaral.mid";//"Test1.mid";
-
-        MidiPlayer midiPlayer;
-        
-        // variables used strictly for storing data
-        MidiEventCollection midiEventCollection;
-        MidiFile midiFile;
-        MidiInfo midiInfo;
-        
-
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            
-            midiInfo = new MidiInfo(s_Filename, i_PersistentTrack + 1);
-
-            
-            foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata)
-            {
-                textbox1.Text += metadata.ToString() + Environment.NewLine;
-            }
-
-            textbox1.Text += Environment.NewLine;
-
-            foreach (Note note in midiInfo.l_Notes)
-            {
-               textbox1.Text += note.i_NoteNumber + ", " + note.li_BeginTime + ", " + note.li_EndTime + Environment.NewLine;
-            }
-
-            textbox1.Text += Environment.NewLine;
-
-            textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote + Environment.NewLine;
-
-            initializeCanvas();
-        }
-
-
-        public void changeText(string text)
-        {
-            textbox1.Text = text;
-            textbox1.ScrollToEnd();
-        }
-
-
-        private void initializeCanvas()
-        {
-            canvas1.Background = new SolidColorBrush(Colors.Black);
-            Rectangle rect1 = new Rectangle();
-            rect1.Height = 320;
-            rect1.Width = 50;
-            rect1.Fill = new SolidColorBrush(Colors.Blue);
-            rect1.SetValue(Canvas.LeftProperty, (double)50);
-
-            Rectangle rect2 = new Rectangle();
-            rect2.Height = 30;
-            rect2.Width = 80;
-            rect2.Fill = new SolidColorBrush(Colors.Red);
-            rect2.SetValue(Canvas.LeftProperty, (double)350);
-            rect2.SetValue(Canvas.TopProperty, (double)100);
-
-            Rectangle rect3 = new Rectangle();
-            rect3.Height = 30;
-            rect3.Width = 80;
-            rect3.Fill = new SolidColorBrush(Colors.Green);
-            rect3.SetValue(Canvas.LeftProperty, (double)200);
-            rect3.SetValue(Canvas.TopProperty, (double)200);
-
-            canvas2.Children.Add(rect2);
-            canvas2.Children.Add(rect3);
-
-            canvas1.Children.Add(rect1);
-            
-        }
         /* This does matching for the violin. We will need to switch to wildcards though to handle chords.
-        private bool noteMatches(ref string serialData, int noteNumber)
+        public bool noteMatches(ref string serialData, int noteNumber)
         {
             switch (serialData)
             {
@@ -390,12 +329,11 @@ namespace NiceWindow
                     return false;
             }
         }*/
-        
+
         // this does note-checking for the flute, just ignore this for now as it is not being used
-        private bool noteMatches(ref string serialData, int noteNumber)
+        public bool noteMatches(ref string serialData, int noteNumber)
         {
-            switch (serialData)
-            {
+            switch (serialData) {
                 case "01111001110": // DN4***
                     return noteNumber == 50;
                 case "01111001111": // DS4EF4
@@ -446,45 +384,27 @@ namespace NiceWindow
                     return false;
             }
         }
+    } // end NoteMatcher
 
+
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public delegate void ChangeTextDelegate(string text);
         
-
-        
-
-        private void animateButton_Clicked(object sender, EventArgs e)
+        public MainWindow()
         {
-            DispatcherTimer dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
-            dispatcherTimer.Tick += new EventHandler(moveCanvas);
-            dispatcherTimer.Start();
-            
-            //DoubleAnimation doubleAnimation// need to investigate more about this 
-
-            animateButton.IsEnabled = false;
+            InitializeComponent();
         }
 
 
-        // DispatcherTimer event
-
-        int i_Direction = -1;
-        void moveCanvas(object sender, EventArgs e)
+        public void changeText(string text)
         {
-            double i_CurPosX = (double)(canvas2.GetValue(Canvas.LeftProperty));
-
-            textbox1.Text += canvas2.GetValue(Canvas.LeftProperty)/*i_CurPosX*/ + Environment.NewLine;
+            textbox1.Text = text;
             textbox1.ScrollToEnd();
-
-            if ((i_Direction == -1 && i_CurPosX <= -400) || (i_Direction == 1 && i_CurPosX >= 0))
-                i_Direction = -i_Direction;
-
-            canvas2.SetValue(Canvas.LeftProperty, i_CurPosX + 2 * i_Direction);
-            
         }
-
-
-        // keyboard events
-
-        
 
     }
 }
