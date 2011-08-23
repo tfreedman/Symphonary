@@ -12,7 +12,7 @@
                 <GridView>
                     <GridViewColumn Width="100" Header="Channel #"
                                     DisplayMemberBinding="{Binding i_ChannelNumber}"/>
-                    <GridViewColumn Width="100" Header="Instrument"
+                    <GridViewColumn Width="150" Header="Instrument"
                                     DisplayMemberBinding="{Binding s_Instrument}"/>
                 </GridView>
             </ListView.View>            

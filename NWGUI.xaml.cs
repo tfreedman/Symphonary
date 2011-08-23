@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using NAudio;
+using NAudio.CoreAudioApi;
+using NAudio.Midi;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,8 +44,8 @@ namespace NiceWindow
 
         private void start_Clicked(object sender, RoutedEventArgs e) 
         {
-            if (b_AnimationStarted) {
-                MessageBox.Show("The animation already started");
+            if (midiPlayer.isPlaying()) {
+                MessageBox.Show("The file is currently being played, please have it finish first.");
                 return;
             }
             
@@ -98,8 +101,9 @@ namespace NiceWindow
         private void stop_Clicked(object sender, RoutedEventArgs e)
         {
             try {
-                midiPlayer.OnClosingOperations();
-                midiPlayer.OnClosedOperations();
+                //midiPlayer.OnClosingOperations();
+                //midiPlayer.OnClosedOperations();
+                midiPlayer.stopPlaying();
             }
             catch (NullReferenceException ex) { }
         }
@@ -230,14 +234,10 @@ namespace NiceWindow
             debugConsole.Show();
 
             try {
-                debugConsole.textbox1.Text += midiInfo.i_NumMusicChannels.ToString() + Environment.NewLine;
-
-                for (int i = 0; i < midiInfo.a_UsedChannels.Length; i++) {
-                    if (midiInfo.a_UsedChannels[i])
-                        debugConsole.textbox1.Text += "Channel " + i + " is being used" + Environment.NewLine;
-                }
-
-                debugConsole.textbox1.Text += i_Channel + Environment.NewLine;
+                debugConsole.textbox1.Text = midiInfo.s_TimeSignature + " " + midiInfo.i_TimeSignatureNumerator + " " + midiInfo.i_TimeSignatureDenominator + Environment.NewLine;
+                /*foreach (MidiEvent entry in midiInfo.l_Metadata) {
+                    debugConsole.textbox1.Text += entry.ToString();
+                }*/
             }
             catch (NullReferenceException ex) { }
         }

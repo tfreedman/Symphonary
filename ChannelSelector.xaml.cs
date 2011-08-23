@@ -40,9 +40,18 @@ namespace NiceWindow
                     _Channels.Add(new Channel
                     {
                         i_ChannelNumber = i,
-                        s_Instrument = "(not yet implemented)"
+                        s_Instrument = "MIDI instrument #" + midiInfo.a_ChannelInstruments[i].ToString()
                     });
                     //MessageBox.Show("aha");
+                }
+            }
+
+            if (i_Channel >= 0) {
+                for (int i = 0; i < listView.Items.Count; i++) {
+                    if (i_Channel == ((Channel)listView.Items[i]).i_ChannelNumber) {
+                        listView.SelectedIndex = i;
+                        break;
+                    }
                 }
             }
         }
