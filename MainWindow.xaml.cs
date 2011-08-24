@@ -41,11 +41,14 @@ namespace NiceWindow
     
     public class MidiInfo
     {
+        // length of 1 tick = microseconds per beat / 60 
+        
         public int i_DeltaTicksPerQuarterNote;
         public int i_MicrosecondsPerQuarterNote;
         public int i_NumMusicChannels;
         public int i_TempoInBPM;
         public int i_TempoInNanoseconds;
+        public int i_TickDuration;
         public int i_TimeSignatureNumerator;
         public int i_TimeSignatureDenominator;
         public string s_TimeSignature;
@@ -56,8 +59,12 @@ namespace NiceWindow
         public int[] a_ExistingChannelOrder = new int[16]; // maps channels from their numbers (0 to 15) to indices in MidiEventCollection
 
         public List<NAudio.Midi.MidiEvent> l_Metadata = new List<NAudio.Midi.MidiEvent>();
-        public List<Note> l_Notes = new List<Note>();
         public MidiEventCollection midiEventCollection;
+
+        // these are for just one channel of choice
+        public long i_EndTime;
+        public List<Note> l_Notes = new List<Note>();
+       
 
         
         public MidiInfo(string s_Filename, int i_Channel)
@@ -98,6 +105,7 @@ namespace NiceWindow
                     if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime)) {
                         l_Notes.Add(new Note(noteOff.NoteNumber, noteOnTime, actualTime(noteOff.AbsoluteTime)));
                         d_NoteOnTimes.Remove(noteOff.NoteNumber);
+                        //noteOff.
                     }
                     else {
                         //MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
@@ -112,8 +120,9 @@ namespace NiceWindow
                         //MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                     }
                 }
-                else {
-
+                else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack) {
+                    i_EndTime = actualTime(midiEvent.AbsoluteTime);
+                    break;
                 }
             }
 
@@ -126,9 +135,9 @@ namespace NiceWindow
 
         private long actualTime(long i_TimeInMIDIFile)
         {
-            int i_ActualTime;
+            //long i_ActualTime = (i_TimeInMIDIFile * i_TempoInBPM) / 60;
 
-
+            //return i_ActualTime;
             return i_TimeInMIDIFile;
         }
 
@@ -140,6 +149,7 @@ namespace NiceWindow
                     i_TempoInBPM = (int)((TempoEvent)midiEventCollection[0][i]).Tempo;
                     i_TempoInNanoseconds = (int)(1000000 * (60 / (double)i_TempoInBPM));
                     i_MicrosecondsPerQuarterNote = ((TempoEvent)midiEventCollection[0][i]).MicrosecondsPerQuarterNote;
+                    i_TickDuration = i_MicrosecondsPerQuarterNote / 60;
                     return;
                 }
                 catch (InvalidCastException ex) { }
@@ -151,7 +161,8 @@ namespace NiceWindow
             for (int i = 0; i < midiEventCollection[0].Count; i++) {
                 try {
                     i_TimeSignatureNumerator = ((TimeSignatureEvent)midiEventCollection[0][i]).Numerator;
-                    i_TimeSignatureDenominator = ((TimeSignatureEvent)midiEventCollection[0][i]).Denominator;
+                    i_TimeSignatureDenominator = (int)Math.Pow(2, ((TimeSignatureEvent)midiEventCollection[0][i]).Denominator);
+                    //MessageBox.Show(((TimeSignatureEvent)midiEventCollection[0][i]).Denominator.ToString());
                     s_TimeSignature = ((TimeSignatureEvent)midiEventCollection[0][i]).TimeSignature;
                     return;
                 }

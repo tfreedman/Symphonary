@@ -28,6 +28,8 @@ namespace NiceWindow
         //Rectangle r = new Rectangle();
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
+        
+        double i_InitialCanvasPosY;
 
         MainWindow debugConsole;
         ChannelSelector channelSelector;
@@ -38,19 +40,29 @@ namespace NiceWindow
         MidiPlayer midiPlayer;
         MidiInfo midiInfo;
 
-        public NWGUI() {
+        DispatcherTimer dispatcherTimer = new DispatcherTimer();       
+
+        long prevTime = 0;
+
+        public NWGUI() 
+        {
             InitializeComponent();
+
+            i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
+
+            dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
+            dispatcherTimer.Tick += new EventHandler(moveCanvas);
         }
 
         private void start_Clicked(object sender, RoutedEventArgs e) 
         {
-            if (midiPlayer.isPlaying()) {
-                MessageBox.Show("The file is currently being played, please have it finish first.");
-                return;
-            }
-            
             try 
             {
+                if (midiPlayer.isPlaying()) {
+                    MessageBox.Show("The file is currently being played, please have it finish first.");
+                    return;
+                }
+                
                 if (midiPlayer.isFinishedLoading()) 
                 {
                     if (i_Channel != -1)
@@ -73,15 +85,13 @@ namespace NiceWindow
                     foreach (Note note in midiInfo.l_Notes) {
                         i++;
                         prevTime += (note.li_EndTime - note.li_BeginTime);
-                        fingering(note.i_NoteNumber, 41, (long)note.li_BeginTime, (long)note.li_EndTime);
+                        fingering(note.i_NoteNumber, 74, (long)note.li_BeginTime, (long)note.li_EndTime);
                         string temp = Convert.ToString(note.li_EndTime - note.li_BeginTime) + " " + Convert.ToString(note.li_BeginTime) + " " + Convert.ToString(note.li_EndTime);
 
                         //MessageBox.Show(temp);
                     }
 
-                    DispatcherTimer dispatcherTimer = new DispatcherTimer();
-                    dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
-                    dispatcherTimer.Tick += new EventHandler(moveCanvas);
+                    
                     dispatcherTimer.Start();
 
                     b_AnimationStarted = true;
@@ -93,7 +103,9 @@ namespace NiceWindow
 
             }
             catch (NullReferenceException ex) {
-                MessageBox.Show("Please load a MIDI file first!");
+                //if (ex.
+                MessageBox.Show("Please load a MIDI file first! (or some other weird error occured, so read the proceeding message)");
+                MessageBox.Show(ex.ToString());
             }
             
         }
@@ -104,12 +116,17 @@ namespace NiceWindow
                 //midiPlayer.OnClosingOperations();
                 //midiPlayer.OnClosedOperations();
                 midiPlayer.stopPlaying();
+
+                resetSubCanvas();
+                
+                b_AnimationStarted = false;
+                dispatcherTimer.Stop();
             }
             catch (NullReferenceException ex) { }
         }
         
-        long prevTime = 0;
-        private void fingering(int note, int instrument, long startTime, long endTime) 
+        
+        private void fingering(int note, int instrument, long startTime, long endTime)
         {
             if (instrument == 41) {
                 int margin = 300;
@@ -118,12 +135,12 @@ namespace NiceWindow
 
                 if (noteNumber == 0) { noteString = "0"; }
                 else if (noteNumber == 1) { noteString = "1-"; }
-                else if (noteNumber == 2) {noteString = "1";}
-                else if (noteNumber == 3) {noteString = "2-";}
-                else if (noteNumber == 4) {noteString = "2";}
-                else if (noteNumber == 5) {noteString = "3";}
-                else if (noteNumber == 6) {noteString = "3+";}
-                else if (noteNumber == 7) {noteString = "4";}
+                else if (noteNumber == 2) { noteString = "1"; }
+                else if (noteNumber == 3) { noteString = "2-"; }
+                else if (noteNumber == 4) { noteString = "2"; }
+                else if (noteNumber == 5) { noteString = "3"; }
+                else if (noteNumber == 6) { noteString = "3+"; }
+                else if (noteNumber == 7) { noteString = "4"; }
                 int padding = 30;
                 Rectangle r = new Rectangle();
                 TextBlock textBlock = new TextBlock();
@@ -131,7 +148,7 @@ namespace NiceWindow
                 textBlock.Height = 50;
                 textBlock.Width = 50;
                 r.Width = 46;
-          
+
                 if (note >= 55 && note < 62) {
                     textBlock.Foreground = new SolidColorBrush(Colors.White);
                     textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width));
@@ -183,6 +200,88 @@ namespace NiceWindow
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
             }
+            else if (instrument == 74) {
+                int margin = 300;
+                int padding = 30;
+
+                String noteString = "";
+
+                if (note == 50)
+                    noteString = "01111001110";
+                else if (note == 51)
+                    noteString = "01111001111";
+                else if (note == 52 || note == 64)
+                    noteString = "01111001101";
+                else if (note == 53)
+                    noteString = "01111001001";
+                else if (note == 54 || note == 66)
+                    noteString = "01111000011";
+                else if (note == 55 || note == 67)
+                    noteString = "01111000001";
+                else if (note == 56 || note == 68)
+                    noteString = "01111010001";
+                else if (note == 57 || note == 69)
+                    noteString = "01110000001";
+                else if (note == 58)
+                    noteString = "01100001001";
+                else if (note == 59 || note == 71)
+                    noteString = "01100000001";
+                else if (note == 60 || note == 72)
+                    noteString = "00100000001";
+                else if (note == 61 || note == 73)
+                    noteString = "00000000001";
+                else if (note == 62)
+                    noteString = "01011001110";
+                else if (note == 63)
+                    noteString = "01011001111";
+                else if (note == 70)
+                    noteString = "10100000001";
+                else if (note == 74)
+                    noteString = "01011000001";
+                else if (note == 75)
+                    noteString = "01111011111";
+                else if (note == 76)
+                    noteString = "01110001101";
+                else if (note == 77)
+                    noteString = "01101001001";
+                else if (note == 78)
+                    noteString = "01101000011";
+                else if (note == 79)
+                    noteString = "00111000001";
+                else if (note == 80)
+                    noteString = "00011010001";
+                else if (note == 81)
+                    noteString = "01010001001";
+                else
+                    return;
+
+                /*if (noteString.Length == 0) {
+                    MessageBox.Show("aha" + note.ToString());
+                }*/
+
+                Rectangle[] r = new Rectangle[noteString.Length];
+                for (int i = 0; i < noteString.Length; i++) {
+                    r[i] = new Rectangle();
+                }
+
+                Color[] color = new Color[11] { Color.FromRgb(220, 42, 62), Color.FromRgb(67, 66, 64), Color.FromRgb(250, 181, 65), Color.FromRgb(0, 100, 100), Color.FromRgb(253, 251, 230), Color.FromRgb(254, 135, 33), Color.FromRgb(144, 187, 69), Color.FromRgb(231, 107, 117), Color.FromRgb(120, 132, 161), Color.FromRgb(82, 44, 95), Color.FromRgb(26, 98, 179) };
+                Color[] border = new Color[11] { Color.FromRgb(189, 36, 54), Color.FromRgb(31, 30, 29), Color.FromRgb(227, 165, 59), Color.FromRgb(0, 43, 43), Color.FromRgb(191, 190, 174), Color.FromRgb(220, 123, 37), Color.FromRgb(114, 148, 55), Color.FromRgb(194, 89, 98), Color.FromRgb(94, 102, 125), Color.FromRgb(26, 14, 31), Color.FromRgb(24, 82, 148) };
+
+                int rWidth = 46;
+                for (int i = 0; i < noteString.Length; i++) {
+                    if (i == 0)
+                        r[i].SetValue(Canvas.LeftProperty, (double)(margin + (rWidth + padding)));
+                    else
+                        r[i].SetValue(Canvas.LeftProperty, (double)(margin + ((i + 1) * (rWidth + padding))));
+
+                    r[i].Fill = new SolidColorBrush(color[i]);
+                    r[i].Stroke = new SolidColorBrush(border[i]);
+                    r[i].StrokeThickness = 2;
+                    r[i].Height = (endTime - startTime);
+                    r[i].SetValue(Canvas.TopProperty, (double)(-1 * prevTime));
+                    subcanv.Children.Add(r[i]);
+                }
+            }
         }
 
         /*private void startMusic_Clicked(object sender, RoutedEventArgs e) {
@@ -215,6 +314,11 @@ namespace NiceWindow
                 }
                 catch (NullReferenceException ex) { }
 
+                resetSubCanvas();
+
+                b_AnimationStarted = false;
+                dispatcherTimer.Stop();
+
                 try {
                     loadingScreen.Close();
                 }
@@ -234,10 +338,21 @@ namespace NiceWindow
             debugConsole.Show();
 
             try {
-                debugConsole.textbox1.Text = midiInfo.s_TimeSignature + " " + midiInfo.i_TimeSignatureNumerator + " " + midiInfo.i_TimeSignatureDenominator + Environment.NewLine;
-                /*foreach (MidiEvent entry in midiInfo.l_Metadata) {
-                    debugConsole.textbox1.Text += entry.ToString();
-                }*/
+                foreach (Note note in midiInfo.l_Notes) {
+                    debugConsole.textbox1.Text += note.li_BeginTime + " " + note.li_EndTime + Environment.NewLine;
+                }
+
+                debugConsole.textbox1.Text += ">> " + midiInfo.i_EndTime + Environment.NewLine;
+
+                foreach (MidiEvent metadata in midiInfo.l_Metadata) {
+                    debugConsole.textbox1.Text += metadata.ToString();
+                }
+
+                /*
+                for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
+                    debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
+                }
+                 */
             }
             catch (NullReferenceException ex) { }
         }
@@ -350,6 +465,13 @@ namespace NiceWindow
         }
 
 
+        private void resetSubCanvas()
+        {
+            subcanv.Children.Clear();
+            subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
+        }
+
+
         /*void drawFrame(object sender, EventArgs e)
         {
             temp++;
@@ -358,7 +480,8 @@ namespace NiceWindow
         }
          */
 
-        public struct ColorRGB {
+        public struct ColorRGB 
+        {
             public byte R;
             public byte G;
             public byte B;
@@ -379,7 +502,8 @@ namespace NiceWindow
             }
         }
 
-        public ColorRGB HSL2RGB(double h, double sl, double l) {
+        public ColorRGB HSL2RGB(double h, double sl, double l) 
+        {
             double v;
             double r, g, b;
             r = l;   // default to gray
@@ -441,7 +565,8 @@ namespace NiceWindow
         }
     }
 
-    public static class ExtensionMethods {
+    public static class ExtensionMethods 
+    {
         private static Action EmptyDelegate = delegate() { };
         public static void Refresh(this UIElement uiElement) {
             uiElement.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
