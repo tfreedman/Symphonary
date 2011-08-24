@@ -124,10 +124,9 @@ namespace NiceWindow
             }
             catch (NullReferenceException ex) { }
         }
-        
-        
-        private void fingering(int note, int instrument, long startTime, long endTime)
-        {
+
+
+        private void fingering(int note, int instrument, long startTime, long endTime) {
             if (instrument == 41) {
                 int margin = 300;
                 int noteNumber = note % 7;
@@ -201,10 +200,10 @@ namespace NiceWindow
                 subcanv.Children.Add(textBlock);
             }
             else if (instrument == 74) {
-                int margin = 300;
+                int margin = 40;
                 int padding = 30;
 
-                String noteString = "";
+                String noteString = " ";
 
                 if (note == 50)
                     noteString = "01111001110";
@@ -252,30 +251,25 @@ namespace NiceWindow
                     noteString = "00011010001";
                 else if (note == 81)
                     noteString = "01010001001";
-                else
-                    return;
-
-                /*if (noteString.Length == 0) {
-                    MessageBox.Show("aha" + note.ToString());
-                }*/
 
                 Rectangle[] r = new Rectangle[noteString.Length];
                 for (int i = 0; i < noteString.Length; i++) {
                     r[i] = new Rectangle();
                 }
-
                 Color[] color = new Color[11] { Color.FromRgb(220, 42, 62), Color.FromRgb(67, 66, 64), Color.FromRgb(250, 181, 65), Color.FromRgb(0, 100, 100), Color.FromRgb(253, 251, 230), Color.FromRgb(254, 135, 33), Color.FromRgb(144, 187, 69), Color.FromRgb(231, 107, 117), Color.FromRgb(120, 132, 161), Color.FromRgb(82, 44, 95), Color.FromRgb(26, 98, 179) };
                 Color[] border = new Color[11] { Color.FromRgb(189, 36, 54), Color.FromRgb(31, 30, 29), Color.FromRgb(227, 165, 59), Color.FromRgb(0, 43, 43), Color.FromRgb(191, 190, 174), Color.FromRgb(220, 123, 37), Color.FromRgb(114, 148, 55), Color.FromRgb(194, 89, 98), Color.FromRgb(94, 102, 125), Color.FromRgb(26, 14, 31), Color.FromRgb(24, 82, 148) };
 
                 int rWidth = 46;
                 for (int i = 0; i < noteString.Length; i++) {
                     if (i == 0)
-                        r[i].SetValue(Canvas.LeftProperty, (double)(margin + (rWidth + padding)));
+                        r[i].SetValue(Canvas.LeftProperty, (double)(margin + rWidth));
                     else
                         r[i].SetValue(Canvas.LeftProperty, (double)(margin + ((i + 1) * (rWidth + padding))));
-
-                    r[i].Fill = new SolidColorBrush(color[i]);
-                    r[i].Stroke = new SolidColorBrush(border[i]);
+                    r[i].Width = rWidth;
+                    if (noteString[i] == '1' && noteString.Length > 3) {
+                        r[i].Fill = new SolidColorBrush(color[i]);
+                        r[i].Stroke = new SolidColorBrush(border[i]);
+                    }
                     r[i].StrokeThickness = 2;
                     r[i].Height = (endTime - startTime);
                     r[i].SetValue(Canvas.TopProperty, (double)(-1 * prevTime));
