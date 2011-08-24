@@ -446,11 +446,41 @@ namespace NiceWindow
         private void initializeCanvas() {
             canv.Background = new SolidColorBrush(Colors.White);
             Rectangle rect1 = new Rectangle();
-            rect1.Height = 5;
+            rect1.Height = 3;
             rect1.Width = 1024;
-            rect1.Fill = new SolidColorBrush(Colors.Black);
-            rect1.SetValue(Canvas.TopProperty, (double)500);
+            rect1.Fill = new SolidColorBrush(Color.FromRgb(51, 51,51));
+            rect1.SetValue(Canvas.TopProperty, (double)650);
             canv.Children.Add(rect1);
+
+            Rectangle rect2 = new Rectangle();
+            rect2.Height = 55;
+            rect2.Width = 1024;
+            rect2.Fill = new SolidColorBrush(Color.FromRgb(51,51,51));
+            rect2.SetValue(Canvas.TopProperty, (double)19);
+            canv.Children.Add(rect2);
+
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = "Example Song";
+            textBlock.Height = 50;
+            textBlock.Width = 400;
+            textBlock.Foreground = new SolidColorBrush(Colors.White);
+            textBlock.FontStyle = FontStyles.Italic;
+            textBlock.FontSize = 30;
+            textBlock.TextAlignment = TextAlignment.Left;
+            textBlock.SetValue(Canvas.TopProperty, (double)25);
+            textBlock.SetValue(Canvas.LeftProperty, (double)10);
+            canv.Children.Add(textBlock);
+
+            TextBlock score = new TextBlock();
+            score.Text = "50/52 notes correct ~ A+";
+            score.Height = 50;
+            score.Width = 400;
+            score.Foreground = new SolidColorBrush(Colors.White);
+            score.FontSize = 30;
+            score.TextAlignment = TextAlignment.Right;
+            score.SetValue(Canvas.TopProperty, (double)25);
+            score.SetValue(Canvas.LeftProperty, (double)600);
+            canv.Children.Add(score);
         }
 
         private void moveCanvas(object sender, EventArgs e) {
