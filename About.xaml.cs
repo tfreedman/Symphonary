@@ -14,20 +14,18 @@ using System.Windows.Shapes;
 namespace NiceWindow
 {
     /// <summary>
-    /// Interaction logic for LoadingScreen.xaml
+    /// Interaction logic for About.xaml
     /// </summary>
-    public partial class LoadingScreen : Window
+    public partial class About : Window
     {
-        public LoadingScreen()
+        public About()
         {
             InitializeComponent();
-
-            
         }
 
-        public void setProgress(int i_ProgressPercentage)
+        private void close_Click(object sender, RoutedEventArgs e)
         {
-            boat.SetValue(Canvas.LeftProperty, 40 + (400 * ((double)i_ProgressPercentage / 100)));
+            Close();
         }
     }
 }

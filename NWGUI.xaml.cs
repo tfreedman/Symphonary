@@ -382,7 +382,8 @@ namespace NiceWindow
 
         private void about_Clicked(object sender, RoutedEventArgs e) 
         {
-            MessageBox.Show("This will be implemented :D");
+            About about = new About();
+            about.Show();
         }
 
         private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
@@ -425,6 +426,9 @@ namespace NiceWindow
                 loadingScreen.Close();
             }
             catch (NullReferenceException ex) { }
+
+            channelSelector = new ChannelSelector(ref midiInfo, i_Channel, channelSelectorOkClicked);
+            channelSelector.Show();
         }
 
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close

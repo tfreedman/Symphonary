@@ -1,6 +1,8 @@
 ﻿<Window x:Class="NiceWindow.LoadingScreen"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:winForms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         Title="" Height="200" Width="600" Topmost="True" 
         ResizeMode="NoResize">
     <Grid>
@@ -8,8 +10,11 @@
             <Image Source="Images/SDLoading.png" Width="170"></Image>
             <!--<MediaElement Source="Images/Katsura.gif" 
                    Canvas.Bottom="0" Canvas.Right="0"></MediaElement>-->
-            <Image Source="Images/Katsura.gif"
-                   Canvas.Bottom="0" Canvas.Right="0"></Image>
+            <wfi:WindowsFormsHost Canvas.Bottom="0" Canvas.Right="0">
+                <winForms:PictureBox SizeMode="AutoSize" ImageLocation="Images/Katsura.gif"></winForms:PictureBox>
+            </wfi:WindowsFormsHost>
+            <!--<Image Source="Images/Katsura.gif" Name="katsura"
+                   Canvas.Bottom="0" Canvas.Right="0"></Image>-->
             <Image Source="Images/SDLoading2.png" Name="boat" Width="60"
                    Canvas.Bottom="0" Canvas.Left="40"></Image>
         </Canvas> 

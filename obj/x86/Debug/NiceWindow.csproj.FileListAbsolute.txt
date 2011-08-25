@@ -50,3 +50,5 @@ D:\miditool\NiceWindow\obj\x86\Debug\ChannelSelector.baml
 D:\miditool\NiceWindow\obj\x86\Debug\ChannelSelector.g.cs
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\ChannelSelector.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\ChannelSelector.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\About.baml
+D:\miditool\NiceWindow\obj\x86\Debug\About.g.cs
