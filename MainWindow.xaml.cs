@@ -42,20 +42,28 @@ namespace NiceWindow
     public class MidiInfo
     {
         // length of 1 tick = microseconds per beat / 60 
+
+        public double d_MilisecondsPerQuarterNote;
+        public double d_MilisecondsPerTick;
         
         public int i_DeltaTicksPerQuarterNote;
         public int i_MicrosecondsPerQuarterNote;
         public int i_NumMusicChannels;
         public int i_TempoInBPM;
-        public int i_TempoInNanoseconds;
-        public int i_TickDuration;
+        public int i_TempoInNanoseconds;        
         public int i_TimeSignatureNumerator;
         public int i_TimeSignatureDenominator;
+        
+        public string s_Title;
         public string s_TimeSignature;
+        
 
         // 16 channels from 0 to 15
         public bool[] a_UsedChannels = new bool[16];
-        public int[] a_ChannelInstruments = new int[16];
+
+        public int[] a_ChannelInstrumentNumbers = new int[16];
+        public string[] a_ChannelInstrumentNames = new string[16];
+
         public int[] a_ExistingChannelOrder = new int[16]; // maps channels from their numbers (0 to 15) to indices in MidiEventCollection
 
         public List<NAudio.Midi.MidiEvent> l_Metadata = new List<NAudio.Midi.MidiEvent>();
@@ -69,13 +77,21 @@ namespace NiceWindow
         
         public MidiInfo(string s_Filename, int i_Channel)
         {
-            midiEventCollection = new MidiFile(s_Filename).Events;
+            s_Title = s_Filename.Substring(Math.Max(0, s_Filename.LastIndexOf('\\') + 1));
+            int i_lastDotPos = s_Title.LastIndexOf('.');
+            if (i_lastDotPos >= 0) {
+                s_Title = s_Title.Substring(0, i_lastDotPos);
+            }
             
+            midiEventCollection = new MidiFile(s_Filename).Events;
             
             i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
             i_NumMusicChannels = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
 
             getTempo();
+            d_MilisecondsPerQuarterNote = i_MicrosecondsPerQuarterNote / 1000.0;
+            d_MilisecondsPerTick = d_MilisecondsPerQuarterNote / i_DeltaTicksPerQuarterNote;
+
             getTimeSignature();
             getUsedChannels();
             getChannelInstruments();
@@ -135,10 +151,10 @@ namespace NiceWindow
 
         private long actualTime(long i_TimeInMIDIFile)
         {
-            //long i_ActualTime = (i_TimeInMIDIFile * i_TempoInBPM) / 60;
+            long i_ActualTime = (long)(i_TimeInMIDIFile * d_MilisecondsPerTick);
 
-            //return i_ActualTime;
-            return i_TimeInMIDIFile;
+            return i_ActualTime;
+            //return i_TimeInMIDIFile;
         }
 
 
@@ -148,8 +164,7 @@ namespace NiceWindow
                 try {
                     i_TempoInBPM = (int)((TempoEvent)midiEventCollection[0][i]).Tempo;
                     i_TempoInNanoseconds = (int)(1000000 * (60 / (double)i_TempoInBPM));
-                    i_MicrosecondsPerQuarterNote = ((TempoEvent)midiEventCollection[0][i]).MicrosecondsPerQuarterNote;
-                    i_TickDuration = i_MicrosecondsPerQuarterNote / 60;
+                    i_MicrosecondsPerQuarterNote = ((TempoEvent)midiEventCollection[0][i]).MicrosecondsPerQuarterNote;                    
                     return;
                 }
                 catch (InvalidCastException ex) { }
@@ -189,14 +204,20 @@ namespace NiceWindow
 
         private void getChannelInstruments()
         {
-            for (int i = 0; i < a_ChannelInstruments.Length; i++) {
-                a_ChannelInstruments[i] = 1; // default is 1 (acoustic grand piano)
+            for (int i = 0; i < a_ChannelInstrumentNumbers.Length; i++) {
+                a_ChannelInstrumentNumbers[i] = 1; // default is 1 (acoustic grand piano)
+            }
+
+            
+            for (int i = 0; i < a_ChannelInstrumentNumbers.Length; i++) {
+                a_ChannelInstrumentNames[i] = PatchChangeEvent.GetPatchName(0);
             }
 
             for (int i = 0; i < i_NumMusicChannels; i++) {
                 for (int j = 0; j < midiEventCollection[i + 1].Count; j++) {
                     if (midiEventCollection[i + 1][j].CommandCode == MidiCommandCode.PatchChange) {
-                        a_ChannelInstruments[midiEventCollection[i + 1][j].Channel - 1] = ((PatchChangeEvent)midiEventCollection[i + 1][j]).Patch + 1;
+                        a_ChannelInstrumentNumbers[midiEventCollection[i + 1][j].Channel - 1] = ((PatchChangeEvent)midiEventCollection[i + 1][j]).Patch + 1;
+                        a_ChannelInstrumentNames[midiEventCollection[i + 1][j].Channel - 1] = PatchChangeEvent.GetPatchName(a_ChannelInstrumentNumbers[midiEventCollection[i + 1][j].Channel - 1] - 1);
                         break;
                     }
                 }

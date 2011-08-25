@@ -18,6 +18,6 @@
             </ListView.View>            
         </ListView>
         <Button HorizontalAlignment="Right" Name="okButton" 
-                Margin="0,5,0,0" Width="100" Content="Ok"/>
+                Margin="0,5,0,0" Width="100" Content="OK"/>
     </StackPanel>
 </Window>

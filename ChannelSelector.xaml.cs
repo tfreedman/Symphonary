@@ -40,7 +40,7 @@ namespace NiceWindow
                     _Channels.Add(new Channel
                     {
                         i_ChannelNumber = i,
-                        s_Instrument = "MIDI instrument #" + midiInfo.a_ChannelInstruments[i].ToString()
+                        s_Instrument = midiInfo.a_ChannelInstrumentNames[i]
                     });
                     //MessageBox.Show("aha");
                 }

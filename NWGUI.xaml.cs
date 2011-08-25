@@ -113,7 +113,8 @@ namespace NiceWindow
         }
 
 
-        private void fingering(int note, int instrument, long startTime, long endTime) {
+        private void fingering(int note, int instrument, long startTime, long endTime) 
+        {
             if (instrument == 41) {
                 int margin = 300;
                 int noteNumber = note % 7;
@@ -279,11 +280,13 @@ namespace NiceWindow
             }
         }*/
 
-        private void exit_Clicked(object sender, RoutedEventArgs e) {
+        private void exit_Clicked(object sender, RoutedEventArgs e) 
+        {
             Application.Current.Shutdown();
         }
 
-        private void open_Clicked(object sender, RoutedEventArgs e) {
+        private void open_Clicked(object sender, RoutedEventArgs e) 
+        {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MIDI Files (*.mid)|*.mid|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -319,16 +322,28 @@ namespace NiceWindow
             debugConsole.Show();
 
             try {
+
+                debugConsole.textbox1.Text += midiInfo.s_Title + Environment.NewLine;
+
+                debugConsole.textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote + Environment.NewLine;
+                debugConsole.textbox1.Text += midiInfo.i_MicrosecondsPerQuarterNote + " " + midiInfo.d_MilisecondsPerQuarterNote + Environment.NewLine;
+                debugConsole.textbox1.Text += midiInfo.d_MilisecondsPerTick + Environment.NewLine;
+
+
+                foreach (MidiEvent metadata in midiInfo.l_Metadata) {
+                    debugConsole.textbox1.Text += metadata.ToString();
+                }
+
+                debugConsole.textbox1.Text += "-----" + Environment.NewLine;
+                
                 foreach (Note note in midiInfo.l_Notes) {
                     debugConsole.textbox1.Text += note.li_BeginTime + " " + note.li_EndTime + Environment.NewLine;
                 }
 
                 debugConsole.textbox1.Text += ">> " + midiInfo.i_EndTime + Environment.NewLine;
 
-                foreach (MidiEvent metadata in midiInfo.l_Metadata) {
-                    debugConsole.textbox1.Text += metadata.ToString();
-                }
-
+                
+                
                 /*
                 for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
                     debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
@@ -393,18 +408,19 @@ namespace NiceWindow
                     midiPlayer.muteOtherChannels();
                 }
             }
-            catch (NullReferenceException ex) {
-            }
+            catch (NullReferenceException ex) { }
         }
 
-        private void handleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) {
+        private void handleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) 
+        {
             try {
                 loadingScreen.setProgress(e.ProgressPercentage);
             }
             catch (NullReferenceException ex) { }
         }
 
-        private void handleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) {
+        private void handleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) 
+        {
             try {
                 loadingScreen.Close();
             }
@@ -412,7 +428,8 @@ namespace NiceWindow
         }
 
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close
-        protected override void OnClosing(CancelEventArgs e) {
+        protected override void OnClosing(CancelEventArgs e) 
+        {
             try {
                 midiPlayer.OnClosingOperations();
             }
@@ -421,7 +438,8 @@ namespace NiceWindow
             base.OnClosing(e);
         }
 
-        protected override void OnClosed(EventArgs e) {
+        protected override void OnClosed(EventArgs e) 
+        {
             try {
                 midiPlayer.OnClosedOperations();
             }
@@ -430,13 +448,15 @@ namespace NiceWindow
             base.OnClosed(e);
         }
 
-        private void initializeCanvas() {
+        private void initializeCanvas() 
+        {
             canv.Background = new SolidColorBrush(Colors.White);
             Rectangle rect1 = new Rectangle();
             rect1.Height = 3;
             rect1.Width = 1024;
             rect1.Fill = new SolidColorBrush(Color.FromRgb(51, 51,51));
             rect1.SetValue(Canvas.TopProperty, (double)650);
+
             canv.Children.Add(rect1);
 
             Rectangle rect2 = new Rectangle();
@@ -447,7 +467,7 @@ namespace NiceWindow
             canv.Children.Add(rect2);
 
             TextBlock textBlock = new TextBlock();
-            textBlock.Text = "Example Song";
+            textBlock.Text = midiInfo.s_Title;
             textBlock.Height = 50;
             textBlock.Width = 400;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
@@ -470,7 +490,8 @@ namespace NiceWindow
             canv.Children.Add(score);
         }
 
-        private void moveCanvas(object sender, EventArgs e) {
+        private void moveCanvas(object sender, EventArgs e) 
+        {
             double i_CurPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
             subcanv.SetValue(Canvas.TopProperty, i_CurPosY + 10);
         }
