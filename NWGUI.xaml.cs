@@ -42,8 +42,6 @@ namespace NiceWindow
 
         DispatcherTimer dispatcherTimer = new DispatcherTimer();       
 
-        long prevTime = 0;
-
         public NWGUI() 
         {
             InitializeComponent();
@@ -72,28 +70,17 @@ namespace NiceWindow
 
                     initializeCanvas();
 
-                    int i = 0;
+                    int j = 0;
 
-                    long maxEndTime = 0;
-
-                    foreach (Note note in midiInfo.l_Notes) {
-                        if (note.li_EndTime > maxEndTime)
-                            maxEndTime = note.li_EndTime;
+                    foreach (Note note in midiInfo.l_Notes)
+                        j++;
+                    for (int i = j - 1; i >= 0; i--) {
+                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 41, (long)midiInfo.l_Notes[i].li_BeginTime, (long)midiInfo.l_Notes[i].li_EndTime);
                     }
+
                     //MessageBox.Show(Convert.ToString(maxEndTime));
-
-                    foreach (Note note in midiInfo.l_Notes) {
-                        i++;
-                        prevTime += (note.li_EndTime - note.li_BeginTime);
-                        fingering(note.i_NoteNumber, 74, (long)note.li_BeginTime, (long)note.li_EndTime);
-                        string temp = Convert.ToString(note.li_EndTime - note.li_BeginTime) + " " + Convert.ToString(note.li_BeginTime) + " " + Convert.ToString(note.li_EndTime);
-
-                        //MessageBox.Show(temp);
-                    }
-
                     
                     dispatcherTimer.Start();
-
                     b_AnimationStarted = true;
                 }
                 else {
@@ -194,8 +181,8 @@ namespace NiceWindow
                 textBlock.FontSize = 30;
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.TextAlignment = TextAlignment.Center;
-                textBlock.SetValue(Canvas.TopProperty, (double)(-1 * prevTime) + r.Height - 50);
-                r.SetValue(Canvas.TopProperty, (double)(-1 * prevTime));
+                textBlock.SetValue(Canvas.TopProperty, (double)(-1 * startTime) + r.Height - 50);
+                r.SetValue(Canvas.TopProperty, (double)(-1 * startTime));
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
             }
@@ -272,7 +259,7 @@ namespace NiceWindow
                     }
                     r[i].StrokeThickness = 2;
                     r[i].Height = (endTime - startTime);
-                    r[i].SetValue(Canvas.TopProperty, (double)(-1 * prevTime));
+                    r[i].SetValue(Canvas.TopProperty, (double)(-1 * startTime));
                     subcanv.Children.Add(r[i]);
                 }
             }
