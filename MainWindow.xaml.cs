@@ -233,16 +233,19 @@ namespace NiceWindow
         bool b_Playing = false;
         bool b_ProgramClosing = false;
 
-        int i_PersistentChannel = -1;
-
+        
         ChannelStopper channelStopper = new ChannelStopper();
         OutputDevice outputDevice = new OutputDevice(0);
         Sequence sequence = new Sequence();
         Sequencer sequencer = new Sequencer();
 
+        int i_PersistentChannel = -1;
+        public int i_NumChannelNotesPlayed = 0;
+
         public MidiPlayer(string s_Filename, 
             System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
-            System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted)
+            System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted,
+            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed)
         {
             sequence.Format = 1;
             sequence.LoadProgressChanged += extHandleLoadProgressChanged;
@@ -252,6 +255,7 @@ namespace NiceWindow
             sequencer.Position = 0;
             sequencer.Sequence = sequence;
             sequencer.ChannelMessagePlayed += handleChannelMessagePlayed;
+            sequencer.ChannelMessagePlayed += extHandleChannelMessagePlayed;
             sequencer.Chased += handleChased;
             sequencer.Stopped += handleStopped;
         }
@@ -270,6 +274,15 @@ namespace NiceWindow
         public void setPersistentChannel(int i_PersistentChannel)
         {
             this.i_PersistentChannel = i_PersistentChannel;
+            i_NumChannelNotesPlayed = 0;
+        }
+
+
+        private void muteAllChannels()
+        {
+            for (int i = 0; i < 16; i++) {
+                outputDevice.Send(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff, 0));
+            }
         }
 
         public void muteOtherChannels()
@@ -313,9 +326,8 @@ namespace NiceWindow
         public void stopPlaying()
         {
             b_Playing = false;
-            muteOtherChannels();
+            muteAllChannels();
             sequencer.Stop();
-            unmuteOtherChannels();
         }
 
         private void handleChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
@@ -325,6 +337,10 @@ namespace NiceWindow
 
             if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentChannel)
                 return;
+
+            if (e.Message.MidiChannel == i_PersistentChannel && e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0) {
+                i_NumChannelNotesPlayed++;
+            }
 
             outputDevice.Send(e.Message);
         }

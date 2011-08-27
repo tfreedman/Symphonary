@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Select Channel" Height="300" Width="300"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" ShowInTaskbar="False">
     <StackPanel>
         <ListView Name="listView" Height="230"
                   ItemsSource="{Binding Channels}"
