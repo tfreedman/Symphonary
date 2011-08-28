@@ -136,9 +136,13 @@ namespace NiceWindow
 
 
                     int j = 0;
-
-                    foreach (Note note in midiInfo.l_Notes)
+                    long lastNote = 0;
+                    foreach (Note note in midiInfo.l_Notes) {
                         j++;
+                        if (note.li_EndTime > lastNote)
+                            lastNote = note.li_EndTime;
+                    }
+                    drawGridLines(lastNote, midiInfo.i_TempoInBPM, midiInfo.i_TimeSignatureNumerator);
                     for (int i = j - 1; i >= 0; i--) {
                         fingering(midiInfo.l_Notes[i].i_NoteNumber, 74, (long)midiInfo.l_Notes[i].li_BeginTime, (long)midiInfo.l_Notes[i].li_EndTime);
                     }
@@ -178,7 +182,25 @@ namespace NiceWindow
             }
             catch (NullReferenceException ex) { }
         }
-
+        private void drawGridLines(long endTime, int bpm, int count) {
+            int runner = 0;
+            for (int i = 0; i < (endTime + 1000); i = i + (bpm / count)) {
+                Rectangle r = new Rectangle();
+                r.Width = 1024;
+                if (runner % count == 0) {
+                    r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
+                    r.SetValue(Canvas.BottomProperty, (double)i);
+                    r.Height = 3;
+                }
+                else {
+                    r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
+                    r.SetValue(Canvas.BottomProperty, (double)i);
+                    r.Height = 1;
+                }
+                subcanv.Children.Add(r);
+                runner++;
+            }
+        }
 
         private void fingering(int note, int instrument, long startTime, long endTime) 
         {
@@ -245,7 +267,7 @@ namespace NiceWindow
 
                 r.StrokeThickness = 2;
                 Canvas.SetZIndex(textBlock, (int)99);
-                r.Height = (endTime - startTime);
+                r.Height = (endTime - startTime - 4);
                 textBlock.FontSize = 30;
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.TextAlignment = TextAlignment.Center;
@@ -326,7 +348,7 @@ namespace NiceWindow
                         r[i].Stroke = new SolidColorBrush(border[i]);
                     }
                     r[i].StrokeThickness = 2;
-                    r[i].Height = (endTime - startTime);
+                    r[i].Height = (endTime - startTime - 4);
                     r[i].SetValue(Canvas.BottomProperty, (double)(startTime));
                     subcanv.Children.Add(r[i]);
                 }
