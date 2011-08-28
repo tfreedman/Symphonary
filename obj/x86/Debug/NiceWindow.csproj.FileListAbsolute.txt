@@ -52,3 +52,5 @@ C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\ChannelSelector.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\ChannelSelector.g.cs
 D:\miditool\NiceWindow\obj\x86\Debug\About.baml
 D:\miditool\NiceWindow\obj\x86\Debug\About.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\SerialPortSelector.baml
+D:\miditool\NiceWindow\obj\x86\Debug\SerialPortSelector.g.cs

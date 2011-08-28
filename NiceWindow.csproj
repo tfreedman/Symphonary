@@ -79,6 +79,9 @@
     <Compile Include="About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SerialPortSelector.xaml.cs">
+      <DependentUpon>SerialPortSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ChannelSelector.xaml.cs">
       <DependentUpon>ChannelSelector.xaml</DependentUpon>
     </Compile>
@@ -94,6 +97,10 @@
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
     <Page Include="About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SerialPortSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

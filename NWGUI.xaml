@@ -22,6 +22,7 @@
                     
                     <MenuItem Header="_Options">
                         <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
+                        <MenuItem Header="_Select Serial Port" Click="selectSerialPort_Clicked"/>
                     </MenuItem>
 
                     <MenuItem Header="_Help">

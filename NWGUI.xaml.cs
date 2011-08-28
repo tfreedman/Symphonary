@@ -10,6 +10,8 @@ using Sanford.Threading;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -38,6 +40,7 @@ namespace NiceWindow
 
         MainWindow debugConsole;
         ChannelSelector channelSelector;
+        SerialPortSelector serialPortSelector;
         LoadingScreen loadingScreen;
 
 
@@ -55,6 +58,10 @@ namespace NiceWindow
         //int i_NumNotesPlayed;
         int i_NumNotesScored;
         string s_ScoreGrade;
+
+        string s_SelectedSerialPort = string.Empty;
+        SerialPort serialPort = new SerialPort();
+
 
         public NWGUI() 
         {
@@ -102,6 +109,7 @@ namespace NiceWindow
             canv.Children.Add(tb_SongTitle);
             canv.Children.Add(tb_ScoreDisplay);
         }
+
 
         private void start_Clicked(object sender, RoutedEventArgs e) 
         {
@@ -403,8 +411,9 @@ namespace NiceWindow
                 debugConsole.textbox1.Text += ">> " + midiInfo.i_EndTime + Environment.NewLine;
                  */
 
-                debugConsole.textbox1.Text += midiInfo.l_Notes.Count;
-                
+                //debugConsole.textbox1.Text += midiInfo.l_Notes.Count + Environment.NewLine;
+                debugConsole.textbox1.Text += s_SelectedSerialPort + Environment.NewLine;
+
                 /*
                 for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
                     debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
@@ -431,6 +440,8 @@ namespace NiceWindow
             channelSelector.Show();
         }
 
+        
+
 
         private void channelSelectorOkClicked(object sender, RoutedEventArgs e)
         {
@@ -440,6 +451,40 @@ namespace NiceWindow
             midiPlayer.setPersistentChannel(i_Channel);
 
             channelSelector.Close();
+        }
+
+
+        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e)
+        {
+            // if the serial port is not closed, opening once again (SerialPortSelector opens ports for testing) 
+            // will cause an exception
+            serialPort.Close(); 
+
+            serialPortSelector = new SerialPortSelector(s_SelectedSerialPort, serialPortSelectorOkClicked);
+            serialPortSelector.Show();
+        }
+
+
+        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e)
+        {
+            s_SelectedSerialPort = serialPortSelector.getSelectedSerialPort();
+
+            serialPortSelector.Close();
+
+            serialPort.Close();
+
+            if (s_SelectedSerialPort == string.Empty) {
+                MessageBox.Show("You have not selected a serial port!");
+                return;
+            }
+
+            try {
+                serialPort.PortName = s_SelectedSerialPort;
+                serialPort.Open();
+            }
+            catch (IOException ex) {
+                MessageBox.Show("The selected serial port could not be opened");
+            }
         }
 
 

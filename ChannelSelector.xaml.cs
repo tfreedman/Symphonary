@@ -65,7 +65,7 @@ namespace NiceWindow
         {
             if (listView.SelectedIndex >= 0) {
                 //MessageBox.Show(((Channel)listView.Items[listView.SelectedIndex]).i_ChannelNumber.ToString());
-                return (((Channel)listView.Items[listView.SelectedIndex]).i_ChannelNumber);
+                return ((Channel)listView.Items[listView.SelectedIndex]).i_ChannelNumber;
             }
 
             return -1;
