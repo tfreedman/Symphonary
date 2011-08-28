@@ -61,6 +61,7 @@ namespace NiceWindow
 
         string s_SelectedSerialPort = string.Empty;
         SerialPort serialPort = new SerialPort();
+        DispatcherTimer serialPortReadTimer = new DispatcherTimer();
 
 
         public NWGUI() 
@@ -108,6 +109,11 @@ namespace NiceWindow
             canv.Children.Add(r_HeaderBackground);
             canv.Children.Add(tb_SongTitle);
             canv.Children.Add(tb_ScoreDisplay);
+
+            serialPort.ReadTimeout = 5;
+            serialPortReadTimer.Interval = TimeSpan.FromSeconds(0.005);
+            serialPortReadTimer.Tick += new EventHandler(getSerialData);
+            serialPortReadTimer.Start();
         }
 
 
@@ -388,6 +394,8 @@ namespace NiceWindow
             debugConsole = new MainWindow();
             debugConsole.Show();
 
+            //serialPortReadTimer.Start();
+
             try {
 
                 /*
@@ -412,7 +420,7 @@ namespace NiceWindow
                  */
 
                 //debugConsole.textbox1.Text += midiInfo.l_Notes.Count + Environment.NewLine;
-                debugConsole.textbox1.Text += s_SelectedSerialPort + Environment.NewLine;
+                //debugConsole.textbox1.Text += s_SelectedSerialPort + Environment.NewLine;
 
                 /*
                 for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
@@ -485,6 +493,33 @@ namespace NiceWindow
             catch (IOException ex) {
                 MessageBox.Show("The selected serial port could not be opened");
             }
+        }
+
+        private void getSerialData(object sender, EventArgs e)
+        {
+            if (s_SelectedSerialPort == string.Empty)
+                return;
+
+            //MessageBox.Show(serialPort.ReadChar().ToString());
+
+            try {
+                string s_Data = "(no data)";
+                try {
+                    s_Data = serialPort.ReadLine();
+                }
+                catch (InvalidOperationException exp) { }
+                catch (TimeoutException exp) { }
+                Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+                    delegate() {
+                        try {
+                            debugConsole.textbox1.Text += "DATA: " + s_Data + Environment.NewLine;
+                            debugConsole.textbox1.ScrollToEnd();
+                        }
+                        catch (NullReferenceException excp) { }
+                    }));
+
+            }
+            catch (IOException ex) { }
         }
 
 
