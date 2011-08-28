@@ -54,3 +54,7 @@ D:\miditool\NiceWindow\obj\x86\Debug\About.baml
 D:\miditool\NiceWindow\obj\x86\Debug\About.g.cs
 D:\miditool\NiceWindow\obj\x86\Debug\SerialPortSelector.baml
 D:\miditool\NiceWindow\obj\x86\Debug\SerialPortSelector.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\About.baml
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\SerialPortSelector.baml
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\About.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\SerialPortSelector.g.cs

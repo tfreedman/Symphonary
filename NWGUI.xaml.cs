@@ -142,7 +142,7 @@ namespace NiceWindow
                     foreach (Note note in midiInfo.l_Notes)
                         j++;
                     for (int i = j - 1; i >= 0; i--) {
-                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 41, (long)midiInfo.l_Notes[i].li_BeginTime, (long)midiInfo.l_Notes[i].li_EndTime);
+                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 74, (long)midiInfo.l_Notes[i].li_BeginTime, (long)midiInfo.l_Notes[i].li_EndTime);
                     }
 
                     //MessageBox.Show(Convert.ToString(maxEndTime));
@@ -252,7 +252,7 @@ namespace NiceWindow
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.TextAlignment = TextAlignment.Center;
                 textBlock.SetValue(Canvas.TopProperty, (double)(-1 * startTime) + r.Height - 50);
-                r.SetValue(Canvas.TopProperty, (double)(-1 * startTime));
+                r.SetValue(Canvas.BottomProperty, (double)(startTime));
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
             }
@@ -329,7 +329,7 @@ namespace NiceWindow
                     }
                     r[i].StrokeThickness = 2;
                     r[i].Height = (endTime - startTime);
-                    r[i].SetValue(Canvas.TopProperty, (double)(-1 * startTime));
+                    r[i].SetValue(Canvas.BottomProperty, (double)(startTime));
                     subcanv.Children.Add(r[i]);
                 }
             }
@@ -610,7 +610,7 @@ namespace NiceWindow
         private void moveCanvas(object sender, EventArgs e) 
         {
             double i_CurPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
-            subcanv.SetValue(Canvas.TopProperty, i_CurPosY + 10);
+            subcanv.SetValue(Canvas.TopProperty, i_CurPosY + 32.0);
         }
 
 
