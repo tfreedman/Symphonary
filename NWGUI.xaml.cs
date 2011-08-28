@@ -61,8 +61,7 @@ namespace NiceWindow
 
         string s_SelectedSerialPort = string.Empty;
         SerialPort serialPort = new SerialPort();
-        DispatcherTimer serialPortReadTimer = new DispatcherTimer();
-
+        Thread serialPortReadThread;
 
         public NWGUI() 
         {
@@ -111,9 +110,8 @@ namespace NiceWindow
             canv.Children.Add(tb_ScoreDisplay);
 
             serialPort.ReadTimeout = 5;
-            serialPortReadTimer.Interval = TimeSpan.FromSeconds(0.005);
-            serialPortReadTimer.Tick += new EventHandler(getSerialData);
-            serialPortReadTimer.Start();
+            serialPortReadThread = new Thread(new ThreadStart(getSerialData));
+            serialPortReadThread.Start();
         }
 
 
@@ -495,31 +493,41 @@ namespace NiceWindow
             }
         }
 
-        private void getSerialData(object sender, EventArgs e)
+
+        private void getSerialData()
         {
-            if (s_SelectedSerialPort == string.Empty)
-                return;
-
-            //MessageBox.Show(serialPort.ReadChar().ToString());
-
-            try {
-                string s_Data = "(no data)";
-                try {
-                    s_Data = serialPort.ReadLine();
+            int count = 0;
+            string data;
+            while (true) {
+                if (s_SelectedSerialPort != string.Empty) {
+                    try {
+                        data = serialPort.ReadLine().Trim();
+                    }
+                    catch (InvalidOperationException e) {
+                        data = "(serial port is closed)";
+                    }
+                    catch (IOException e) {
+                        data = "(serial port is closed)";
+                    }
+                    catch (TimeoutException e) {
+                        data = "(no data)";
+                    }
                 }
-                catch (InvalidOperationException exp) { }
-                catch (TimeoutException exp) { }
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
-                    delegate() {
-                        try {
-                            debugConsole.textbox1.Text += "DATA: " + s_Data + Environment.NewLine;
-                            debugConsole.textbox1.ScrollToEnd();
-                        }
-                        catch (NullReferenceException excp) { }
-                    }));
+                else {
+                    data = "(no serial port selected)";
+                }
+                
 
+                if (debugConsole != null) {
+                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+                        delegate() {
+                            debugConsole.textbox1.Text = "DATA: " + data + Environment.NewLine;
+                        }));
+                    count++;
+                }
+
+                Thread.Sleep(5);
             }
-            catch (IOException ex) { }
         }
 
 
@@ -583,6 +591,8 @@ namespace NiceWindow
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close
         protected override void OnClosing(CancelEventArgs e) 
         {
+            serialPortReadThread.Abort();
+            
             try {
                 midiPlayer.OnClosingOperations();
             }
