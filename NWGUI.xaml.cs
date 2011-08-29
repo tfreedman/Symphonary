@@ -137,18 +137,20 @@ namespace NiceWindow
 
                     int j = 0;
                     long lastNote = 0;
+                    long firstStart = 0;
                     foreach (Note note in midiInfo.l_Notes) {
                         j++;
                         if (note.li_EndTime > lastNote)
                             lastNote = note.li_EndTime;
                     }
+
                     drawGridLines(lastNote, midiInfo.i_TempoInBPM, midiInfo.i_TimeSignatureNumerator);
                     for (int i = j - 1; i >= 0; i--) {
-                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 74, (long)midiInfo.l_Notes[i].li_BeginTime, (long)midiInfo.l_Notes[i].li_EndTime);
-                    }
-
-                    //MessageBox.Show(Convert.ToString(maxEndTime));
-                    
+                        if (i == j - 1) {
+                            firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
+                        }
+                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 74, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+                    }                   
                     dispatcherTimer.Start();
                     b_AnimationStarted = true;
                 }
@@ -189,12 +191,12 @@ namespace NiceWindow
                 r.Width = 1024;
                 if (runner % count == 0) {
                     r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
-                    r.SetValue(Canvas.BottomProperty, (double)i);
+                    r.SetValue(Canvas.TopProperty, (double)-i * 1.66667);
                     r.Height = 3;
                 }
                 else {
                     r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
-                    r.SetValue(Canvas.BottomProperty, (double)i);
+                    r.SetValue(Canvas.TopProperty, (double)-i * 1.66667);
                     r.Height = 1;
                 }
                 subcanv.Children.Add(r);
@@ -267,7 +269,7 @@ namespace NiceWindow
 
                 r.StrokeThickness = 2;
                 Canvas.SetZIndex(textBlock, (int)99);
-                r.Height = (endTime - startTime - 4);
+                r.Height = (endTime - startTime);
                 textBlock.FontSize = 30;
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.TextAlignment = TextAlignment.Center;
@@ -348,7 +350,7 @@ namespace NiceWindow
                         r[i].Stroke = new SolidColorBrush(border[i]);
                     }
                     r[i].StrokeThickness = 2;
-                    r[i].Height = (endTime - startTime - 4);
+                    r[i].Height = (endTime - startTime);
                     r[i].SetValue(Canvas.BottomProperty, (double)(startTime));
                     subcanv.Children.Add(r[i]);
                 }
@@ -581,6 +583,10 @@ namespace NiceWindow
                 if (e.Key.ToString() == "M") {
                     midiPlayer.muteOtherChannels();
                 }
+                else if (e.Key.ToString() == "S") {
+                    double i_CurPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
+                    subcanv.SetValue(Canvas.TopProperty, i_CurPosY + 30.0);
+                }
             }
             catch (NullReferenceException ex) { }
         }
@@ -639,10 +645,12 @@ namespace NiceWindow
             showCanvasChildren();
         }
 
+        double mover = 615.0;
         private void moveCanvas(object sender, EventArgs e) 
         {
-            double i_CurPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
-            subcanv.SetValue(Canvas.TopProperty, i_CurPosY + 32.0);
+
+            mover += 3.333334;
+             subcanv.SetValue(Canvas.TopProperty, mover);
         }
 
 
