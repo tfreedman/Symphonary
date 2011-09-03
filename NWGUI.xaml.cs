@@ -31,8 +31,6 @@ namespace NiceWindow
 {
     public partial class NWGUI : Window 
     {
-        //int temp = 0;
-        //Rectangle r = new Rectangle();
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
         
@@ -42,8 +40,7 @@ namespace NiceWindow
         ChannelSelector channelSelector;
         SerialPortSelector serialPortSelector;
         LoadingScreen loadingScreen;
-
-
+        long starterTime = 0;
         int i_Channel = -1;
         double scrollSpeed = 1.66667;
         double multiplier = 1;
@@ -71,7 +68,7 @@ namespace NiceWindow
 
             i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
 
-            dispatcherTimer.Interval = TimeSpan.FromSeconds(0.0167);
+            dispatcherTimer.Interval = new TimeSpan(166667);
             dispatcherTimer.Tick += new EventHandler(moveCanvas);
             dispatcherTimer.Tick += new EventHandler(updateScoreDisplay);
 
@@ -132,11 +129,10 @@ namespace NiceWindow
                         midiPlayer.setPersistentChannel(i_Channel);
 
                     midiPlayer.startPlaying();
-
+                    starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                     resetScore();
                     initializeCanvas();
-
-
+                    
                     int j = 0;
                     long lastNote = 0;
                     long firstStart = 0;
@@ -172,7 +168,6 @@ namespace NiceWindow
                     MessageBox.Show("Please wait for the MIDI file to finish loading");
                 }
 
-
             }
             catch (NullReferenceException ex) {
                 //if (ex.
@@ -200,7 +195,7 @@ namespace NiceWindow
         }
         private void drawGridLines(long endTime, int bpm, int count) {
             int runner = 0;
-            for (double i = 0; i < (endTime + 1000); i = i + 1.775 + (bpm / count)) {
+            for (double i = 0; i < (endTime + 1000); i = i + (1.775 * multiplier) + (bpm / count)) {
                 Rectangle r = new Rectangle();
                 r.Width = 1024;
                 if (runner % count == 0) {
@@ -240,9 +235,9 @@ namespace NiceWindow
                 textBlock.Height = 50;
                 textBlock.Width = 50;
                 r.Width = 46;
-
+                textBlock.Foreground = new SolidColorBrush(Colors.White);
                 if (note >= 55 && note < 62) {
-                    textBlock.Foreground = new SolidColorBrush(Colors.White);
+
                     textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width));
                     r.SetValue(Canvas.LeftProperty, (double)(margin + r.Width));
                     r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
@@ -250,7 +245,6 @@ namespace NiceWindow
                 }
 
                 else if (note >= 62 && note < 69) {
-                    textBlock.Foreground = new SolidColorBrush(Colors.White);
                     textBlock.SetValue(Canvas.LeftProperty, (margin + (2 * (r.Width + padding))));
                     r.SetValue(Canvas.LeftProperty, (double)(margin + (2 * (r.Width + padding))));
                     r.Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
@@ -258,7 +252,6 @@ namespace NiceWindow
                 }
 
                 else if (note >= 69 && note < 76) {
-                    textBlock.Foreground = new SolidColorBrush(Colors.White);
                     textBlock.SetValue(Canvas.LeftProperty, (margin + (3 * (r.Width + padding))));
                     r.SetValue(Canvas.LeftProperty, (double)(margin + (3 * (r.Width + padding))));
                     r.Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
@@ -266,7 +259,6 @@ namespace NiceWindow
                 }
 
                 else if (note >= 76 && note < 83) {
-                    textBlock.Foreground = new SolidColorBrush(Colors.White);
                     textBlock.SetValue(Canvas.LeftProperty, (margin + (4 * (r.Width + padding))));
                     r.SetValue(Canvas.LeftProperty, (double)(margin + (4 * (r.Width + padding))));
                     r.Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
@@ -274,7 +266,6 @@ namespace NiceWindow
                 }
 
                 else {
-                    textBlock.Foreground = new SolidColorBrush(Colors.White);
                     textBlock.SetValue(Canvas.LeftProperty, (margin + (5 * (r.Width + padding))));
                     r.SetValue(Canvas.LeftProperty, (double)(margin + (5 * (r.Width + padding))));
                     r.Fill = new SolidColorBrush(Colors.Black);
@@ -284,10 +275,10 @@ namespace NiceWindow
                 r.StrokeThickness = 2;
                 Canvas.SetZIndex(textBlock, (int)99);
                 r.Height = (endTime - startTime) * multiplier;
-                textBlock.FontSize = 30;
+                textBlock.FontSize = 26;
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.TextAlignment = TextAlignment.Center;
-                textBlock.SetValue(Canvas.TopProperty, (double)(-1 * startTime) + r.Height - 50);
+                textBlock.SetValue(Canvas.TopProperty, (double)((-1 * startTime * multiplier) - 35));
                 r.SetValue(Canvas.BottomProperty, (double)(startTime) * multiplier);
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
@@ -656,12 +647,14 @@ namespace NiceWindow
         }
 
 
-        double mover = 615.0;
+        double mover = 615;
+
+
         private void moveCanvas(object sender, EventArgs e) 
         {
-             double moveBy = 3.333334 * multiplier;
-             mover += moveBy;
-             subcanv.SetValue(Canvas.TopProperty, mover);
+            long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            long delta = milliseconds - starterTime;
+            subcanv.SetValue(Canvas.TopProperty, (double)((delta / 10) * multiplier) + mover);
         }
 
 
