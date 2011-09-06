@@ -159,7 +159,7 @@ namespace NiceWindow {
                         if (i == j - 1) {
                             firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
                         }
-                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 30, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 35, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
                     }
                     dispatcherTimer.Start();
                     b_AnimationStarted = true;
@@ -366,6 +366,67 @@ namespace NiceWindow {
                 else {
                     textBlock.SetValue(Canvas.TopProperty, (5 + margin + (7 * (r.Height + padding))));
                     r.SetValue(Canvas.TopProperty, (double)(margin + (7 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Colors.Black);
+                    r.Stroke = new SolidColorBrush(Colors.Black);
+                    noteString = Convert.ToString(note);
+                }
+                textBlock.Text = noteString;
+                r.StrokeThickness = 2;
+                Canvas.SetZIndex(textBlock, (int)99);
+                r.Width = (endTime - startTime) * multiplier;
+                textBlock.FontSize = 26;
+                textBlock.FontWeight = FontWeights.Bold;
+                textBlock.TextAlignment = TextAlignment.Center;
+                textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
+                r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
+                subcanv.Children.Add(r);
+                subcanv.Children.Add(textBlock);
+            }
+            else if (instrument >= 33 && instrument <= 40) { //BASS
+                int margin = 200;
+                int padding = 20;
+                Rectangle r = new Rectangle();
+                TextBlock textBlock = new TextBlock();
+                textBlock.Height = 50;
+                textBlock.Width = 50;
+                r.Height = 46;
+                String noteString = "";
+
+                textBlock.Foreground = new SolidColorBrush(Colors.White);
+                if (note >= 43 && note <= 47) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + r.Height));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + r.Height));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
+                    noteString = Convert.ToString(note - 43);
+                }
+
+                else if (note >= 38 && note <= 42) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (2 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (2 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(227, 165, 59));
+                    noteString = Convert.ToString(note - 38);
+                }
+
+                else if (note >= 33 && note <= 37) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (3 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (3 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(189, 36, 54));
+                    noteString = Convert.ToString(note - 33);
+                }
+
+                else if (note >= 28 && note <= 32) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (4 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (4 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(24, 82, 148));
+                    noteString = Convert.ToString(note - 28);
+                }
+                else {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (5 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (5 * (r.Height + padding))));
                     r.Fill = new SolidColorBrush(Colors.Black);
                     r.Stroke = new SolidColorBrush(Colors.Black);
                     noteString = Convert.ToString(note);
