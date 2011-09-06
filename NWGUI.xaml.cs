@@ -27,13 +27,11 @@ using System.Threading;
 using System.Windows.Threading;
 
 
-namespace NiceWindow 
-{
-    public partial class NWGUI : Window 
-    {
+namespace NiceWindow {
+    public partial class NWGUI : Window {
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
-        
+
         double i_InitialCanvasPosY;
 
         MainWindow debugConsole;
@@ -61,9 +59,9 @@ namespace NiceWindow
         string s_SelectedSerialPort = string.Empty;
         SerialPort serialPort = new SerialPort();
         Thread serialPortReadThread;
+        int hInst = 1;
 
-        public NWGUI() 
-        {
+        public NWGUI() {
             InitializeComponent();
 
             i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
@@ -74,11 +72,6 @@ namespace NiceWindow
 
             canv.Background = new SolidColorBrush(Colors.White);
 
-            r_KeyLine.Height = 3;
-            r_KeyLine.Width = 1024;
-            r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            r_KeyLine.SetValue(Canvas.TopProperty, (double)650);
-            
             r_HeaderBackground.Height = 55;
             r_HeaderBackground.Width = 1024;
             r_HeaderBackground.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
@@ -92,7 +85,7 @@ namespace NiceWindow
             tb_SongTitle.TextAlignment = TextAlignment.Left;
             tb_SongTitle.SetValue(Canvas.TopProperty, (double)25);
             tb_SongTitle.SetValue(Canvas.LeftProperty, (double)10);
-            
+
             tb_ScoreDisplay.Height = 50;
             tb_ScoreDisplay.Width = 400;
             tb_ScoreDisplay.Foreground = new SolidColorBrush(Colors.White);
@@ -102,7 +95,18 @@ namespace NiceWindow
             tb_ScoreDisplay.SetValue(Canvas.LeftProperty, (double)600);
 
             hideCanvasChildren();
-
+            if (hInst == 0) {
+                r_KeyLine.Height = 3;
+                r_KeyLine.Width = 1024;
+                r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+                r_KeyLine.SetValue(Canvas.TopProperty, (double)650);
+            }
+            else {
+                r_KeyLine.Height = 1024;
+                r_KeyLine.Width = 3;
+                r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+                r_KeyLine.SetValue(Canvas.LeftProperty, (double)10);
+            }
             canv.Children.Add(r_KeyLine);
             canv.Children.Add(r_HeaderBackground);
             canv.Children.Add(tb_SongTitle);
@@ -114,17 +118,14 @@ namespace NiceWindow
         }
 
 
-        private void start_Clicked(object sender, RoutedEventArgs e) 
-        {
-            try 
-            {
+        private void start_Clicked(object sender, RoutedEventArgs e) {
+            try {
                 if (midiPlayer.isPlaying()) {
                     MessageBox.Show("The file is currently being played, please have it finish first.");
                     return;
                 }
-                
-                if (midiPlayer.isFinishedLoading()) 
-                {
+
+                if (midiPlayer.isFinishedLoading()) {
                     if (i_Channel != -1)
                         midiPlayer.setPersistentChannel(i_Channel);
 
@@ -132,7 +133,7 @@ namespace NiceWindow
                     starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                     resetScore();
                     initializeCanvas();
-                    
+
                     int j = 0;
                     long lastNote = 0;
                     long firstStart = 0;
@@ -149,18 +150,17 @@ namespace NiceWindow
 
                     if (smallestNoteLength < 300)
                         multiplier = 300 / smallestNoteLength;
-                    //MessageBox.Show(Convert.ToString(multiplier));
 
-                    if(midiInfo.i_TimeSignatureNumerator == 0)
+                    if (midiInfo.i_TimeSignatureNumerator == 0)
                         MessageBox.Show(Convert.ToString("Warning! Time Signature is 0"));
-
+                    hInst = 1;
                     drawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
                     for (int i = j - 1; i >= 0; i--) {
                         if (i == j - 1) {
                             firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
                         }
-                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 74, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
-                    }                   
+                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 30, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+                    }
                     dispatcherTimer.Start();
                     b_AnimationStarted = true;
                 }
@@ -174,20 +174,19 @@ namespace NiceWindow
                 MessageBox.Show("Please load a MIDI file first! (or some other weird error occured, so read the proceeding message)");
                 MessageBox.Show(ex.ToString());
             }
-            
+
         }
 
-        private void stop_Clicked(object sender, RoutedEventArgs e)
-        {
+        private void stop_Clicked(object sender, RoutedEventArgs e) {
             hideCanvasChildren();
-            
+
             try {
                 //midiPlayer.OnClosingOperations();
                 //midiPlayer.OnClosedOperations();
                 midiPlayer.stopPlaying();
 
                 resetSubCanvas();
-                
+
                 b_AnimationStarted = false;
                 dispatcherTimer.Stop();
             }
@@ -197,28 +196,91 @@ namespace NiceWindow
             int runner = 0;
             for (double i = 0; i < (endTime + 1000); i = i + (1.775 * multiplier) + (bpm / count)) {
                 Rectangle r = new Rectangle();
-                r.Width = 1024;
-                if (runner % count == 0) {
-                    r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
-                    r.SetValue(Canvas.TopProperty, (double)-i * scrollSpeed);
-                    r.Height = 3;
+                if (hInst == 0) {
+                    r.Width = 1024;
+                    if (runner % count == 0) {
+                        r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
+                        r.SetValue(Canvas.TopProperty, (double)-i * scrollSpeed);
+                        r.Height = 3;
+                    }
+                    else {
+                        r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
+                        r.SetValue(Canvas.TopProperty, (double)-i * scrollSpeed);
+                        r.Height = 1;
+                    }
                 }
                 else {
-                    r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
-                    r.SetValue(Canvas.TopProperty, (double)-i * scrollSpeed);
-                    r.Height = 1;
+                    r.Height = 1024;
+                    if (runner % count == 0) {
+                        r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
+                        r.SetValue(Canvas.LeftProperty, (double)i * scrollSpeed);
+                        r.Width = 3;
+                    }
+                    else {
+                        r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
+                        r.SetValue(Canvas.LeftProperty, (double)i * scrollSpeed);
+                        r.Width = 1;
+                    }
                 }
                 subcanv.Children.Add(r);
                 runner++;
             }
         }
 
-        private void fingering(int note, int instrument, long startTime, long endTime) 
-        {
-            if (instrument == 41) {
+        private void fingering(int note, int instrument, long startTime, long endTime) {
+            if (instrument == 41) { //VIOLIN
                 int margin = 300;
-                int noteNumber = note % 7;
+                int noteNumber;
+
+                int padding = 30;
+                Rectangle r = new Rectangle();
+                TextBlock textBlock = new TextBlock();
+
+                textBlock.Height = 50;
+                textBlock.Width = 50;
+                r.Width = 46;
                 string noteString = "";
+                textBlock.Foreground = new SolidColorBrush(Colors.White);
+                if (note >= 55 && note < 62) {
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + r.Width));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
+                    noteNumber = note - 55;
+                }
+
+                else if (note >= 62 && note < 69) {
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + (2 * (r.Width + padding))));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + (2 * (r.Width + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(227, 165, 59));
+                    noteNumber = note - 62;
+                }
+
+                else if (note >= 69 && note < 76) {
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + (3 * (r.Width + padding))));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + (3 * (r.Width + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(189, 36, 54));
+                    noteNumber = note - 69;
+                }
+
+                else if (note >= 76 && note < 83) {
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + (4 * (r.Width + padding))));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + (4 * (r.Width + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(24, 82, 148));
+                    noteNumber = note - 76;
+                }
+
+                else {
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + (5 * (r.Width + padding))));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + (5 * (r.Width + padding))));
+                    r.Fill = new SolidColorBrush(Colors.Black);
+                    r.Stroke = new SolidColorBrush(Colors.Black);
+                    noteNumber = note;
+                }
+
 
                 if (noteNumber == 0) { noteString = "0"; }
                 else if (noteNumber == 1) { noteString = "1-"; }
@@ -228,49 +290,7 @@ namespace NiceWindow
                 else if (noteNumber == 5) { noteString = "3"; }
                 else if (noteNumber == 6) { noteString = "3+"; }
                 else if (noteNumber == 7) { noteString = "4"; }
-                int padding = 30;
-                Rectangle r = new Rectangle();
-                TextBlock textBlock = new TextBlock();
                 textBlock.Text = noteString;
-                textBlock.Height = 50;
-                textBlock.Width = 50;
-                r.Width = 46;
-                textBlock.Foreground = new SolidColorBrush(Colors.White);
-                if (note >= 55 && note < 62) {
-
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + r.Width));
-                    r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
-                    r.Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
-                }
-
-                else if (note >= 62 && note < 69) {
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + (2 * (r.Width + padding))));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + (2 * (r.Width + padding))));
-                    r.Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
-                    r.Stroke = new SolidColorBrush(Color.FromRgb(227, 165, 59));
-                }
-
-                else if (note >= 69 && note < 76) {
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + (3 * (r.Width + padding))));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + (3 * (r.Width + padding))));
-                    r.Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
-                    r.Stroke = new SolidColorBrush(Color.FromRgb(189, 36, 54));
-                }
-
-                else if (note >= 76 && note < 83) {
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + (4 * (r.Width + padding))));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + (4 * (r.Width + padding))));
-                    r.Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
-                    r.Stroke = new SolidColorBrush(Color.FromRgb(24, 82, 148));
-                }
-
-                else {
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + (5 * (r.Width + padding))));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + (5 * (r.Width + padding))));
-                    r.Fill = new SolidColorBrush(Colors.Black);
-                    r.Stroke = new SolidColorBrush(Colors.Black);
-                }
 
                 r.StrokeThickness = 2;
                 Canvas.SetZIndex(textBlock, (int)99);
@@ -283,7 +303,86 @@ namespace NiceWindow
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
             }
-            else if (instrument == 74) {
+
+            else if (instrument >= 25 && instrument <= 32) { //GUITAR
+                int margin = 100;
+                int padding = 20;
+                Rectangle r = new Rectangle();
+                TextBlock textBlock = new TextBlock();
+                textBlock.Height = 50;
+                textBlock.Width = 50;
+                r.Height = 46;
+                String noteString = "";
+
+                textBlock.Foreground = new SolidColorBrush(Colors.White);
+                if (note >= 64 && note < 69) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + r.Height));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + r.Height));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
+                    noteString = Convert.ToString(note - 64);
+                }
+
+                else if (note >= 59 && note <= 63) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (2 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (2 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(227, 165, 59));
+                    noteString = Convert.ToString(note - 59);
+                }
+
+                else if (note >= 55 && note < 59) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (3 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (3 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(189, 36, 54));
+                    noteString = Convert.ToString(note - 55);
+                }
+
+                else if (note >= 50 && note <= 54) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (4 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (4 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(24, 82, 148));
+                    noteString = Convert.ToString(note - 50);
+                }
+
+                else if (note >= 45 && note <= 49) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (5 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (5 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(82, 44, 95));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(26, 14, 31));
+                    noteString = Convert.ToString(note - 45);
+                }
+
+                else if (note >= 40 && note <= 44) {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (6 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (6 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Color.FromRgb(120, 132, 161));
+                    r.Stroke = new SolidColorBrush(Color.FromRgb(94, 102, 125));
+                    noteString = Convert.ToString(note - 40);
+                }
+
+                else {
+                    textBlock.SetValue(Canvas.TopProperty, (5 + margin + (7 * (r.Height + padding))));
+                    r.SetValue(Canvas.TopProperty, (double)(margin + (7 * (r.Height + padding))));
+                    r.Fill = new SolidColorBrush(Colors.Black);
+                    r.Stroke = new SolidColorBrush(Colors.Black);
+                    noteString = Convert.ToString(note);
+                }
+                textBlock.Text = noteString;
+                r.StrokeThickness = 2;
+                Canvas.SetZIndex(textBlock, (int)99);
+                r.Width = (endTime - startTime) * multiplier;
+                textBlock.FontSize = 26;
+                textBlock.FontWeight = FontWeights.Bold;
+                textBlock.TextAlignment = TextAlignment.Center;
+                textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
+                r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
+                subcanv.Children.Add(r);
+                subcanv.Children.Add(textBlock);
+            }
+            else if (instrument == 74) { //FLUTE
                 int margin = 40;
                 int padding = 30;
 
@@ -376,13 +475,11 @@ namespace NiceWindow
             }
         }*/
 
-        private void exit_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void exit_Clicked(object sender, RoutedEventArgs e) {
             Application.Current.Shutdown();
         }
 
-        private void open_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void open_Clicked(object sender, RoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MIDI Files (*.mid)|*.mid|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -408,16 +505,15 @@ namespace NiceWindow
                 loadingScreen = new LoadingScreen();
                 loadingScreen.Show();
                 i_Channel = -1;
-                
-                midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged, 
+
+                midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged,
                     handleMIDILoadCompleted, handleMIDIChannelMessagePlayed);
-                
+
                 midiInfo = new MidiInfo(openFileDialog.FileName, i_Channel);
             }
         }
 
-        private void debug_Clicked(object sender, RoutedEventArgs e)
-        {
+        private void debug_Clicked(object sender, RoutedEventArgs e) {
             debugConsole = new MainWindow();
             debugConsole.Show();
 
@@ -458,9 +554,7 @@ namespace NiceWindow
             catch (NullReferenceException ex) { }
         }
 
-
-        private void selectChannel_Clicked(object sender, RoutedEventArgs e)
-        {
+        private void selectChannel_Clicked(object sender, RoutedEventArgs e) {
             if (midiInfo == null) {
                 MessageBox.Show("Please load a MIDI file first!");
                 return;
@@ -470,38 +564,30 @@ namespace NiceWindow
                 MessageBox.Show("The file is currently being played, please have it finish first.");
                 return;
             }
-            
+
             channelSelector = new ChannelSelector(ref midiInfo, i_Channel, channelSelectorOkClicked);
             channelSelector.Show();
         }
 
-        
-
-
-        private void channelSelectorOkClicked(object sender, RoutedEventArgs e)
-        {
+        private void channelSelectorOkClicked(object sender, RoutedEventArgs e) {
             i_Channel = channelSelector.getSelectedChannel();
-            
+
             midiInfo.loadChannelNotes(i_Channel);
             midiPlayer.setPersistentChannel(i_Channel);
 
             channelSelector.Close();
         }
 
-
-        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e)
-        {
+        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e) {
             // if the serial port is not closed, opening once again (SerialPortSelector opens ports for testing) 
             // will cause an exception
-            serialPort.Close(); 
+            serialPort.Close();
 
             serialPortSelector = new SerialPortSelector(s_SelectedSerialPort, serialPortSelectorOkClicked);
             serialPortSelector.Show();
         }
 
-
-        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e)
-        {
+        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e) {
             s_SelectedSerialPort = serialPortSelector.getSelectedSerialPort();
 
             serialPortSelector.Close();
@@ -523,8 +609,7 @@ namespace NiceWindow
         }
 
 
-        private void getSerialData()
-        {
+        private void getSerialData() {
             int count = 0;
             string data;
             while (true) {
@@ -545,7 +630,7 @@ namespace NiceWindow
                 else {
                     data = "(no serial port selected)";
                 }
-                
+
 
                 if (debugConsole != null) {
                     Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
@@ -560,14 +645,12 @@ namespace NiceWindow
         }
 
 
-        private void about_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void about_Clicked(object sender, RoutedEventArgs e) {
             About about = new About();
             about.Show();
         }
 
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
-        {
+        private void NWGUI_KeyUp(object sender, KeyEventArgs e) {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -579,8 +662,7 @@ namespace NiceWindow
             catch (NullReferenceException ex) { }
         }
 
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e) 
-        {
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e) {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -592,8 +674,7 @@ namespace NiceWindow
             catch (NullReferenceException ex) { }
         }
 
-        private void handleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) 
-        {
+        private void handleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) {
             try {
                 loadingScreen.setProgress(e.ProgressPercentage);
             }
@@ -601,8 +682,7 @@ namespace NiceWindow
         }
 
 
-        private void handleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) 
-        {
+        private void handleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) {
             try {
                 loadingScreen.Close();
             }
@@ -612,16 +692,14 @@ namespace NiceWindow
             channelSelector.Show();
         }
 
-        private void handleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
-        {
+        private void handleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e) {
             //i_NumNotesPlayed++;
         }
 
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close
-        protected override void OnClosing(CancelEventArgs e) 
-        {
+        protected override void OnClosing(CancelEventArgs e) {
             serialPortReadThread.Abort();
-            
+
             try {
                 midiPlayer.OnClosingOperations();
             }
@@ -630,8 +708,7 @@ namespace NiceWindow
             base.OnClosing(e);
         }
 
-        protected override void OnClosed(EventArgs e) 
-        {
+        protected override void OnClosed(EventArgs e) {
             try {
                 midiPlayer.OnClosedOperations();
             }
@@ -640,49 +717,45 @@ namespace NiceWindow
             base.OnClosed(e);
         }
 
-        private void initializeCanvas() 
-        {
+        private void initializeCanvas() {
             tb_SongTitle.Text = midiInfo.s_Title;
             showCanvasChildren();
         }
 
-
-        double mover = 615;
-
-
-        private void moveCanvas(object sender, EventArgs e) 
-        {
+        private void moveCanvas(object sender, EventArgs e) {
             long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             long delta = milliseconds - starterTime;
-            subcanv.SetValue(Canvas.TopProperty, (double)((delta / 10) * multiplier) + mover);
+            if (hInst == 0) {
+                double mover = 615;
+                subcanv.SetValue(Canvas.TopProperty, (double)((delta / 10) * multiplier) + mover);
+            }
+            else {
+                double mover = 25;
+                subcanv.SetValue(Canvas.LeftProperty, (double)(-1 * (delta / 10) * multiplier) + mover);
+            }
         }
 
-
-        private void hideCanvasChildren()
-        {
+        private void hideCanvasChildren() {
             r_HeaderBackground.Visibility = Visibility.Hidden;
             r_KeyLine.Visibility = Visibility.Hidden;
             tb_ScoreDisplay.Visibility = Visibility.Hidden;
             tb_SongTitle.Visibility = Visibility.Hidden;
         }
 
-        private void showCanvasChildren()
-        {
+        private void showCanvasChildren() {
             r_HeaderBackground.Visibility = Visibility.Visible;
             r_KeyLine.Visibility = Visibility.Visible;
             tb_ScoreDisplay.Visibility = Visibility.Visible;
             tb_SongTitle.Visibility = Visibility.Visible;
         }
 
-        private void resetSubCanvas()
-        {
+        private void resetSubCanvas() {
             subcanv.Children.Clear();
             subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
         }
 
 
-        private void determineScoreGrade()
-        {
+        private void determineScoreGrade() {
             try {
                 if (midiPlayer.i_NumChannelNotesPlayed == 0) {
                     s_ScoreGrade = "...";
@@ -693,7 +766,7 @@ namespace NiceWindow
                 s_ScoreGrade = "...";
                 return;
             }
-            
+
 
             double percentage = ((double)i_NumNotesScored / (double)(midiPlayer.i_NumChannelNotesPlayed)) * 100;
 
@@ -725,13 +798,11 @@ namespace NiceWindow
                 s_ScoreGrade = "F";
         }
 
-        private void resetScore()
-        {
+        private void resetScore() {
             i_NumNotesScored = 0;
         }
 
-        private void updateScoreDisplay(object sender, EventArgs e)
-        {
+        private void updateScoreDisplay(object sender, EventArgs e) {
             determineScoreGrade();
 
             try {
@@ -749,8 +820,7 @@ namespace NiceWindow
         }
          */
 
-        public struct ColorRGB 
-        {
+        public struct ColorRGB {
             public byte R;
             public byte G;
             public byte B;
@@ -771,8 +841,7 @@ namespace NiceWindow
             }
         }
 
-        public ColorRGB HSL2RGB(double h, double sl, double l) 
-        {
+        public ColorRGB HSL2RGB(double h, double sl, double l) {
             double v;
             double r, g, b;
             r = l;   // default to gray
@@ -834,8 +903,7 @@ namespace NiceWindow
         }
     }
 
-    public static class ExtensionMethods 
-    {
+    public static class ExtensionMethods {
         private static Action EmptyDelegate = delegate() { };
         public static void Refresh(this UIElement uiElement) {
             uiElement.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
