@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfAnimatedControl;
 
 namespace NiceWindow
 {
@@ -21,13 +22,12 @@ namespace NiceWindow
         public LoadingScreen()
         {
             InitializeComponent();
-
-            
         }
 
         public void setProgress(int i_ProgressPercentage)
         {
             boat.SetValue(Canvas.LeftProperty, 40 + (400 * ((double)i_ProgressPercentage / 100)));
+            percentageText.Text = i_ProgressPercentage + "% Complete";
         }
     }
 }

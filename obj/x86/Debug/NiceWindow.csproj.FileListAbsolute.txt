@@ -58,3 +58,7 @@ C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\About.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\SerialPortSelector.baml
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\About.g.cs
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\SerialPortSelector.g.cs
+D:\miditool\NiceWindow\obj\x86\Debug\GenerateResource.read.139.tlog
+D:\miditool\NiceWindow\bin\Debug\WpfAnimatedControl.dll
+D:\miditool\NiceWindow\bin\Debug\WpfAnimatedControl.pdb
+D:\miditool\NiceWindow\obj\x86\Debug\NiceWindow_MarkupCompile.lref

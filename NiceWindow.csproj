@@ -70,6 +70,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="WpfAnimatedControl">
+      <HintPath>..\WpfAnimatedControl\WpfAnimatedControl\bin\Debug\WpfAnimatedControl.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -168,6 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Banner.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SDLoading3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
