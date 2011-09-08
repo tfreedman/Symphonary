@@ -383,6 +383,7 @@ namespace NiceWindow
     public class NoteMatcher
     {
         // This does matching for the violin. We will need to switch to wildcards though to handle chords.
+        /*
         public bool noteMatches(string serialData, int noteNumber)
         {
             switch (serialData)
@@ -457,10 +458,11 @@ namespace NiceWindow
                     return false;
             }
         }
+         */
 
         // this does note-checking for the flute, just ignore this for now as it is not being used
-        /*
-        public bool noteMatches(ref string serialData, int noteNumber)
+        
+        public bool noteMatches(string serialData, int noteNumber)
         {
             switch (serialData) {
                 case "01111001110": // DN4***
@@ -513,7 +515,7 @@ namespace NiceWindow
                     return false;
             }
         }
-         */
+        
     } // end NoteMatcher
 
 
