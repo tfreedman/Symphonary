@@ -758,7 +758,7 @@ namespace NiceWindow
         private void getSerialData() 
         {
             while (true) {
-                score.s_CurrentFingering = string.Empty;
+                //score.s_CurrentFingering = string.Empty;
 
                 if (s_SelectedSerialPort != string.Empty && serialPort.IsOpen) {
                     try {
@@ -768,7 +768,7 @@ namespace NiceWindow
 
                     }
                     catch (TimeoutException e) {
-                        
+                        score.s_CurrentFingering = string.Empty;
                     }
                 }
 
