@@ -7,6 +7,7 @@ using Sanford.Multimedia.Midi;
 using Sanford.Multimedia.Timers;
 using Sanford.Threading;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -124,7 +125,7 @@ namespace NiceWindow
                         //noteOff.
                     }
                     else {
-                        //MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+                        MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
                     }
                 }
                 else if (midiEvent.CommandCode == MidiCommandCode.NoteOn) {
@@ -133,7 +134,7 @@ namespace NiceWindow
                         d_NoteOnTimes.Add(noteOn.NoteNumber, actualTime(noteOn.AbsoluteTime));
                     }
                     catch (ArgumentException e) {
-                        //MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
+                        MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                     }
                 }
                 else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack) {
@@ -241,6 +242,8 @@ namespace NiceWindow
 
         int i_PersistentChannel = -1;
         public int i_NumChannelNotesPlayed = 0;
+        //public List<int> l_CurrentPlayingChannelNotes = new List<int>();
+        public ArrayList al_CurrentPlayingChannelNotes = new ArrayList();
 
         public MidiPlayer(string s_Filename, 
             System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
@@ -338,8 +341,14 @@ namespace NiceWindow
             if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentChannel)
                 return;
 
-            if (e.Message.MidiChannel == i_PersistentChannel && e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0) {
-                i_NumChannelNotesPlayed++;
+            if (e.Message.MidiChannel == i_PersistentChannel) {
+                if (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0) {
+                    i_NumChannelNotesPlayed++;
+                    al_CurrentPlayingChannelNotes.Add(e.Message.Data1);
+                }
+                else if (e.Message.Command == ChannelCommand.NoteOn || e.Message.Command == ChannelCommand.NoteOff) {
+                    al_CurrentPlayingChannelNotes.Remove(e.Message.Data1);
+                }
             }
 
             outputDevice.Send(e.Message);
@@ -373,8 +382,8 @@ namespace NiceWindow
 
     public class NoteMatcher
     {
-        /* This does matching for the violin. We will need to switch to wildcards though to handle chords.
-        public bool noteMatches(ref string serialData, int noteNumber)
+        // This does matching for the violin. We will need to switch to wildcards though to handle chords.
+        public bool noteMatches(string serialData, int noteNumber)
         {
             switch (serialData)
             {
@@ -447,9 +456,10 @@ namespace NiceWindow
                 default: // does not match the note
                     return false;
             }
-        }*/
+        }
 
         // this does note-checking for the flute, just ignore this for now as it is not being used
+        /*
         public bool noteMatches(ref string serialData, int noteNumber)
         {
             switch (serialData) {
@@ -503,6 +513,7 @@ namespace NiceWindow
                     return false;
             }
         }
+         */
     } // end NoteMatcher
 
 

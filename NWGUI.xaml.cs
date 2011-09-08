@@ -8,6 +8,7 @@ using Sanford.Multimedia.Midi;
 using Sanford.Multimedia.Timers;
 using Sanford.Threading;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -27,8 +28,81 @@ using System.Threading;
 using System.Windows.Threading;
 
 
-namespace NiceWindow {
-    public partial class NWGUI : Window {
+namespace NiceWindow 
+{
+    public class Score
+    {
+        public int i_NumNotesScored = 0;
+        public string s_CurrentFingering = string.Empty;
+
+        NoteMatcher noteMatcher = new NoteMatcher();
+        
+        public void resetScore()
+        {
+            i_NumNotesScored = 0;
+        }
+
+        public void updateScore(ref MidiPlayer midiPlayer)
+        {
+            if (midiPlayer == null)
+                return;
+
+            // this is a hack, we shouldn't be modifying this list in the MidiPlayer, it should be used for
+            // informational purposes
+            for (int i = 0; i < midiPlayer.al_CurrentPlayingChannelNotes.Count; i++) {
+                if (noteMatcher.noteMatches(s_CurrentFingering, (int)midiPlayer.al_CurrentPlayingChannelNotes[i])) {
+                    i_NumNotesScored++;
+                    midiPlayer.al_CurrentPlayingChannelNotes.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        public string scoreGrade(int i_NumChannelNotesPlayed)
+        {
+            try {
+                if (i_NumChannelNotesPlayed == 0) {
+                    return "...";
+                }
+            }
+            catch (NullReferenceException e) {
+                return "...";
+            }
+
+            double percentage = ((double)i_NumNotesScored / (double)(i_NumChannelNotesPlayed)) * 100;
+
+            if (percentage >= 90)
+                return "A+";
+            else if (percentage >= 85)
+                return "A";
+            else if (percentage >= 80)
+                return "A-";
+            else if (percentage >= 76)
+                return "B+";
+            else if (percentage >= 73)
+                return "B";
+            else if (percentage >= 70)
+                return "B-";
+            else if (percentage >= 67)
+                return "C+";
+            else if (percentage >= 63)
+                return "C";
+            else if (percentage >= 60)
+                return "C-";
+            else if (percentage >= 57)
+                return "D+";
+            else if (percentage >= 53)
+                return "D";
+            else if (percentage >= 50)
+                return "D-";
+            else
+                return "F";
+        }
+    }
+
+    
+    public partial class NWGUI : Window 
+    {
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
 
@@ -49,6 +123,7 @@ namespace NiceWindow {
         Rectangle r_KeyLine = new Rectangle();
         TextBlock tb_ScoreDisplay = new TextBlock();
         TextBlock tb_SongTitle = new TextBlock();
+        TextBlock tb_Fingering = new TextBlock();
 
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
@@ -61,7 +136,10 @@ namespace NiceWindow {
         Thread serialPortReadThread;
         int hInst = 1;
 
-        public NWGUI() {
+        Score score = new Score();
+
+        public NWGUI()
+        {
             InitializeComponent();
 
             i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
@@ -69,13 +147,14 @@ namespace NiceWindow {
             dispatcherTimer.Interval = new TimeSpan(166667);
             dispatcherTimer.Tick += new EventHandler(moveCanvas);
             dispatcherTimer.Tick += new EventHandler(updateScoreDisplay);
+            dispatcherTimer.Tick += new EventHandler(updateFingeringDisplay);
 
             canv.Background = new SolidColorBrush(Colors.White);
 
             r_HeaderBackground.Height = 55;
             r_HeaderBackground.Width = 1024;
             r_HeaderBackground.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            r_HeaderBackground.SetValue(Canvas.TopProperty, (double)19);
+            r_HeaderBackground.SetValue(Canvas.TopProperty, 19.0);
 
             tb_SongTitle.Height = 50;
             tb_SongTitle.Width = 400;
@@ -83,34 +162,42 @@ namespace NiceWindow {
             tb_SongTitle.FontStyle = FontStyles.Italic;
             tb_SongTitle.FontSize = 30;
             tb_SongTitle.TextAlignment = TextAlignment.Left;
-            tb_SongTitle.SetValue(Canvas.TopProperty, (double)25);
-            tb_SongTitle.SetValue(Canvas.LeftProperty, (double)10);
+            tb_SongTitle.SetValue(Canvas.TopProperty, 25.0);
+            tb_SongTitle.SetValue(Canvas.LeftProperty, 10.0);
 
             tb_ScoreDisplay.Height = 50;
             tb_ScoreDisplay.Width = 400;
             tb_ScoreDisplay.Foreground = new SolidColorBrush(Colors.White);
             tb_ScoreDisplay.FontSize = 30;
             tb_ScoreDisplay.TextAlignment = TextAlignment.Right;
-            tb_ScoreDisplay.SetValue(Canvas.TopProperty, (double)25);
-            tb_ScoreDisplay.SetValue(Canvas.LeftProperty, (double)600);
+            tb_ScoreDisplay.SetValue(Canvas.TopProperty, 25.0);
+            tb_ScoreDisplay.SetValue(Canvas.LeftProperty, 600.0);
+
+            tb_Fingering.Height = 50;
+            tb_Fingering.Width = 100;
+            tb_Fingering.Foreground = new SolidColorBrush(Colors.Red);
+            tb_Fingering.SetValue(Canvas.TopProperty, 100.0);
+            tb_Fingering.SetValue(Canvas.LeftProperty, 100.0);
+            //tb_Fingering.Text = "aha";
 
             hideCanvasChildren();
             if (hInst == 0) {
                 r_KeyLine.Height = 3;
                 r_KeyLine.Width = 1024;
                 r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-                r_KeyLine.SetValue(Canvas.TopProperty, (double)650);
+                r_KeyLine.SetValue(Canvas.TopProperty, 650.0);
             }
             else {
                 r_KeyLine.Height = 1024;
                 r_KeyLine.Width = 3;
                 r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-                r_KeyLine.SetValue(Canvas.LeftProperty, (double)10);
+                r_KeyLine.SetValue(Canvas.LeftProperty, 10.0);
             }
             canv.Children.Add(r_KeyLine);
             canv.Children.Add(r_HeaderBackground);
             canv.Children.Add(tb_SongTitle);
             canv.Children.Add(tb_ScoreDisplay);
+            canv.Children.Add(tb_Fingering);
 
             serialPort.ReadTimeout = 5;
             serialPortReadThread = new Thread(new ThreadStart(getSerialData));
@@ -118,59 +205,39 @@ namespace NiceWindow {
         }
 
 
-        private void start_Clicked(object sender, RoutedEventArgs e) {
+        private void start_Clicked(object sender, RoutedEventArgs e) 
+        {
             try {
                 if (midiPlayer.isPlaying()) {
                     MessageBox.Show("The file is currently being played, please have it finish first.");
                     return;
                 }
 
-                if (midiPlayer.isFinishedLoading()) {
-                    if (i_Channel != -1)
-                        midiPlayer.setPersistentChannel(i_Channel);
-
-                    midiPlayer.startPlaying();
-                    starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                    resetScore();
-                    initializeCanvas();
-
-                    int j = 0;
-                    long lastNote = 0;
-                    long firstStart = 0;
-                    long smallestNoteLength = 0;
-                    foreach (Note note in midiInfo.l_Notes) {
-                        j++;
-                        if (smallestNoteLength == 0)
-                            smallestNoteLength = note.li_EndTime - note.li_BeginTime;
-                        else if (smallestNoteLength > (note.li_EndTime - note.li_BeginTime))
-                            smallestNoteLength = (note.li_EndTime - note.li_BeginTime);
-                        if (note.li_EndTime > lastNote)
-                            lastNote = note.li_EndTime;
-                    }
-
-                    if (smallestNoteLength < 300)
-                        multiplier = 300 / smallestNoteLength;
-
-                    if (midiInfo.i_TimeSignatureNumerator == 0)
-                        MessageBox.Show(Convert.ToString("Warning! Time Signature is 0"));
-                    hInst = 1;
-                    drawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
-                    for (int i = j - 1; i >= 0; i--) {
-                        if (i == j - 1) {
-                            firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
-                        }
-                        fingering(midiInfo.l_Notes[i].i_NoteNumber, 35, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
-                    }
-                    dispatcherTimer.Start();
-                    b_AnimationStarted = true;
+                if (i_Channel < 0) {
+                    MessageBox.Show("Please select a channel to play first.");
+                    return;
                 }
-                else {
+
+                if (!midiPlayer.isFinishedLoading()) {
                     MessageBox.Show("Please wait for the MIDI file to finish loading");
+                    return;
                 }
 
+                midiPlayer.setPersistentChannel(i_Channel);
+
+                score.resetScore();
+                initializeCanvas();
+
+                showSubCanvas();
+                
+                dispatcherTimer.Start();
+                b_AnimationStarted = true;
+
+                midiPlayer.startPlaying();
+                starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                
             }
             catch (NullReferenceException ex) {
-                //if (ex.
                 MessageBox.Show("Please load a MIDI file first! (or some other weird error occured, so read the proceeding message)");
                 MessageBox.Show(ex.ToString());
             }
@@ -185,14 +252,17 @@ namespace NiceWindow {
                 //midiPlayer.OnClosedOperations();
                 midiPlayer.stopPlaying();
 
-                resetSubCanvas();
+                hideSubCanvas();
+                resetSubCanvas(false);
 
                 b_AnimationStarted = false;
                 dispatcherTimer.Stop();
             }
             catch (NullReferenceException ex) { }
         }
-        private void drawGridLines(long endTime, int bpm, int count) {
+
+        private void drawGridLines(long endTime, int bpm, int count) 
+        {
             int runner = 0;
             for (double i = 0; i < (endTime + 1000); i = i + (1.775 * multiplier) + (bpm / count)) {
                 Rectangle r = new Rectangle();
@@ -227,7 +297,8 @@ namespace NiceWindow {
             }
         }
 
-        private void fingering(int note, int instrument, long startTime, long endTime) {
+        private void fingering(int note, int instrument, long startTime, long endTime) 
+        {
             if (instrument == 41) { //VIOLIN
                 int margin = 300;
                 int noteNumber;
@@ -552,7 +623,9 @@ namespace NiceWindow {
                 }
                 catch (NullReferenceException ex) { }
 
-                resetSubCanvas();
+                hideSubCanvas();
+                resetSubCanvas(true);
+
                 hideCanvasChildren();
 
                 b_AnimationStarted = false;
@@ -581,6 +654,7 @@ namespace NiceWindow {
             //serialPortReadTimer.Start();
 
             try {
+                debugConsole.textbox1.Text += midiInfo.l_Notes.Count + Environment.NewLine;
 
                 /*
                 debugConsole.textbox1.Text += midiInfo.s_Title + Environment.NewLine;
@@ -588,14 +662,18 @@ namespace NiceWindow {
                 debugConsole.textbox1.Text += midiInfo.i_DeltaTicksPerQuarterNote + Environment.NewLine;
                 debugConsole.textbox1.Text += midiInfo.i_MicrosecondsPerQuarterNote + " " + midiInfo.d_MilisecondsPerQuarterNote + Environment.NewLine;
                 debugConsole.textbox1.Text += midiInfo.d_MilisecondsPerTick + Environment.NewLine;
-
-
+                */
+                  
+                
                 foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata) {
                     debugConsole.textbox1.Text += metadata.ToString();
                 }
+                 
 
+                /*
                 debugConsole.textbox1.Text += "-----" + Environment.NewLine;
                 
+                 
                 foreach (Note note in midiInfo.l_Notes) {
                     debugConsole.textbox1.Text += note.li_BeginTime + " " + note.li_EndTime + Environment.NewLine;
                 }
@@ -609,8 +687,8 @@ namespace NiceWindow {
                 /*
                 for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
                     debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
-                }
-                 */
+                }*/
+                
             }
             catch (NullReferenceException ex) { }
         }
@@ -630,16 +708,22 @@ namespace NiceWindow {
             channelSelector.Show();
         }
 
-        private void channelSelectorOkClicked(object sender, RoutedEventArgs e) {
+        private void channelSelectorOkClicked(object sender, RoutedEventArgs e) 
+        {
             i_Channel = channelSelector.getSelectedChannel();
 
             midiInfo.loadChannelNotes(i_Channel);
             midiPlayer.setPersistentChannel(i_Channel);
 
+            hideSubCanvas();
+            resetSubCanvas(true);
+            initializeSubCanvas();
+
             channelSelector.Close();
         }
 
-        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e) {
+        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e) 
+        {
             // if the serial port is not closed, opening once again (SerialPortSelector opens ports for testing) 
             // will cause an exception
             serialPort.Close();
@@ -648,7 +732,8 @@ namespace NiceWindow {
             serialPortSelector.Show();
         }
 
-        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e) {
+        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e) 
+        {
             s_SelectedSerialPort = serialPortSelector.getSelectedSerialPort();
 
             serialPortSelector.Close();
@@ -670,48 +755,48 @@ namespace NiceWindow {
         }
 
 
-        private void getSerialData() {
-            int count = 0;
-            string data;
+        private void getSerialData() 
+        {
             while (true) {
-                if (s_SelectedSerialPort != string.Empty) {
+                score.s_CurrentFingering = string.Empty;
+
+                if (s_SelectedSerialPort != string.Empty && serialPort.IsOpen) {
                     try {
-                        data = serialPort.ReadLine().Trim();
+                        score.s_CurrentFingering = serialPort.ReadLine().Trim();
                     }
                     catch (InvalidOperationException e) {
-                        data = "(serial port is closed)";
-                    }
-                    catch (IOException e) {
-                        data = "(serial port is closed)";
+
                     }
                     catch (TimeoutException e) {
-                        data = "(no data)";
+                        
                     }
                 }
-                else {
-                    data = "(no serial port selected)";
-                }
 
+                
+                score.updateScore(ref midiPlayer);
 
+                /*
                 if (debugConsole != null) {
                     Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
                         delegate() {
                             debugConsole.textbox1.Text = "DATA: " + data + Environment.NewLine;
                         }));
                     count++;
-                }
+                }*/
 
                 Thread.Sleep(5);
             }
         }
 
 
-        private void about_Clicked(object sender, RoutedEventArgs e) {
+        private void about_Clicked(object sender, RoutedEventArgs e) 
+        {
             About about = new About();
             about.Show();
         }
 
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e) {
+        private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
+        {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -723,7 +808,8 @@ namespace NiceWindow {
             catch (NullReferenceException ex) { }
         }
 
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e) {
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e) 
+        {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -778,12 +864,51 @@ namespace NiceWindow {
             base.OnClosed(e);
         }
 
-        private void initializeCanvas() {
+        private void initializeCanvas() 
+        {
             tb_SongTitle.Text = midiInfo.s_Title;
             showCanvasChildren();
         }
 
-        private void moveCanvas(object sender, EventArgs e) {
+        private void initializeSubCanvas()
+        {
+            if (i_Channel < 0) {
+                return;
+            }
+            
+            int j = 0;
+            long lastNote = 0;
+            long firstStart = 0;
+            long smallestNoteLength = 0;
+            foreach (Note note in midiInfo.l_Notes) {
+                j++;
+                if (smallestNoteLength == 0)
+                    smallestNoteLength = note.li_EndTime - note.li_BeginTime;
+                else if (smallestNoteLength > (note.li_EndTime - note.li_BeginTime))
+                    smallestNoteLength = (note.li_EndTime - note.li_BeginTime);
+                if (note.li_EndTime > lastNote)
+                    lastNote = note.li_EndTime;
+            }
+
+            if (smallestNoteLength < 300)
+                multiplier = 300 / smallestNoteLength;
+
+            if (midiInfo.i_TimeSignatureNumerator == 0)
+                MessageBox.Show(Convert.ToString("Warning! Time Signature is 0"));
+
+            hInst = 1;
+
+            drawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
+            for (int i = j - 1; i >= 0; i--) {
+                if (i == j - 1) {
+                    firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
+                }
+                fingering(midiInfo.l_Notes[i].i_NoteNumber, 35, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+            }
+        }
+
+        private void moveCanvas(object sender, EventArgs e) 
+        {
             long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             long delta = milliseconds - starterTime;
             if (hInst == 0) {
@@ -801,6 +926,7 @@ namespace NiceWindow {
             r_KeyLine.Visibility = Visibility.Hidden;
             tb_ScoreDisplay.Visibility = Visibility.Hidden;
             tb_SongTitle.Visibility = Visibility.Hidden;
+            tb_Fingering.Visibility = Visibility.Hidden;
         }
 
         private void showCanvasChildren() {
@@ -808,68 +934,40 @@ namespace NiceWindow {
             r_KeyLine.Visibility = Visibility.Visible;
             tb_ScoreDisplay.Visibility = Visibility.Visible;
             tb_SongTitle.Visibility = Visibility.Visible;
+            tb_Fingering.Visibility = Visibility.Visible;
         }
 
-        private void resetSubCanvas() {
-            subcanv.Children.Clear();
+        private void resetSubCanvas(bool clearCanvasChildren) 
+        {
+            if (clearCanvasChildren)
+                subcanv.Children.Clear();
+
             subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
         }
 
-
-        private void determineScoreGrade() {
-            try {
-                if (midiPlayer.i_NumChannelNotesPlayed == 0) {
-                    s_ScoreGrade = "...";
-                    return;
-                }
-            }
-            catch (NullReferenceException e) {
-                s_ScoreGrade = "...";
-                return;
-            }
-
-
-            double percentage = ((double)i_NumNotesScored / (double)(midiPlayer.i_NumChannelNotesPlayed)) * 100;
-
-            if (percentage >= 90)
-                s_ScoreGrade = "A+";
-            else if (percentage >= 85)
-                s_ScoreGrade = "A";
-            else if (percentage >= 80)
-                s_ScoreGrade = "A-";
-            else if (percentage >= 76)
-                s_ScoreGrade = "B+";
-            else if (percentage >= 73)
-                s_ScoreGrade = "B";
-            else if (percentage >= 70)
-                s_ScoreGrade = "B-";
-            else if (percentage >= 67)
-                s_ScoreGrade = "C+";
-            else if (percentage >= 63)
-                s_ScoreGrade = "C";
-            else if (percentage >= 60)
-                s_ScoreGrade = "C-";
-            else if (percentage >= 57)
-                s_ScoreGrade = "D+";
-            else if (percentage >= 53)
-                s_ScoreGrade = "D";
-            else if (percentage >= 50)
-                s_ScoreGrade = "D-";
-            else
-                s_ScoreGrade = "F";
+        private void showSubCanvas()
+        {
+            subcanv.Visibility = Visibility.Visible;
         }
 
-        private void resetScore() {
-            i_NumNotesScored = 0;
+        private void hideSubCanvas()
+        {
+            subcanv.Visibility = Visibility.Hidden;
         }
 
-        private void updateScoreDisplay(object sender, EventArgs e) {
-            determineScoreGrade();
 
+
+        private void updateScoreDisplay(object sender, EventArgs e) 
+        {
             try {
-                tb_ScoreDisplay.Text = i_NumNotesScored + "/" + midiPlayer.i_NumChannelNotesPlayed + " notes correct ~ " + s_ScoreGrade;
+                tb_ScoreDisplay.Text = score.i_NumNotesScored + "/" + midiPlayer.i_NumChannelNotesPlayed + " notes correct ~ " + score.scoreGrade(midiPlayer.i_NumChannelNotesPlayed);
             }
             catch (NullReferenceException ex) { }
+        }
+
+        private void updateFingeringDisplay(object sender, EventArgs e)
+        {
+            tb_Fingering.Text = "Fingering: " + score.s_CurrentFingering; 
         }
 
 
