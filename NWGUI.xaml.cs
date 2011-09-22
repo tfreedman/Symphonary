@@ -28,22 +28,18 @@ using System.Threading;
 using System.Windows.Threading;
 
 
-namespace NiceWindow 
-{
-    public class Score
-    {
+namespace NiceWindow {
+    public class Score {
         public int i_NumNotesScored = 0;
         public string s_CurrentFingering = string.Empty;
 
         NoteMatcher noteMatcher = new NoteMatcher();
-        
-        public void resetScore()
-        {
+
+        public void resetScore() {
             i_NumNotesScored = 0;
         }
 
-        public void updateScore(ref MidiPlayer midiPlayer)
-        {
+        public void updateScore(ref MidiPlayer midiPlayer) {
             if (midiPlayer == null)
                 return;
 
@@ -58,8 +54,7 @@ namespace NiceWindow
             }
         }
 
-        public string scoreGrade(int i_NumChannelNotesPlayed)
-        {
+        public string scoreGrade(int i_NumChannelNotesPlayed) {
             try {
                 if (i_NumChannelNotesPlayed == 0) {
                     return "...";
@@ -100,9 +95,8 @@ namespace NiceWindow
         }
     }
 
-    
-    public partial class NWGUI : Window 
-    {
+
+    public partial class NWGUI : Window {
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
 
@@ -114,7 +108,7 @@ namespace NiceWindow
         LoadingScreen loadingScreen;
         long starterTime = 0;
         int i_Channel = -1;
-        double scrollSpeed = 1.66667;
+        double scrollSpeed = 2.00000;
         double multiplier = 1;
         MidiPlayer midiPlayer;
         MidiInfo midiInfo;
@@ -135,16 +129,25 @@ namespace NiceWindow
         SerialPort serialPort = new SerialPort();
         Thread serialPortReadThread;
         int hInst = 1;
+        int instrument = 0;
 
         Score score = new Score();
 
-        public NWGUI()
-        {
+        public NWGUI() {
             InitializeComponent();
+            Stop.IsEnabled = false;
+            instrument = readSettingsFromFile();
+            if (instrument != 0) {
+                instrument_Clicked(instrument);
+            }
+            else {
+                Start.IsEnabled = false;
+                Stop.IsEnabled = false;
+            }
 
             i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
 
-            dispatcherTimer.Interval = new TimeSpan(166667);
+            dispatcherTimer.Interval = new TimeSpan(200000);
             dispatcherTimer.Tick += new EventHandler(moveCanvas);
             dispatcherTimer.Tick += new EventHandler(updateScoreDisplay);
             dispatcherTimer.Tick += new EventHandler(updateFingeringDisplay);
@@ -181,19 +184,6 @@ namespace NiceWindow
             //tb_Fingering.Text = "aha";
 
             hideCanvasChildren();
-            if (hInst == 0) {
-                r_KeyLine.Height = 3;
-                r_KeyLine.Width = 1024;
-                r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-                r_KeyLine.SetValue(Canvas.TopProperty, 650.0);
-            }
-            else {
-                r_KeyLine.Height = 1024;
-                r_KeyLine.Width = 3;
-                r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-                r_KeyLine.SetValue(Canvas.LeftProperty, 10.0);
-            }
-            canv.Children.Add(r_KeyLine);
             canv.Children.Add(r_HeaderBackground);
             canv.Children.Add(tb_SongTitle);
             canv.Children.Add(tb_ScoreDisplay);
@@ -205,8 +195,10 @@ namespace NiceWindow
         }
 
 
-        private void start_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void start_Clicked(object sender, RoutedEventArgs e) {
+            Start.IsEnabled = false;
+            Stop.IsEnabled = true;
+            Instruments.IsEnabled = false;
             try {
                 if (midiPlayer.isPlaying()) {
                     MessageBox.Show("The file is currently being played, please have it finish first.");
@@ -229,13 +221,13 @@ namespace NiceWindow
                 initializeCanvas();
 
                 showSubCanvas();
-                
+
                 dispatcherTimer.Start();
                 b_AnimationStarted = true;
 
                 midiPlayer.startPlaying();
                 starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                
+
             }
             catch (NullReferenceException ex) {
                 MessageBox.Show("Please load a MIDI file first! (or some other weird error occured, so read the proceeding message)");
@@ -245,6 +237,9 @@ namespace NiceWindow
         }
 
         private void stop_Clicked(object sender, RoutedEventArgs e) {
+            Start.IsEnabled = true;
+            Stop.IsEnabled = false;
+            Instruments.IsEnabled = true;
             hideCanvasChildren();
 
             try {
@@ -261,8 +256,7 @@ namespace NiceWindow
             catch (NullReferenceException ex) { }
         }
 
-        private void drawGridLines(long endTime, int bpm, int count) 
-        {
+        private void drawGridLines(long endTime, int bpm, int count) {
             int runner = 0;
             for (double i = 0; i < (endTime + 1000); i = i + (1.775 * multiplier) + (bpm / count)) {
                 Rectangle r = new Rectangle();
@@ -297,8 +291,7 @@ namespace NiceWindow
             }
         }
 
-        private void fingering(int note, int instrument, long startTime, long endTime) 
-        {
+        private void fingering(int note, int instrument, long startTime, long endTime) {
             if (instrument == 41) { //VIOLIN
                 int margin = 300;
                 int noteNumber;
@@ -663,12 +656,12 @@ namespace NiceWindow
                 debugConsole.textbox1.Text += midiInfo.i_MicrosecondsPerQuarterNote + " " + midiInfo.d_MilisecondsPerQuarterNote + Environment.NewLine;
                 debugConsole.textbox1.Text += midiInfo.d_MilisecondsPerTick + Environment.NewLine;
                 */
-                  
-                
+
+
                 foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata) {
                     debugConsole.textbox1.Text += metadata.ToString();
                 }
-                 
+
 
                 /*
                 debugConsole.textbox1.Text += "-----" + Environment.NewLine;
@@ -688,7 +681,7 @@ namespace NiceWindow
                 for (int i = 0; i < midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]].Count; i++) {
                     debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
                 }*/
-                
+
             }
             catch (NullReferenceException ex) { }
         }
@@ -708,8 +701,7 @@ namespace NiceWindow
             channelSelector.Show();
         }
 
-        private void channelSelectorOkClicked(object sender, RoutedEventArgs e) 
-        {
+        private void channelSelectorOkClicked(object sender, RoutedEventArgs e) {
             i_Channel = channelSelector.getSelectedChannel();
 
             midiInfo.loadChannelNotes(i_Channel);
@@ -722,8 +714,62 @@ namespace NiceWindow
             channelSelector.Close();
         }
 
-        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void instrument_Clicked(int num) {
+            Start.IsEnabled = true;
+            Stop.IsEnabled = true;
+            canv.Children.Remove(r_KeyLine);
+            writeSettingsToFile(num);
+            instrument = num;
+            if (num == 30 || num == 35) {
+                r_KeyLine.SetValue(Canvas.LeftProperty, 10.0);
+                hInst = 1;
+                r_KeyLine.Height = 1024;
+                r_KeyLine.Width = 3;
+            } 
+            else {
+                hInst = 0;
+                r_KeyLine.SetValue(Canvas.TopProperty, 650.0);
+                r_KeyLine.Height = 3;
+                r_KeyLine.Width = 1024;
+            }
+            r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+            canv.Children.Add(r_KeyLine);
+        }
+
+        private void flute_Clicked(object sender, RoutedEventArgs e) {
+            instrument_Clicked(74);
+        }
+
+        private void violin_Clicked(object sender, RoutedEventArgs e) {
+            instrument_Clicked(41);
+        }
+
+        private void guitar_Clicked(object sender, RoutedEventArgs e) {
+            instrument_Clicked(30);
+        }
+
+        private void bass_Clicked(object sender, RoutedEventArgs e) {
+            instrument_Clicked(35);
+        }
+
+        private void writeSettingsToFile (int inst) {
+            TextWriter tw = new StreamWriter("settings.ini");
+            tw.WriteLine(inst);
+            tw.Close();
+        }
+
+        private int readSettingsFromFile() {
+            int returner = 0;
+            try {
+                TextReader tr = new StreamReader("settings.ini");
+                returner = Convert.ToInt32(tr.ReadLine());
+                tr.Close();
+            }
+            catch (Exception e) { }
+            return returner;
+        }
+
+        private void selectSerialPort_Clicked(object sender, RoutedEventArgs e) {
             // if the serial port is not closed, opening once again (SerialPortSelector opens ports for testing) 
             // will cause an exception
             serialPort.Close();
@@ -732,8 +778,7 @@ namespace NiceWindow
             serialPortSelector.Show();
         }
 
-        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e) 
-        {
+        private void serialPortSelectorOkClicked(object sender, RoutedEventArgs e) {
             s_SelectedSerialPort = serialPortSelector.getSelectedSerialPort();
 
             serialPortSelector.Close();
@@ -755,8 +800,7 @@ namespace NiceWindow
         }
 
 
-        private void getSerialData() 
-        {
+        private void getSerialData() {
             while (true) {
                 //score.s_CurrentFingering = string.Empty;
 
@@ -772,7 +816,7 @@ namespace NiceWindow
                     }
                 }
 
-                
+
                 score.updateScore(ref midiPlayer);
 
                 /*
@@ -789,14 +833,12 @@ namespace NiceWindow
         }
 
 
-        private void about_Clicked(object sender, RoutedEventArgs e) 
-        {
+        private void about_Clicked(object sender, RoutedEventArgs e) {
             About about = new About();
             about.Show();
         }
 
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
-        {
+        private void NWGUI_KeyUp(object sender, KeyEventArgs e) {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -808,8 +850,7 @@ namespace NiceWindow
             catch (NullReferenceException ex) { }
         }
 
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e) 
-        {
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e) {
             try {
                 if (!midiPlayer.isPlaying())
                     return;
@@ -864,18 +905,16 @@ namespace NiceWindow
             base.OnClosed(e);
         }
 
-        private void initializeCanvas() 
-        {
+        private void initializeCanvas() {
             tb_SongTitle.Text = midiInfo.s_Title;
             showCanvasChildren();
         }
 
-        private void initializeSubCanvas()
-        {
+        private void initializeSubCanvas() {
             if (i_Channel < 0) {
                 return;
             }
-            
+
             int j = 0;
             long lastNote = 0;
             long firstStart = 0;
@@ -896,19 +935,17 @@ namespace NiceWindow
             if (midiInfo.i_TimeSignatureNumerator == 0)
                 MessageBox.Show(Convert.ToString("Warning! Time Signature is 0"));
 
-            hInst = 1;
 
             drawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
             for (int i = j - 1; i >= 0; i--) {
                 if (i == j - 1) {
                     firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
                 }
-                fingering(midiInfo.l_Notes[i].i_NoteNumber, 35, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+                fingering(midiInfo.l_Notes[i].i_NoteNumber, instrument, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
             }
         }
 
-        private void moveCanvas(object sender, EventArgs e) 
-        {
+        private void moveCanvas(object sender, EventArgs e) {
             long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             long delta = milliseconds - starterTime;
             if (hInst == 0) {
@@ -937,47 +974,37 @@ namespace NiceWindow
             tb_Fingering.Visibility = Visibility.Visible;
         }
 
-        private void resetSubCanvas(bool clearCanvasChildren) 
-        {
+        private void resetSubCanvas(bool clearCanvasChildren) {
             if (clearCanvasChildren)
                 subcanv.Children.Clear();
 
             subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
         }
 
-        private void showSubCanvas()
-        {
+        private void showSubCanvas() {
             subcanv.Visibility = Visibility.Visible;
         }
 
-        private void hideSubCanvas()
-        {
+        private void hideSubCanvas() {
             subcanv.Visibility = Visibility.Hidden;
         }
 
 
 
-        private void updateScoreDisplay(object sender, EventArgs e) 
-        {
+        private void updateScoreDisplay(object sender, EventArgs e) {
             try {
                 tb_ScoreDisplay.Text = score.i_NumNotesScored + "/" + midiPlayer.i_NumChannelNotesPlayed + " notes correct ~ " + score.scoreGrade(midiPlayer.i_NumChannelNotesPlayed);
             }
             catch (NullReferenceException ex) { }
         }
 
-        private void updateFingeringDisplay(object sender, EventArgs e)
-        {
-            tb_Fingering.Text = "Fingering: " + score.s_CurrentFingering; 
-        }
+        private void updateFingeringDisplay(object sender, EventArgs e) {
 
+            if (instrument == 41) {
+                tb_Fingering.Text = "Fingering: " + score.s_CurrentFingering;
 
-        /*void drawFrame(object sender, EventArgs e)
-        {
-            temp++;
-            r.SetValue(Canvas.TopProperty, (double)temp);
-            canv.InvalidateVisual();
+            }
         }
-         */
 
         public struct ColorRGB {
             public byte R;

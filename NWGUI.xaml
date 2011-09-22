@@ -15,14 +15,21 @@
                     </MenuItem>
                     
                     <MenuItem Header="_Run">
-                        <MenuItem Header="_Start" Click="start_Clicked"/>
-                        <MenuItem Header="_Stop" Click="stop_Clicked"/>
+                        <MenuItem Name="Start" Header="_Start" Click="start_Clicked"/>
+                        <MenuItem Name="Stop" Header="_Stop" Click="stop_Clicked"/>
                         <MenuItem Header="_Show debug console" Click="debug_Clicked"/>
                     </MenuItem>
                     
                     <MenuItem Header="_Options">
                         <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
                         <MenuItem Header="_Select Serial Port" Click="selectSerialPort_Clicked"/>
+                    </MenuItem>
+
+                    <MenuItem Name="Instruments" Header="_Instruments">
+                        <MenuItem Header="_Violin" Click="violin_Clicked"/>
+                        <MenuItem Header="_Flute" Click="flute_Clicked"/>
+                        <MenuItem Header="_Guitar" Click="guitar_Clicked"/>
+                        <MenuItem Header="_Bass" Click="bass_Clicked"/>
                     </MenuItem>
 
                     <MenuItem Header="_Help">
