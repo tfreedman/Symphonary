@@ -657,6 +657,7 @@ namespace NiceWindow {
 
                 midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged,
                     handleMIDILoadCompleted, handleMIDIChannelMessagePlayed);
+                midiPlayer.b_PlayPersistentChannel = false; // make it so that the user's instrument's notes don't play
 
                 midiInfo = new MidiInfo(openFileDialog.FileName, i_Channel);
             }
@@ -988,14 +989,27 @@ namespace NiceWindow {
             tb_ScoreDisplay.Visibility = Visibility.Hidden;
             tb_SongTitle.Visibility = Visibility.Hidden;
             tb_Fingering.Visibility = Visibility.Hidden;
+            for (int i = 0; i < r_violin.Length; i++) {
+                r_violin[i].Visibility = Visibility.Hidden;
+            }
+            for (int i = 0; i < tb_violin.Length; i++) {
+                tb_violin[i].Visibility = Visibility.Hidden;
+            }
         }
 
-        private void showCanvasChildren() {
+        private void showCanvasChildren()
+        {
             r_HeaderBackground.Visibility = Visibility.Visible;
             r_KeyLine.Visibility = Visibility.Visible;
             tb_ScoreDisplay.Visibility = Visibility.Visible;
             tb_SongTitle.Visibility = Visibility.Visible;
             tb_Fingering.Visibility = Visibility.Visible;
+            for (int i = 0; i < r_violin.Length; i++) {
+                r_violin[i].Visibility = Visibility.Visible;
+            }
+            for (int i = 0; i < tb_violin.Length; i++) {
+                tb_violin[i].Visibility = Visibility.Visible;
+            }
         }
 
         private void resetSubCanvas(bool clearCanvasChildren) {

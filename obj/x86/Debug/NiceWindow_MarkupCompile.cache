@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Debug\
+D:\miditool\NiceWindow\obj\x86\Debug\
 NiceWindow
 none
 false
 DEBUG;TRACE
-C:\Users\Tyler\NiceWindow\NiceWindow\App.xaml
+D:\miditool\NiceWindow\App.xaml
 6308402064
 
 11751834594
-221986691088
+22387116296
 About.xaml;SerialPortSelector.xaml;ChannelSelector.xaml;LoadingScreen.xaml;MainWindow.xaml;NWGUI.xaml;
 
 False

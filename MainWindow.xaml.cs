@@ -220,6 +220,7 @@ namespace NiceWindow {
         bool b_FinishedLoading = false;
         bool b_MuteOtherTracks = false;
         bool b_Playing = false;
+        public bool b_PlayPersistentChannel = true;
         bool b_ProgramClosing = false;
 
 
@@ -233,10 +234,11 @@ namespace NiceWindow {
         //public List<int> l_CurrentPlayingChannelNotes = new List<int>();
         public ArrayList al_CurrentPlayingChannelNotes = new ArrayList();
 
-        public MidiPlayer(string s_Filename,
+        public MidiPlayer(string s_Filename, 
             System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
             System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted,
-            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed) {
+            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed) 
+        {
             sequence.Format = 1;
             sequence.LoadProgressChanged += extHandleLoadProgressChanged;
             sequence.LoadCompleted += handleLoadCompleted;
@@ -327,7 +329,8 @@ namespace NiceWindow {
                 }
             }
 
-            outputDevice.Send(e.Message);
+            if (e.Message.MidiChannel != i_PersistentChannel || b_PlayPersistentChannel)
+                outputDevice.Send(e.Message);
         }
 
 
