@@ -19,3 +19,11 @@ C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\GenerateResource.read.1.tlo
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\GenerateResource.write.1.tlog
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\NiceWindow.exe
 C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\NiceWindow.pdb
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\About.baml
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\SerialPortSelector.baml
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\ChannelSelector.baml
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\About.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\SerialPortSelector.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\ChannelSelector.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\LoadingScreen.g.cs
+C:\Users\Tyler\NiceWindow\NiceWindow\obj\x86\Release\NiceWindow_MarkupCompile.lref

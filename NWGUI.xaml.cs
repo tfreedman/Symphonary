@@ -118,6 +118,10 @@ namespace NiceWindow {
         TextBlock tb_ScoreDisplay = new TextBlock();
         TextBlock tb_SongTitle = new TextBlock();
         TextBlock tb_Fingering = new TextBlock();
+                        
+        Rectangle[] r_violin = new Rectangle[4];
+        TextBlock[] tb_violin = new TextBlock[4];
+
 
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
@@ -136,6 +140,13 @@ namespace NiceWindow {
         public NWGUI() {
             InitializeComponent();
             Stop.IsEnabled = false;
+
+            for (int i = 0; i < 4; i++) {
+                r_violin[i] = new Rectangle();
+                tb_violin[i] = new TextBlock();
+            }
+
+
             instrument = readSettingsFromFile();
             if (instrument != 0) {
                 instrument_Clicked(instrument);
@@ -181,9 +192,16 @@ namespace NiceWindow {
             tb_Fingering.Foreground = new SolidColorBrush(Colors.Red);
             tb_Fingering.SetValue(Canvas.TopProperty, 100.0);
             tb_Fingering.SetValue(Canvas.LeftProperty, 100.0);
-            //tb_Fingering.Text = "aha";
 
             hideCanvasChildren();
+
+            for (int i = 0; i < 4; i++) {
+                canv.Children.Add(tb_violin[i]);
+                canv.Children.Add(r_violin[i]);
+                Canvas.SetZIndex(tb_violin[i], (int)99);
+                Canvas.SetZIndex(r_violin[i], (int)98);
+            }
+
             canv.Children.Add(r_HeaderBackground);
             canv.Children.Add(tb_SongTitle);
             canv.Children.Add(tb_ScoreDisplay);
@@ -199,6 +217,7 @@ namespace NiceWindow {
             Start.IsEnabled = false;
             Stop.IsEnabled = true;
             Instruments.IsEnabled = false;
+            instrument_Clicked(instrument);
             try {
                 if (midiPlayer.isPlaying()) {
                     MessageBox.Show("The file is currently being played, please have it finish first.");
@@ -240,7 +259,9 @@ namespace NiceWindow {
             Start.IsEnabled = true;
             Stop.IsEnabled = false;
             Instruments.IsEnabled = true;
+            instrument_Clicked(instrument);
             hideCanvasChildren();
+
 
             try {
                 //midiPlayer.OnClosingOperations();
@@ -306,8 +327,8 @@ namespace NiceWindow {
                 string noteString = "";
                 textBlock.Foreground = new SolidColorBrush(Colors.White);
                 if (note >= 55 && note < 62) {
-                    textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width));
-                    r.SetValue(Canvas.LeftProperty, (double)(margin + r.Width));
+                    textBlock.SetValue(Canvas.LeftProperty, (margin + r.Width + padding));
+                    r.SetValue(Canvas.LeftProperty, (double)(margin + r.Width + padding));
                     r.Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
                     r.Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
                     noteNumber = note - 55;
@@ -347,13 +368,13 @@ namespace NiceWindow {
 
 
                 if (noteNumber == 0) { noteString = "0"; }
-                else if (noteNumber == 1) { noteString = "1-"; }
-                else if (noteNumber == 2) { noteString = "1"; }
-                else if (noteNumber == 3) { noteString = "2-"; }
-                else if (noteNumber == 4) { noteString = "2"; }
-                else if (noteNumber == 5) { noteString = "3"; }
-                else if (noteNumber == 6) { noteString = "3+"; }
-                else if (noteNumber == 7) { noteString = "4"; }
+                else if (noteNumber == 1) { noteString = "1"; }
+                else if (noteNumber == 2) { noteString = "2"; }
+                else if (noteNumber == 3) { noteString = "3"; }
+                else if (noteNumber == 4) { noteString = "4"; }
+                else if (noteNumber == 5) { noteString = "5"; }
+                else if (noteNumber == 6) { noteString = "6"; }
+                else if (noteNumber == 7) { noteString = "7"; }
                 textBlock.Text = noteString;
 
                 r.StrokeThickness = 2;
@@ -560,6 +581,7 @@ namespace NiceWindow {
                 else if (note == 81)
                     noteString = "01010001001";
 
+
                 Rectangle[] r = new Rectangle[noteString.Length];
                 for (int i = 0; i < noteString.Length; i++) {
                     r[i] = new Rectangle();
@@ -720,15 +742,17 @@ namespace NiceWindow {
             canv.Children.Remove(r_KeyLine);
             writeSettingsToFile(num);
             instrument = num;
+
             if (num == 30 || num == 35) {
                 r_KeyLine.SetValue(Canvas.LeftProperty, 10.0);
                 hInst = 1;
                 r_KeyLine.Height = 1024;
                 r_KeyLine.Width = 3;
-            } 
+            }
             else {
                 hInst = 0;
-                r_KeyLine.SetValue(Canvas.TopProperty, 650.0);
+                r_KeyLine.SetValue(Canvas.TopProperty, 629.0);
+                Canvas.SetZIndex(r_KeyLine, (int)97);
                 r_KeyLine.Height = 3;
                 r_KeyLine.Width = 1024;
             }
@@ -752,7 +776,7 @@ namespace NiceWindow {
             instrument_Clicked(35);
         }
 
-        private void writeSettingsToFile (int inst) {
+        private void writeSettingsToFile(int inst) {
             TextWriter tw = new StreamWriter("settings.ini");
             tw.WriteLine(inst);
             tw.Close();
@@ -977,7 +1001,7 @@ namespace NiceWindow {
         private void resetSubCanvas(bool clearCanvasChildren) {
             if (clearCanvasChildren)
                 subcanv.Children.Clear();
-
+            
             subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
         }
 
@@ -992,17 +1016,54 @@ namespace NiceWindow {
 
 
         private void updateScoreDisplay(object sender, EventArgs e) {
+
+
             try {
                 tb_ScoreDisplay.Text = score.i_NumNotesScored + "/" + midiPlayer.i_NumChannelNotesPlayed + " notes correct ~ " + score.scoreGrade(midiPlayer.i_NumChannelNotesPlayed);
             }
             catch (NullReferenceException ex) { }
         }
-
         private void updateFingeringDisplay(object sender, EventArgs e) {
-
             if (instrument == 41) {
-                tb_Fingering.Text = "Fingering: " + score.s_CurrentFingering;
+                int margin = 300;
+                int padding = 30;
 
+                for (int i = 0; i < 4; i++) {
+                    tb_violin[i].Height = 50;
+                    tb_violin[i].Width = 50;
+                    tb_violin[i].Foreground = new SolidColorBrush(Colors.White);
+                    r_violin[i].Width = 46;
+                    tb_violin[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_violin[i].Width + (padding)))));
+                    r_violin[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_violin[i].Width + (padding)))));
+                    try {
+                        if (score.s_CurrentFingering.Length == 4)
+                        tb_violin[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
+                    }
+                    catch (Exception ex) { }
+                        r_violin[i].StrokeThickness = 2;
+                    r_violin[i].Height = 50;
+                    tb_violin[i].FontSize = 26;
+                    tb_violin[i].FontWeight = FontWeights.Bold;
+                    tb_violin[i].TextAlignment = TextAlignment.Center;
+                    tb_violin[i].SetValue(Canvas.TopProperty, (double)630);
+                    r_violin[i].SetValue(Canvas.TopProperty, (double)630);
+                    if (i == 0) {
+                        r_violin[i].Fill = new SolidColorBrush(Color.FromRgb(144, 187, 69));
+                        r_violin[i].Stroke = new SolidColorBrush(Color.FromRgb(114, 148, 55));
+                    }
+                    else if (i == 1) {
+                        r_violin[i].Fill = new SolidColorBrush(Color.FromRgb(250, 181, 65));
+                        r_violin[i].Stroke = new SolidColorBrush(Color.FromRgb(227, 165, 59));
+                    }
+                    else if (i == 2) {
+                        r_violin[i].Fill = new SolidColorBrush(Color.FromRgb(220, 42, 62));
+                        r_violin[i].Stroke = new SolidColorBrush(Color.FromRgb(189, 36, 54));
+                    }
+                    else if (i == 3) {
+                        r_violin[i].Fill = new SolidColorBrush(Color.FromRgb(26, 98, 179));
+                        r_violin[i].Stroke = new SolidColorBrush(Color.FromRgb(24, 82, 148));
+                    }
+                }
             }
         }
 

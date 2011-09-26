@@ -24,40 +24,36 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace NiceWindow
-{
-    public class Note 
-    {
+namespace NiceWindow {
+    public class Note {
         public int i_NoteNumber;
         public long li_BeginTime;
         public long li_EndTime;
 
-        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime) 
-        {
+        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime) {
             this.i_NoteNumber = i_NoteNumber;
             this.li_BeginTime = li_BeginTime;
             this.li_EndTime = li_EndTime;
         }
     } // end Note
-    
-    public class MidiInfo
-    {
+
+    public class MidiInfo {
         // length of 1 tick = microseconds per beat / 60 
 
         public double d_MilisecondsPerQuarterNote;
         public double d_MilisecondsPerTick;
-        
+
         public int i_DeltaTicksPerQuarterNote;
         public int i_MicrosecondsPerQuarterNote;
         public int i_NumMusicChannels;
         public int i_TempoInBPM;
-        public int i_TempoInNanoseconds;        
+        public int i_TempoInNanoseconds;
         public int i_TimeSignatureNumerator;
         public int i_TimeSignatureDenominator;
-        
+
         public string s_Title;
         public string s_TimeSignature;
-        
+
 
         // 16 channels from 0 to 15
         public bool[] a_UsedChannels = new bool[16];
@@ -73,19 +69,18 @@ namespace NiceWindow
         // these are for just one channel of choice
         public long i_EndTime;
         public List<Note> l_Notes = new List<Note>();
-       
 
-        
-        public MidiInfo(string s_Filename, int i_Channel)
-        {
+
+
+        public MidiInfo(string s_Filename, int i_Channel) {
             s_Title = s_Filename.Substring(Math.Max(0, s_Filename.LastIndexOf('\\') + 1));
             int i_lastDotPos = s_Title.LastIndexOf('.');
             if (i_lastDotPos >= 0) {
                 s_Title = s_Title.Substring(0, i_lastDotPos);
             }
-            
+
             midiEventCollection = new MidiFile(s_Filename).Events;
-            
+
             i_DeltaTicksPerQuarterNote = midiEventCollection.DeltaTicksPerQuarterNote;
             i_NumMusicChannels = midiEventCollection.Tracks - 1; // one of the tracks is used for metadata
 
@@ -102,8 +97,7 @@ namespace NiceWindow
             }
         }
 
-        public bool loadChannelNotes(int i_Channel)
-        {
+        public bool loadChannelNotes(int i_Channel) {
             if (i_Channel < 0 || i_Channel > 15 || !a_UsedChannels[i_Channel]) {
                 return false;
             }
@@ -150,8 +144,7 @@ namespace NiceWindow
             return true;
         }
 
-        private long actualTime(long i_TimeInMIDIFile)
-        {
+        private long actualTime(long i_TimeInMIDIFile) {
             long i_ActualTime = (long)(i_TimeInMIDIFile * d_MilisecondsPerTick);
 
             return i_ActualTime;
@@ -159,21 +152,19 @@ namespace NiceWindow
         }
 
 
-        private void getTempo()
-        {
+        private void getTempo() {
             for (int i = 0; i < midiEventCollection[0].Count; i++) {
                 try {
                     i_TempoInBPM = (int)((TempoEvent)midiEventCollection[0][i]).Tempo;
                     i_TempoInNanoseconds = (int)(1000000 * (60 / (double)i_TempoInBPM));
-                    i_MicrosecondsPerQuarterNote = ((TempoEvent)midiEventCollection[0][i]).MicrosecondsPerQuarterNote;                    
+                    i_MicrosecondsPerQuarterNote = ((TempoEvent)midiEventCollection[0][i]).MicrosecondsPerQuarterNote;
                     return;
                 }
                 catch (InvalidCastException ex) { }
             }
         }
 
-        private void getTimeSignature()
-        {
+        private void getTimeSignature() {
             for (int i = 0; i < midiEventCollection[0].Count; i++) {
                 try {
                     i_TimeSignatureNumerator = ((TimeSignatureEvent)midiEventCollection[0][i]).Numerator;
@@ -186,8 +177,7 @@ namespace NiceWindow
             }
         }
 
-        private void getUsedChannels()
-        {
+        private void getUsedChannels() {
             for (int i = 0; i < a_UsedChannels.Length; i++) {
                 a_UsedChannels[i] = false;
             }
@@ -203,13 +193,12 @@ namespace NiceWindow
             }
         }
 
-        private void getChannelInstruments()
-        {
+        private void getChannelInstruments() {
             for (int i = 0; i < a_ChannelInstrumentNumbers.Length; i++) {
                 a_ChannelInstrumentNumbers[i] = 1; // default is 1 (acoustic grand piano)
             }
 
-            
+
             for (int i = 0; i < a_ChannelInstrumentNumbers.Length; i++) {
                 a_ChannelInstrumentNames[i] = PatchChangeEvent.GetPatchName(0);
             }
@@ -227,14 +216,13 @@ namespace NiceWindow
     }
 
 
-    public class MidiPlayer
-    {
+    public class MidiPlayer {
         bool b_FinishedLoading = false;
         bool b_MuteOtherTracks = false;
         bool b_Playing = false;
         bool b_ProgramClosing = false;
 
-        
+
         ChannelStopper channelStopper = new ChannelStopper();
         OutputDevice outputDevice = new OutputDevice(0);
         Sequence sequence = new Sequence();
@@ -245,11 +233,10 @@ namespace NiceWindow
         //public List<int> l_CurrentPlayingChannelNotes = new List<int>();
         public ArrayList al_CurrentPlayingChannelNotes = new ArrayList();
 
-        public MidiPlayer(string s_Filename, 
+        public MidiPlayer(string s_Filename,
             System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
             System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted,
-            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed)
-        {
+            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed) {
             sequence.Format = 1;
             sequence.LoadProgressChanged += extHandleLoadProgressChanged;
             sequence.LoadCompleted += handleLoadCompleted;
@@ -263,33 +250,28 @@ namespace NiceWindow
             sequencer.Stopped += handleStopped;
         }
 
-        public bool isFinishedLoading()
-        {
+        public bool isFinishedLoading() {
             return b_FinishedLoading;
         }
-        
-        public bool isPlaying()
-        {
+
+        public bool isPlaying() {
             return b_Playing;
         }
 
 
-        public void setPersistentChannel(int i_PersistentChannel)
-        {
+        public void setPersistentChannel(int i_PersistentChannel) {
             this.i_PersistentChannel = i_PersistentChannel;
             i_NumChannelNotesPlayed = 0;
         }
 
 
-        private void muteAllChannels()
-        {
+        private void muteAllChannels() {
             for (int i = 0; i < 16; i++) {
                 outputDevice.Send(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff, 0));
             }
         }
 
-        public void muteOtherChannels()
-        {
+        public void muteOtherChannels() {
             b_MuteOtherTracks = true;
             for (int i = 0; i < 16; i++) {
                 if (i != i_PersistentChannel) {
@@ -300,25 +282,21 @@ namespace NiceWindow
         }
 
 
-        public void unmuteOtherChannels()
-        {
+        public void unmuteOtherChannels() {
             b_MuteOtherTracks = false;
         }
 
-        public void OnClosingOperations()
-        {
+        public void OnClosingOperations() {
             b_ProgramClosing = true;
         }
 
-        public void OnClosedOperations()
-        {
+        public void OnClosedOperations() {
             sequencer.Dispose();
             if (outputDevice != null)
                 outputDevice.Dispose();
         }
 
-        public void startPlaying()
-        {
+        public void startPlaying() {
             if (b_FinishedLoading) {
                 sequencer.Start();
                 b_Playing = true;
@@ -326,15 +304,13 @@ namespace NiceWindow
             }
         }
 
-        public void stopPlaying()
-        {
+        public void stopPlaying() {
             b_Playing = false;
             muteAllChannels();
             sequencer.Stop();
         }
 
-        private void handleChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
-        {
+        private void handleChannelMessagePlayed(object sender, ChannelMessageEventArgs e) {
             if (b_ProgramClosing) // don't try playing anything if program is closing
                 return;
 
@@ -355,21 +331,18 @@ namespace NiceWindow
         }
 
 
-        private void handleChased(object sender, ChasedEventArgs e)
-        {
+        private void handleChased(object sender, ChasedEventArgs e) {
             // I don't know what exactly this handles
             foreach (ChannelMessage message in e.Messages) {
                 outputDevice.Send(message);
             }
         }
 
-        private void handleLoadCompleted(object sender, AsyncCompletedEventArgs e)
-        {
+        private void handleLoadCompleted(object sender, AsyncCompletedEventArgs e) {
             b_FinishedLoading = true;
         }
 
-        private void handleStopped(object sender, StoppedEventArgs e)
-        {
+        private void handleStopped(object sender, StoppedEventArgs e) {
             foreach (ChannelMessage message in e.Messages) {
                 outputDevice.Send(message);
             }
@@ -380,13 +353,73 @@ namespace NiceWindow
 
 
 
-    public class NoteMatcher
-    {
+    public class NoteMatcher {
         // This does matching for the violin. We will need to switch to wildcards though to handle chords.
-        /*
-        public bool noteMatches(string serialData, int noteNumber)
-        {
-            switch (serialData)
+
+        public bool noteMatches(string serialData, int noteNumber) {
+            if (serialData.Length == 4) {
+                if (noteNumber == 55 && serialData[0] == '0')
+                    return true;
+                else if (noteNumber == 56 && serialData[0] == '1')
+                    return true;
+                else if (noteNumber == 57 && serialData[0] == '2')
+                    return true;
+                else if (noteNumber == 58 && serialData[0] == '3')
+                    return true;
+                else if (noteNumber == 59 && serialData[0] == '4')
+                    return true;
+                else if (noteNumber == 60 && serialData[0] == '5')
+                    return true;
+                else if (noteNumber == 61 && serialData[0] == '6')
+                    return true;
+                else if (noteNumber == 62 && (serialData[0] == '7' || serialData[1] == '0'))
+                    return true;
+                else if (noteNumber == 63 && serialData[1] == '1')
+                    return true;
+                else if (noteNumber == 64 && serialData[1] == '2')
+                    return true;
+                else if (noteNumber == 65 && serialData[1] == '3')
+                    return true;
+                else if (noteNumber == 66 && serialData[1] == '4')
+                    return true;
+                else if (noteNumber == 67 && serialData[1] == '5')
+                    return true;
+                else if (noteNumber == 68 && serialData[1] == '6')
+                    return true;
+                else if (noteNumber == 69 && (serialData[1] == '7' || serialData[2] == '0'))
+                    return true;
+                else if (noteNumber == 70 && serialData[2] == '1')
+                    return true;
+                else if (noteNumber == 71 && serialData[2] == '2')
+                    return true;
+                else if (noteNumber == 72 && serialData[2] == '3')
+                    return true;
+                else if (noteNumber == 73 && serialData[2] == '4')
+                    return true;
+                else if (noteNumber == 74 && serialData[2] == '5')
+                    return true;
+                else if (noteNumber == 75 && serialData[2] == '6')
+                    return true;
+                else if (noteNumber == 76 && (serialData[2] == '7' || serialData[3] == '0'))
+                    return true;
+                else if (noteNumber == 77 && serialData[3] == '1')
+                    return true;
+                else if (noteNumber == 78 && serialData[3] == '2')
+                    return true;
+                else if (noteNumber == 79 && serialData[3] == '3')
+                    return true;
+                else if (noteNumber == 80 && serialData[3] == '4')
+                    return true;
+                else if (noteNumber == 81 && serialData[3] == '5')
+                    return true;
+                else if (noteNumber == 82 && serialData[3] == '6')
+                    return true;
+                else if (noteNumber == 83 && serialData[3] == '7')
+                    return true;
+
+            }
+            return false;
+            /*switch (serialData)
             {
                 case "0000": // GN3*** || DN4*** || AN4*** || EN5***
                     return noteNumber == 55 || noteNumber == 62 || noteNumber == 69 || noteNumber == 76;
@@ -456,13 +489,13 @@ namespace NiceWindow
 
                 default: // does not match the note
                     return false;
-            }
+            }*/
         }
-         */
+
 
         // this does note-checking for the flute, just ignore this for now as it is not being used
-        
-        public bool noteMatches(string serialData, int noteNumber)
+
+        /*public bool noteMatches(string serialData, int noteNumber)
         {
             switch (serialData) {
                 case "01111001110": // DN4***
@@ -514,26 +547,23 @@ namespace NiceWindow
                 default: // does not match the note
                     return false;
             }
-        }
-        
+        }*/
+
     } // end NoteMatcher
 
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {
+    public partial class MainWindow : Window {
         public delegate void ChangeTextDelegate(string text);
-        
-        public MainWindow()
-        {
+
+        public MainWindow() {
             InitializeComponent();
         }
 
 
-        public void changeText(string text)
-        {
+        public void changeText(string text) {
             textbox1.Text = text;
             textbox1.ScrollToEnd();
         }
