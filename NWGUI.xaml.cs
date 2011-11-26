@@ -656,8 +656,9 @@ namespace NiceWindow {
                 i_Channel = -1;
 
                 midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged,
-                    handleMIDILoadCompleted, handleMIDIChannelMessagePlayed);
-                midiPlayer.b_PlayPersistentChannel = false; // make it so that the user's instrument's notes don't play
+                    handleMIDILoadCompleted, handleMIDIChannelMessagePlayed, handleMIDIPlayingCompleted);
+                
+                //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
 
                 midiInfo = new MidiInfo(openFileDialog.FileName, i_Channel);
             }
@@ -825,6 +826,14 @@ namespace NiceWindow {
         }
 
 
+        private void muteSelectedChannel_Clicked(object sender, RoutedEventArgs e)
+        {
+            try {
+                midiPlayer.b_PlayPersistentChannel = !(muteSelectedChannel.IsChecked);
+            }
+            catch (NullReferenceException ex) { }
+        }
+
         private void getSerialData() {
             while (true) {
                 //score.s_CurrentFingering = string.Empty;
@@ -907,6 +916,19 @@ namespace NiceWindow {
 
         private void handleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e) {
             //i_NumNotesPlayed++;
+        }
+
+        private void handleMIDIPlayingCompleted(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(delegate() {
+                Start.IsEnabled = true;
+                Stop.IsEnabled = false;
+                Instruments.IsEnabled = true;
+                instrument_Clicked(instrument);
+
+                b_AnimationStarted = false;
+                dispatcherTimer.Stop();
+            }));
         }
 
         // override some program event handlers to ensure extra things are loaded/closed properly on start/close

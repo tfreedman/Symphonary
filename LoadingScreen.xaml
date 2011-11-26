@@ -14,8 +14,8 @@
                             Stretch="UniformToFill" 
                             Opacity="0.7"></ImageBrush>
             </Canvas.Background>-->
-            <Image Source="Images/SDLoading3.png" Width="600" 
-                   Opacity="0.7" Panel.ZIndex="2"></Image>
+            <!--<Image Source="Images/SDLoading3.png" Width="600" 
+                   Opacity="0.7" Panel.ZIndex="2"></Image>-->
             <Image Source="Images/SDLoading.png" Width="170"
                    Panel.ZIndex="3"></Image>
             <wfi:WindowsFormsHost Canvas.Bottom="0" Canvas.Right="0">

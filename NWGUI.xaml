@@ -1,7 +1,7 @@
 ﻿<Window x:Class="NiceWindow.NWGUI"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Nice Window" Height="700" Width="1024" ResizeMode="NoResize"
+        Title="Symphonary" Height="700" Width="1024" ResizeMode="NoResize"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown">
     <Grid>
 
@@ -23,6 +23,7 @@
                     <MenuItem Header="_Options">
                         <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
                         <MenuItem Header="_Select Serial Port" Click="selectSerialPort_Clicked"/>
+                        <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="muteSelectedChannel_Clicked"/>
                     </MenuItem>
 
                     <MenuItem Name="Instruments" Header="_Instruments">

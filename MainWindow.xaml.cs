@@ -237,7 +237,8 @@ namespace NiceWindow {
         public MidiPlayer(string s_Filename, 
             System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
             System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted,
-            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed) 
+            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed,
+            System.EventHandler extHandlePlayingCompleted) 
         {
             sequence.Format = 1;
             sequence.LoadProgressChanged += extHandleLoadProgressChanged;
@@ -250,6 +251,8 @@ namespace NiceWindow {
             sequencer.ChannelMessagePlayed += extHandleChannelMessagePlayed;
             sequencer.Chased += handleChased;
             sequencer.Stopped += handleStopped;
+            sequencer.PlayingCompleted += handlePlayingCompleted;
+            sequencer.PlayingCompleted += extHandlePlayingCompleted;
         }
 
         public bool isFinishedLoading() {
@@ -319,6 +322,7 @@ namespace NiceWindow {
             if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentChannel)
                 return;
 
+            
             if (e.Message.MidiChannel == i_PersistentChannel) {
                 if (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0) {
                     i_NumChannelNotesPlayed++;
@@ -329,8 +333,10 @@ namespace NiceWindow {
                 }
             }
 
-            if (e.Message.MidiChannel != i_PersistentChannel || b_PlayPersistentChannel)
+            if (e.Message.MidiChannel != i_PersistentChannel || b_PlayPersistentChannel ||
+                ((e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 <= 0) || e.Message.Command == ChannelCommand.NoteOff)) {
                 outputDevice.Send(e.Message);
+            }
         }
 
 
@@ -351,6 +357,11 @@ namespace NiceWindow {
             }
 
             b_Playing = false;
+        }
+
+        private void handlePlayingCompleted(object sender, EventArgs e)
+        {
+            // left blank intentionally
         }
     } // end MidiPlayer
 
