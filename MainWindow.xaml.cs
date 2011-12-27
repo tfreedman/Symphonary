@@ -24,7 +24,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace NiceWindow {
+namespace Symphonary {
     public class Note {
         public int i_NoteNumber;
         public long li_BeginTime;
