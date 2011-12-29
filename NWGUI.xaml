@@ -5,10 +5,9 @@
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
         xmlns:Symphonary="clr-namespace:Symphonary">
     <Grid>
-
         <Canvas Name="canv" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="742" Canvas.ZIndex="1">
             <StackPanel Orientation="Vertical" Canvas.ZIndex="2">
-                <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top" Width="1280">
+                <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top" Width="{Binding ElementName=canv,Path=ActualWidth}">
                     <MenuItem Header="_File">
                         <MenuItem Header="_Open..." Click="open_Clicked"/>
                         <Separator />

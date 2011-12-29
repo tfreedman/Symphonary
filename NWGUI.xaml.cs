@@ -26,8 +26,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Windows.Threading;
-using System;
-using System.Collections.Generic;
 
 namespace Symphonary {
     public class Score {
@@ -117,11 +115,8 @@ namespace Symphonary {
         TextBlock tb_ScoreDisplay = new TextBlock();
         TextBlock tb_SongTitle = new TextBlock();
 
-        Rectangle[] r_violin = new Rectangle[4];
-        TextBlock[] tb_violin = new TextBlock[4];
-
-        Rectangle[] r_guitar = new Rectangle[6];
-        TextBlock[] tb_guitar = new TextBlock[6];
+        Rectangle[] r_instrument;
+        TextBlock[] tb_instrument;
 
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
@@ -167,17 +162,6 @@ namespace Symphonary {
             Stop.IsEnabled = false;
             Start.IsEnabled = false;
 
-            for (int i = 0; i < 4; i++) {
-                r_violin[i] = new Rectangle();
-                tb_violin[i] = new TextBlock();
-            }
-
-            for (int i = 0; i < 6; i++) {
-                r_guitar[i] = new Rectangle();
-                tb_guitar[i] = new TextBlock();
-            }
-
-
             instrument = readSettingsFromFile();
             if (instrument != 0) {
                 instrument_Clicked(instrument);
@@ -216,22 +200,13 @@ namespace Symphonary {
             tb_ScoreDisplay.TextAlignment = TextAlignment.Right;
             tb_ScoreDisplay.SetValue(Canvas.TopProperty, 25.0);
             tb_ScoreDisplay.SetValue(Canvas.LeftProperty, 660.0);
-
             hideCanvasChildren();
 
-            for (int i = 0; i < 4; i++) {
-                canv.Children.Add(tb_violin[i]);
-                canv.Children.Add(r_violin[i]);
-                Canvas.SetZIndex(tb_violin[i], (int)99);
-                Canvas.SetZIndex(r_violin[i], (int)98);
-            }
-
-
-            for (int i = 0; i < 6; i++) {
-                canv.Children.Add(tb_guitar[i]);
-                canv.Children.Add(r_guitar[i]);
-                Canvas.SetZIndex(tb_guitar[i], (int)99);
-                Canvas.SetZIndex(r_guitar[i], (int)98);
+            for (int i = 0; i < r_instrument.Length; i++) {
+                canv.Children.Add(tb_instrument[i]);
+                canv.Children.Add(r_instrument[i]);
+                Canvas.SetZIndex(tb_instrument[i], (int)99);
+                Canvas.SetZIndex(r_instrument[i], (int)98);
             }
 
             canv.Children.Add(r_HeaderBackground);
@@ -359,45 +334,18 @@ namespace Symphonary {
                 textBlock.Height = 50;
                 textBlock.Width = 50;
                 r.Width = 46;
-                int i = 1;
-                
-                if (note >= 55 && note < 62) {
-                    r.Fill = new SolidColorBrush(color[6]);
-                    r.Stroke = new SolidColorBrush(border[6]);
-                    noteString = Convert.ToString(note - 55);
-                    i = 1;
-                }
-                else if (note >= 62 && note < 69) {
-                    r.Fill = new SolidColorBrush(color[2]);
-                    r.Stroke = new SolidColorBrush(border[2]);
-                    noteString = Convert.ToString(note - 62);
-                    i = 2;
-                }
-                else if (note >= 69 && note < 76) {
-                    r.Fill = new SolidColorBrush(color[0]);
-                    r.Stroke = new SolidColorBrush(border[0]);
-                    noteString = Convert.ToString(note - 69);
-                    i = 3;
-                }
-                else if (note >= 76 && note < 83) {
-                    r.Fill = new SolidColorBrush(color[10]);
-                    r.Stroke = new SolidColorBrush(color[10]);
-                    noteString = Convert.ToString(note - 76);
-                    i = 4;
-                }
-                else {
-                    r.Fill = new SolidColorBrush(Colors.Black);
-                    r.Stroke = new SolidColorBrush(Colors.Black);
-                    noteString = Convert.ToString(note);
-                    i = 5;
-                }
-                textBlock.SetValue(Canvas.LeftProperty, (margin + (i * (r.Width + padding))));
-                r.SetValue(Canvas.LeftProperty, (double)(margin + (i * (r.Width + padding))));
 
-                if (noteString == "0") { noteString = "0"; }
-                else if (noteString == "1") { noteString = "1"; } else if (noteString == "2") { noteString = "2"; } else if (noteString == "3") { noteString = "3"; } else if (noteString == "4") { noteString = "4"; } else if (noteString == "5") { noteString = "5"; } else if (noteString == "6") { noteString = "6"; } else if (noteString == "7") { noteString = "7"; }
-
-                textBlock.Text = noteString;
+                int[,] violin = new int[4, 2] { { 55, 61 }, { 62, 68 }, { 69, 75 }, { 76, 83 } };
+                int[] ctrl_violin = { 0, 6, 2, 0, 10 };
+                for (int i = violin.GetLength(0); i > 0; i--) {
+                    if (note >= violin[i - 1, 0] && note <= violin[i - 1, 1]) {
+                        textBlock.Text = Convert.ToString(note - violin[i - 1, 0]);
+                        r.Fill = new SolidColorBrush(color[ctrl_violin[i]]);
+                        r.Stroke = new SolidColorBrush(border[ctrl_violin[i]]);
+                        textBlock.SetValue(Canvas.LeftProperty, (margin + (i * (r.Width + padding))));
+                        r.SetValue(Canvas.LeftProperty, (double)(margin + (i * (r.Width + padding))));
+                    }
+                }
                 r.Height = (endTime - startTime) * multiplier;
                 textBlock.SetValue(Canvas.TopProperty, (double)((-1 * startTime * multiplier) - 35));
                 r.SetValue(Canvas.BottomProperty, (double)(startTime) * multiplier);
@@ -414,15 +362,13 @@ namespace Symphonary {
                 int[] ctrl_guitar = {1,6,2,0,10,9,8};
                 for (int i = guitar.GetLength(0); i > 0; i--) {
                     if (note >= guitar[i-1,0] && note <= guitar[i-1,1]) {
-                        noteString = Convert.ToString(note - guitar[i-1,0]);
+                        textBlock.Text = Convert.ToString(note - guitar[i-1,0]);
                         r.Fill = new SolidColorBrush(color[ctrl_guitar[i]]);
                         r.Stroke = new SolidColorBrush(border[ctrl_guitar[i]]);
                         textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i-1) * (r.Height + padding))));
                         r.SetValue(Canvas.TopProperty, (double)(margin + ((i-1)* (r.Height + padding))));
                     }
                 }
-
-                textBlock.Text = noteString;
                 r.Width = (endTime - startTime) * multiplier;
                 textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
                 r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
@@ -440,14 +386,13 @@ namespace Symphonary {
                 int[] ctrl_bass = { 1, 6, 2, 0, 10};
                 for (int i = bass.GetLength(0); i > 0; i--) {
                     if (note >= bass[i - 1, 0] && note <= bass[i - 1, 1]) {
-                        noteString = Convert.ToString(note - bass[i - 1, 0]);
+                        textBlock.Text = Convert.ToString(note - bass[i - 1, 0]);
                         r.Fill = new SolidColorBrush(color[ctrl_bass[i]]);
                         r.Stroke = new SolidColorBrush(border[ctrl_bass[i]]);
                         textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i - 1) * (r.Height + padding))));
                         r.SetValue(Canvas.TopProperty, (double)(margin + ((i - 1) * (r.Height + padding))));
                     }
                 }
-                textBlock.Text = noteString;
                 r.Width = (endTime - startTime) * multiplier;
                 textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
                 r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
@@ -659,6 +604,23 @@ namespace Symphonary {
                 Canvas.SetZIndex(r_KeyLine, (int)97);
                 r_KeyLine.Height = 3;
                 r_KeyLine.Width = 1280;
+            }
+
+            if (num == 35 || num == 41) {
+                r_instrument = new Rectangle[4];
+                tb_instrument = new TextBlock[4];
+            }
+            else if (num == 74) {
+                r_instrument = new Rectangle[11];
+                tb_instrument = new TextBlock[11];
+            }
+            else if (num == 30) {
+                r_instrument = new Rectangle[6];
+                tb_instrument = new TextBlock[6];
+            }
+            for (int i = 0; i < r_instrument.Length; i++) {
+                r_instrument[i] = new Rectangle{};
+                tb_instrument[i] = new TextBlock {};
             }
             r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
             canv.Children.Add(r_KeyLine);
@@ -883,13 +845,9 @@ namespace Symphonary {
             r_KeyLine.Visibility = Visibility.Hidden;
             tb_ScoreDisplay.Visibility = Visibility.Hidden;
             tb_SongTitle.Visibility = Visibility.Hidden;
-            for (int i = 0; i < r_guitar.Length; i++) {
-                r_guitar[i].Visibility = Visibility.Hidden;
-                tb_guitar[i].Visibility = Visibility.Hidden;
-            }
-            for (int i = 0; i < r_violin.Length; i++) {
-                r_violin[i].Visibility = Visibility.Hidden;
-                tb_violin[i].Visibility = Visibility.Hidden;
+            for (int i = 0; i < r_instrument.Length; i++) {
+                r_instrument[i].Visibility = Visibility.Hidden;
+                tb_instrument[i].Visibility = Visibility.Hidden;
             }
         }
 
@@ -898,13 +856,9 @@ namespace Symphonary {
             r_KeyLine.Visibility = Visibility.Visible;
             tb_ScoreDisplay.Visibility = Visibility.Visible;
             tb_SongTitle.Visibility = Visibility.Visible;
-            for (int i = 0; i < r_guitar.Length; i++) {
-                r_guitar[i].Visibility = Visibility.Visible;
-                tb_guitar[i].Visibility = Visibility.Visible;
-            }
-            for (int i = 0; i < r_violin.Length; i++) {
-                r_violin[i].Visibility = Visibility.Visible;
-                tb_violin[i].Visibility = Visibility.Visible;
+            for (int i = 0; i < r_instrument.Length; i++) {
+                r_instrument[i].Visibility = Visibility.Visible;
+                tb_instrument[i].Visibility = Visibility.Visible;
             }
         }
 
@@ -928,94 +882,87 @@ namespace Symphonary {
             } catch (NullReferenceException ex) { }
         }
         private void updateFingeringDisplay(object sender, EventArgs e) {
-            for (int i = 0; i < tb_guitar.Length; i++) {
-                tb_guitar[i].FontSize = 26;
-                tb_guitar[i].FontWeight = FontWeights.Bold;
-                tb_guitar[i].TextAlignment = TextAlignment.Center;
-                r_guitar[i].StrokeThickness = 2;
-                tb_guitar[i].Foreground = new SolidColorBrush(Colors.White);
-            }
-            for (int i = 0; i < tb_violin.Length; i++) {
-                r_violin[i].StrokeThickness = 2;
-                tb_violin[i].FontSize = 26;
-                tb_violin[i].FontWeight = FontWeights.Bold;
-                tb_violin[i].TextAlignment = TextAlignment.Center;
-                tb_violin[i].Foreground = new SolidColorBrush(Colors.White);
+            for (int i = 0; i < r_instrument.Length; i++) {
+                r_instrument[i].StrokeThickness = 2;
+                tb_instrument[i].FontSize = 26;
+                tb_instrument[i].FontWeight = FontWeights.Bold;
+                tb_instrument[i].TextAlignment = TextAlignment.Center;
+                tb_instrument[i].Foreground = new SolidColorBrush(Colors.White);
             }
             if (instrument == 41) {
                 int margin = 300;
                 int padding = 30;
-                for (int i = 0; i < 4; i++) {
-                    tb_violin[i].Height = 50;
-                    tb_violin[i].Width = 50;
-                    r_violin[i].Width = 46;
-                    tb_violin[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_violin[i].Width + (padding)))));
-                    r_violin[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_violin[i].Width + (padding)))));
+                for (int i = 0; i < r_instrument.Length; i++) {
+                    tb_instrument[i].Height = 50;
+                    tb_instrument[i].Width = 50;
+                    r_instrument[i].Height = 50;
+                    r_instrument[i].Width = 46;
+                    tb_instrument[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_instrument[i].Width + (padding)))));
+                    r_instrument[i].SetValue(Canvas.LeftProperty, (margin + ((i + 1) * (r_instrument[i].Width + (padding)))));
                     try {
                         if (score.s_CurrentFingering.Length == 4)
-                            tb_violin[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
+                            tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
                     } catch (Exception ex) { }
-
-                    r_violin[i].Height = 50;
-                    tb_violin[i].SetValue(Canvas.TopProperty, (double)630);
-                    r_violin[i].SetValue(Canvas.TopProperty, (double)630);
+                    tb_instrument[i].SetValue(Canvas.TopProperty, (double)630);
+                    r_instrument[i].SetValue(Canvas.TopProperty, (double)630);
                     if (i == 0) {
-                        r_violin[i].Fill = new SolidColorBrush(color[6]);
-                        r_violin[i].Stroke = new SolidColorBrush(border[6]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[6]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[6]);
                     }
                     else if (i == 1) {
-                        r_violin[i].Fill = new SolidColorBrush(color[2]);
-                        r_violin[i].Stroke = new SolidColorBrush(border[2]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[2]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[2]);
                     }
                     else if (i == 2) {
-                        r_violin[i].Fill = new SolidColorBrush(color[0]);
-                        r_violin[i].Stroke = new SolidColorBrush(border[0]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[0]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[0]);
                     }
                     else if (i == 3) {
-                        r_violin[i].Fill = new SolidColorBrush(color[10]);
-                        r_violin[i].Stroke = new SolidColorBrush(border[10]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[10]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[10]);
                     }
                 }
             }
             else if (instrument >= 25 && instrument <= 32) {
                 int margin = 175;
                 int padding = 20;
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < r_instrument.Length; i++) {
                     try {
                         if (score.s_CurrentFingering.Length == 6)
-                            tb_guitar[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
+                            tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
                     } catch (Exception ex) { }
-                    tb_guitar[i].Height = 50;
-                    tb_guitar[i].Width = 50;
-                    r_guitar[i].Height = 46;
-                    r_guitar[i].Width = 50;
+                    tb_instrument[i].Height = 50;
+                    tb_instrument[i].Width = 50;
+                    r_instrument[i].Height = 46;
+                    r_instrument[i].Width = 50;
 
-                    tb_guitar[i].SetValue(Canvas.TopProperty, (5 + margin + (i * r_guitar[i].Height * padding)));
-                    r_guitar[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_guitar[i].Height + padding))));
+                    tb_instrument[i].SetValue(Canvas.TopProperty, (5 + margin + (i * r_instrument[i].Height * padding)));
+                    r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
                     if (i == 0) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[6]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[6]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[6]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[6]);
                     }
                     if (i == 1) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[2]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[2]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[2]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[2]);
                     }
                     if (i == 2) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[0]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[0]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[0]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[0]);
                     }
                     if (i == 3) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[10]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[10]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[10]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[10]);
                     }
                     if (i == 4) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[9]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[9]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[9]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[9]);
                     }
                     if (i == 5) {
-                        r_guitar[i].Fill = new SolidColorBrush(color[8]);
-                        r_guitar[i].Stroke = new SolidColorBrush(border[8]);
+                        r_instrument[i].Fill = new SolidColorBrush(color[8]);
+                        r_instrument[i].Stroke = new SolidColorBrush(border[8]);
                     }
+
                 }
             }
         }
