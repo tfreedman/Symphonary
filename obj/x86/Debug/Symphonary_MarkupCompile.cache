@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\
+F:\miditool\Symphonary\Symphonary\obj\x86\Debug\
 Symphonary
 none
 false
 DEBUG;TRACE
-C:\Users\Tyler\Symphonary\App.xaml
+F:\miditool\Symphonary\Symphonary\App.xaml
 6308402064
 
 11-857975053
-22-454051636
+221016421441
 About.xaml;SerialPortSelector.xaml;ChannelSelector.xaml;LoadingScreen.xaml;MainWindow.xaml;NWGUI.xaml;
 
 False

@@ -71,7 +71,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="WpfAnimatedControl">
-      <HintPath>..\WpfAnimatedControl\WpfAnimatedControl\bin\Debug\WpfAnimatedControl.dll</HintPath>
+      <HintPath>bin\Debug\WpfAnimatedControl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
