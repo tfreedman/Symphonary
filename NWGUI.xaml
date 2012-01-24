@@ -1,46 +1,74 @@
 ﻿<Window x:Class="Symphonary.NWGUI"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Symphonary" Height="770" Width="1286" ResizeMode="CanMinimize"
+        Title="Symphonary" ResizeMode="CanResizeWithGrip"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
-        xmlns:Symphonary="clr-namespace:Symphonary">
-    <Grid>
-        <Canvas Name="canv" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="742" Canvas.ZIndex="1">
-            <StackPanel Orientation="Vertical" Canvas.ZIndex="2">
-                <Menu IsMainMenu="True" Height="22px" VerticalAlignment="Top" Width="{Binding ElementName=canv,Path=ActualWidth}">
-                    <MenuItem Header="_File">
-                        <MenuItem Header="_Open..." Click="open_Clicked"/>
-                        <Separator />
-                        <MenuItem Header="_Exit" Click="exit_Clicked"/>
-                    </MenuItem>
-                    
-                    <MenuItem Header="_Run">
-                        <MenuItem Name="Start" Header="_Start" Click="start_Clicked" />
-                        <MenuItem Name="Stop" Header="_Stop" Click="stop_Clicked"/>
-                        <MenuItem Header="_Show debug console" Click="debug_Clicked"/>
-                    </MenuItem>
-                    
-                    <MenuItem Header="_Options">
-                        <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
-                        <MenuItem Header="_Select Serial Port" Click="selectSerialPort_Clicked"/>
-                        <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="muteSelectedChannel_Clicked"/>
-                    </MenuItem>
+        xmlns:Symphonary="clr-namespace:Symphonary" Width="1280" Height="744" Name="window" LayoutUpdated="layout_Updated" SizeChanged="size_Changed">
+    <Grid Name="grid">
+        <StackPanel Orientation="Vertical" Canvas.ZIndex="2" Margin="0" VerticalAlignment="Top">
+            <Menu IsMainMenu="True" Height="22" VerticalAlignment="Top" Width="{Binding ElementName=Window,Path=ActualWidth}">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
 
-                    <MenuItem  Name="Instruments" Header="_Instruments">
-                        <MenuItem Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="41"/>
-                        <MenuItem Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="74"/>
-                        <MenuItem Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="30"/>
-                        <MenuItem Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="35"/>
-                    </MenuItem>
-                    
-                    <MenuItem Header="_Help">
-                        <MenuItem Header="_About" Click="about_Clicked"/>
-                    </MenuItem>
 
-                </Menu>
-            </StackPanel>
-            <Canvas Name="subcanv" Canvas.Top="0" Canvas.ZIndex="0"></Canvas>
+                <MenuItem Header="_File" Grid.Column="0">
+                    <MenuItem Header="_Open..." Click="open_Clicked"/>
+                    <Separator />
+                    <MenuItem Header="_Exit" Click="exit_Clicked"/>
+                </MenuItem>
+
+                <MenuItem Header="_Run" Grid.Column="1">
+                    <MenuItem Name="Start" Header="_Start" Click="start_Clicked" />
+                    <MenuItem Name="Stop" Header="_Stop" Click="stop_Clicked"/>
+                    <MenuItem Header="_Show debug console" Click="debug_Clicked"/>
+                </MenuItem>
+
+                <MenuItem Header="_Options" Grid.Column="2">
+                    <MenuItem Header="_Select Channel" Click="selectChannel_Clicked"/>
+                    <MenuItem Header="_Select Serial Port" Click="selectSerialPort_Clicked"/>
+                    <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="muteSelectedChannel_Clicked"/>
+                </MenuItem>
+
+                <MenuItem Name="Instruments" Header="_Instruments" Grid.Column="3">
+                    <MenuItem Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="41"/>
+                    <MenuItem Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="74"/>
+                    <MenuItem Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="30"/>
+                    <MenuItem Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="instrument_Clicked" IsCheckable="True" Tag="35"/>
+                </MenuItem>
+
+                <MenuItem Header="_Help" Grid.Column="4">
+                    <MenuItem Header="_About" Click="about_Clicked"/>
+                </MenuItem>
+
+                <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="6" Focusable="False" IsHitTestVisible="False" />
+                <MenuItem Name="FullScreen" Header="_Full Screen" Click="fullscreen_Clicked" HorizontalAlignment="Right" Grid.Column="7"/>
+
+            </Menu>
+        </StackPanel>
+        <DockPanel Name="r_HeaderBackground" VerticalAlignment="Top" Height="50" Canvas.ZIndex="1" Margin="0,22,0,0">
+            <TextBlock Name="tb_SongTitle" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="10,0,0,0" />
+            <TextBlock Name="tb_ScoreDisplay" DockPanel.Dock="Right" Width="500" HorizontalAlignment="Right" Margin="0,0,25,0" />
+        </DockPanel>
+        <Rectangle Name="r_KeyLine" Width="3" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
+        <Viewbox Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,72,0,0">
+            <Canvas Name="canv" HorizontalAlignment="Stretch" Height="720" Margin="0">
+                <Canvas Name="gridlines"></Canvas>
+                <Canvas Name="subcanv"></Canvas>
             </Canvas>
-
+        </Viewbox>
     </Grid>
 </Window>

@@ -95,6 +95,7 @@ namespace Symphonary {
     }
 
     public partial class NWGUI : Window {
+
         bool b_AnimationStarted = false;
         int i_CanvasMoveDirection = 1;
 
@@ -111,16 +112,9 @@ namespace Symphonary {
         MidiPlayer midiPlayer;
         MidiInfo midiInfo;
 
-        Rectangle r_HeaderBackground = new Rectangle();
-        Rectangle r_KeyLine = new Rectangle();
-        TextBlock tb_ScoreDisplay = new TextBlock();
-        TextBlock tb_SongTitle = new TextBlock();
-
         Rectangle[] r_instrument;
         TextBlock[] tb_instrument;
-
-        DispatcherTimer dispatcherTimer = new DispatcherTimer();
-
+        
         //int i_NumNotesPlayed;
         int i_NumNotesScored;
         string s_ScoreGrade;
@@ -157,7 +151,6 @@ namespace Symphonary {
         int instrument = 0;
 
         Score score = new Score();
-
         public NWGUI() {
             InitializeComponent();
             Stop.IsEnabled = false;
@@ -171,61 +164,45 @@ namespace Symphonary {
                         item.IsChecked = true;
             }
 
-            i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
+                        i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
 
-            dispatcherTimer.Interval = new TimeSpan(200000);
-            dispatcherTimer.Tick += new EventHandler(moveCanvas);
-            dispatcherTimer.Tick += new EventHandler(updateScoreDisplay);
-            dispatcherTimer.Tick += new EventHandler(updateFingeringDisplay);
-
-            canv.Background = new SolidColorBrush(Colors.White);
-
-            r_HeaderBackground.Height = 55;
-            r_HeaderBackground.Width = 1280;
-            r_HeaderBackground.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            r_HeaderBackground.SetValue(Canvas.TopProperty, 19.0);
+            r_HeaderBackground.Background = new SolidColorBrush(Color.FromRgb(51, 51, 51));
 
             tb_SongTitle.Height = 50;
-            tb_SongTitle.Width = 400;
             tb_SongTitle.Foreground = new SolidColorBrush(Colors.White);
             tb_SongTitle.FontStyle = FontStyles.Italic;
             tb_SongTitle.FontSize = 30;
             tb_SongTitle.TextAlignment = TextAlignment.Left;
-            tb_SongTitle.SetValue(Canvas.TopProperty, 25.0);
-            tb_SongTitle.SetValue(Canvas.LeftProperty, 10.0);
 
             tb_ScoreDisplay.Height = 50;
-            tb_ScoreDisplay.Width = 600;
             tb_ScoreDisplay.Foreground = new SolidColorBrush(Colors.White);
             tb_ScoreDisplay.FontSize = 30;
             tb_ScoreDisplay.TextAlignment = TextAlignment.Right;
-            tb_ScoreDisplay.SetValue(Canvas.TopProperty, 25.0);
-            tb_ScoreDisplay.SetValue(Canvas.LeftProperty, 660.0);
             hideCanvasChildren();
-
-            //MessageBox.Show(r_instrument.Length.ToString());
-            
-
-            
-            //MessageBox.Show(canv.Children.Contains(r_instrument[0]).ToString());
-            //MessageBox.Show("r_instrument[0] dimensions: " + r_instrument[0].Width + " " + r_instrument[0].Height);
-            
-            
-             
-            canv.Children.Add(r_HeaderBackground);
-            canv.Children.Add(tb_SongTitle);
-            canv.Children.Add(tb_ScoreDisplay);
 
             serialPort.ReadTimeout = 5;
             serialPortReadThread = new Thread(new ThreadStart(getSerialData));
             serialPortReadThread.Start();
         }
 
+        bool isFullScreen = false;
+        private void fullscreen_Clicked(object sender, RoutedEventArgs e) {
 
-        private void start_Clicked(object sender, RoutedEventArgs e) {           
-            Start.IsEnabled = false;
-            Stop.IsEnabled = true;
-            Instruments.IsEnabled = false;
+            if (isFullScreen) {
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                Topmost = false;
+                WindowState = WindowState.Normal;
+            }
+            else {
+                WindowStyle = WindowStyle.None;
+                Topmost = true;
+                WindowState = WindowState.Maximized;
+            }
+            size_Changed(this, e);
+            isFullScreen = !isFullScreen;
+        }
+
+        private void start_Clicked(object sender, RoutedEventArgs e) {
             instrument_Clicked(instrument);
             try {
                 if (midiPlayer.isPlaying()) {
@@ -243,16 +220,18 @@ namespace Symphonary {
                     return;
                 }
 
+                Start.IsEnabled = false;
+                Stop.IsEnabled = true;
+                Instruments.IsEnabled = false;
+
                 midiPlayer.setPersistentChannel(i_Channel);
 
                 score.resetScore();
                 initializeCanvas();
 
                 showSubCanvas();
-
-                dispatcherTimer.Start();
+                CompositionTarget.Rendering += new EventHandler(moveCanvas);
                 b_AnimationStarted = true;
-
                 midiPlayer.startPlaying();
                 starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
@@ -263,13 +242,13 @@ namespace Symphonary {
 
         }
 
+
         private void stop_Clicked(object sender, RoutedEventArgs e) {
             Start.IsEnabled = true;
             Stop.IsEnabled = false;
             Instruments.IsEnabled = true;
             instrument_Clicked(instrument);
             hideCanvasChildren();
-
 
             try {
                 //midiPlayer.OnClosingOperations();
@@ -280,7 +259,8 @@ namespace Symphonary {
                 resetSubCanvas(false);
 
                 b_AnimationStarted = false;
-                dispatcherTimer.Stop();
+                CompositionTarget.Rendering -= new EventHandler(moveCanvas);
+
             } catch (NullReferenceException ex) { }
         }
 
@@ -302,7 +282,7 @@ namespace Symphonary {
                     }
                 }
                 else {
-                    r.Height = 780;
+                    r.Height = 700;
                     if (runner % count == 0) {
                         r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
                         r.SetValue(Canvas.LeftProperty, (double)i * scrollSpeed);
@@ -314,7 +294,7 @@ namespace Symphonary {
                         r.Width = 1;
                     }
                 }
-                subcanv.Children.Add(r);
+                gridlines.Children.Add(r);
                 runner++;
             }
         }
@@ -326,7 +306,8 @@ namespace Symphonary {
             textBlock.FontWeight = FontWeights.Bold;
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
-
+            RoutedEventArgs e = new RoutedEventArgs();
+            size_Changed(this, e);
             Canvas.SetZIndex(textBlock, (int)99);
             Rectangle r = new Rectangle();
             r.StrokeThickness = 2;
@@ -356,16 +337,16 @@ namespace Symphonary {
                 subcanv.Children.Add(textBlock);
             }
             else if (instrument >= 25 && instrument <= 32) { //GUITAR
-                int margin = 175;
+                int margin = 220;
                 int padding = 20;
                 textBlock.Height = 50;
                 textBlock.Width = 50;
                 r.Height = 46;
-                int[,] guitar = new int[6,2] {{40, 44},{45, 49},{50, 54},{55, 58},{59, 63},{64, 68}};
-                int[] ctrl_guitar = {1,6,2,0,10,9,8};
+                int[,] guitar = new int[6, 2] { { 64, 68 }, { 59, 63 }, { 55, 58 }, { 50, 54 }, { 45, 49 }, { 40, 44 } };
+                int[] ctrl_guitar = {1,8,9,10,0,2,6};
                 for (int i = guitar.GetLength(0); i > 0; i--) {
                     if (note >= guitar[i-1,0] && note <= guitar[i-1,1]) {
-                        textBlock.Text = Convert.ToString(note - guitar[i-1,0]);
+                        textBlock.Text = Convert.ToString(note - guitar[i - 1, 0]);
                         r.Fill = new SolidColorBrush(color[ctrl_guitar[i]]);
                         r.Stroke = new SolidColorBrush(border[ctrl_guitar[i]]);
                         textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i-1) * (r.Height + padding))));
@@ -497,7 +478,7 @@ namespace Symphonary {
                 hideCanvasChildren();
 
                 b_AnimationStarted = false;
-                dispatcherTimer.Stop();
+                CompositionTarget.Rendering -= new EventHandler(moveCanvas);
 
                 try {
                     loadingScreen.Close();
@@ -520,7 +501,6 @@ namespace Symphonary {
         private void debug_Clicked(object sender, RoutedEventArgs e) {
             debugConsole = new MainWindow();
             debugConsole.Show();
-
             //serialPortReadTimer.Start();
 
             try {
@@ -539,11 +519,9 @@ namespace Symphonary {
                     debugConsole.textbox1.Text += metadata.ToString();
                 }
 
-
                 /*
                 debugConsole.textbox1.Text += "-----" + Environment.NewLine;
-                
-                 
+                                 
                 foreach (Note note in midiInfo.l_Notes) {
                     debugConsole.textbox1.Text += note.li_BeginTime + " " + note.li_EndTime + Environment.NewLine;
                 }
@@ -589,15 +567,13 @@ namespace Symphonary {
 
         private void instrument_Clicked(object sender, RoutedEventArgs e) {
             int num = Convert.ToInt32(((MenuItem)sender).Tag);
-            canv.Children.Remove(r_KeyLine);
+            grid.Children.Remove(r_KeyLine);
             writeSettingsToFile(num);
             instrument = num;
 
             //MessageBox.Show(num.ToString());
 
             if (num == 30 || num == 35) {
-                r_KeyLine.SetValue(Canvas.LeftProperty, 50.0);
-                r_KeyLine.SetValue(Canvas.TopProperty, 74.0);
                 hInst = 1;
                 r_KeyLine.Height = 700;
                 r_KeyLine.Width = 3;
@@ -605,7 +581,7 @@ namespace Symphonary {
             else {
                 hInst = 0;
                 r_KeyLine.SetValue(Canvas.LeftProperty, 0.0);
-                r_KeyLine.SetValue(Canvas.TopProperty, 629.0);
+                r_KeyLine.SetValue(Canvas.BottomProperty, 20.0);
                 Canvas.SetZIndex(r_KeyLine, (int)97);
                 r_KeyLine.Height = 3;
                 r_KeyLine.Width = 1280;
@@ -635,17 +611,13 @@ namespace Symphonary {
 
 
             for (int i = 0; i < r_instrument.Length; i++) {
-                // I don't know why curly brackets don't trigger a syntax error, they seem to work
                 r_instrument[i] = new Rectangle{};
                 tb_instrument[i] = new TextBlock{};
-                //r_instrument[i] = new Rectangle();
-                //tb_instrument[i] = new TextBlock();
-
                 r_instrument[i].Visibility = Visibility.Hidden;
                 tb_instrument[i].Visibility = Visibility.Hidden;
             }
             r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            canv.Children.Add(r_KeyLine);
+            grid.Children.Add(r_KeyLine);
 
 
             // this has been moved from updateFingeringDisplay --------------------
@@ -685,7 +657,7 @@ namespace Symphonary {
                 }
             } // end if (num == 41)
             else if (num >= 25 && num <= 32) {
-                int margin = 175;
+                int margin = 220;
                 int padding = 20;
                 for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
@@ -697,27 +669,27 @@ namespace Symphonary {
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
 
                     switch (i) {
-                        case 0:
+                        case 5:
                             r_instrument[i].Fill = new SolidColorBrush(color[6]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[6]);
                             break;
-                        case 1:
+                        case 4:
                             r_instrument[i].Fill = new SolidColorBrush(color[2]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[2]);
                             break;
-                        case 2:
+                        case 3:
                             r_instrument[i].Fill = new SolidColorBrush(color[0]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[0]);
                             break;
-                        case 3:
+                        case 2:
                             r_instrument[i].Fill = new SolidColorBrush(color[10]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[10]);
                             break;
-                        case 4:
+                        case 1:
                             r_instrument[i].Fill = new SolidColorBrush(color[9]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[9]);
                             break;
-                        case 5:
+                        case 0:
                             r_instrument[i].Fill = new SolidColorBrush(color[8]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[8]);
                             break;
@@ -821,10 +793,32 @@ namespace Symphonary {
             }
         }
 
-
         private void about_Clicked(object sender, RoutedEventArgs e) {
             About about = new About();
             about.Show();
+        }
+
+        private void layout_Updated(object sender, EventArgs e) {
+            RoutedEventArgs d = new RoutedEventArgs();
+            size_Changed(this, d);
+        }
+
+        private void size_Changed(object sender, RoutedEventArgs e) {
+            r_HeaderBackground.Width = window.ActualWidth;
+            ScaleTransform sc;
+            if (hInst == 1) {
+                sc = new ScaleTransform(1, 2);
+                r_KeyLine.Height = window.ActualHeight;
+            }
+            else {
+                sc = new ScaleTransform(2, 1);
+                r_KeyLine.Width = window.ActualWidth;
+            }
+            gridlines.LayoutTransform = sc;
+            gridlines.UpdateLayout();
+            canv.Width = window.ActualWidth;
+            r_KeyLine.Margin = new Thickness((r_instrument[0].PointToScreen(new Point(r_instrument[0].ActualWidth, r_instrument[0].ActualHeight)) - r_instrument[0].PointToScreen(new Point(0, 0))).X, 0, 0, 0);
+
         }
 
         private void NWGUI_KeyUp(object sender, KeyEventArgs e) {
@@ -877,7 +871,7 @@ namespace Symphonary {
                 instrument_Clicked(instrument);
 
                 b_AnimationStarted = false;
-                dispatcherTimer.Stop();
+                CompositionTarget.Rendering -= new EventHandler(moveCanvas);
             }));
         }
 
@@ -938,16 +932,31 @@ namespace Symphonary {
             }
         }
 
+        long previousTime;
+        long currentTime;
+        long frameCount = 0;
         private void moveCanvas(object sender, EventArgs e) {
+            updateScoreDisplay(sender, e);
+            updateFingeringDisplay(sender, e);
+            frameCount++;
             long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            long delta = milliseconds - starterTime;
+            currentTime = milliseconds;
+
+            if (frameCount % 10 == 0)
+                FPS.Header = 1000 / (currentTime - previousTime) + " FPS";
+
+            previousTime = currentTime;
+
+            long currentDelta = (milliseconds - starterTime) / 10;
             if (hInst == 0) {
                 double mover = 625;
-                subcanv.SetValue(Canvas.TopProperty, (double)((delta / 10) * multiplier) + mover);
+                Canvas.SetTop(subcanv,  (double)(currentDelta * multiplier) + mover);
+                Canvas.SetTop(gridlines, (double)(currentDelta * multiplier) + mover);
             }
             else {
                 double mover = 75;
-                subcanv.SetValue(Canvas.LeftProperty, (double)(-1 * (delta / 10) * multiplier) + mover);
+                Canvas.SetLeft(subcanv,(double)(-1 * currentDelta * multiplier) + mover);
+                Canvas.SetLeft(gridlines, (double)(-1 * currentDelta * multiplier) + mover);
             }
         }
 
@@ -974,17 +983,22 @@ namespace Symphonary {
         }
 
         private void resetSubCanvas(bool clearCanvasChildren) {
-            if (clearCanvasChildren)
+            if (clearCanvasChildren) {
                 subcanv.Children.Clear();
+                gridlines.Children.Clear();
+            }
             subcanv.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
+            gridlines.SetValue(Canvas.TopProperty, i_InitialCanvasPosY);
         }
 
         private void showSubCanvas() {
             subcanv.Visibility = Visibility.Visible;
+            gridlines.Visibility = Visibility.Visible;
         }
 
         private void hideSubCanvas() {
             subcanv.Visibility = Visibility.Hidden;
+            gridlines.Visibility = Visibility.Hidden;
         }
 
         private void updateScoreDisplay(object sender, EventArgs e) {
@@ -994,8 +1008,6 @@ namespace Symphonary {
         }
 
         private void updateFingeringDisplay(object sender, EventArgs e) {
-
-            //MessageBox.Show(r_instrument.Length.ToString());
             for (int i = 0; i < r_instrument.Length; i++) {
                 r_instrument[i].StrokeThickness = 2;
                 tb_instrument[i].FontSize = 26;
@@ -1020,7 +1032,7 @@ namespace Symphonary {
                         if (score.s_CurrentFingering.Length == 6)
                             tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
                     }
-                    catch (Exception ex) { }
+                    catch (Exception ex) {}
                 }
             }
         }

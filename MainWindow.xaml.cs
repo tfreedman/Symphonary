@@ -433,77 +433,6 @@ namespace Symphonary {
 
             }
             return false;
-            /*switch (serialData)
-            {
-                case "0000": // GN3*** || DN4*** || AN4*** || EN5***
-                    return noteNumber == 55 || noteNumber == 62 || noteNumber == 69 || noteNumber == 76;
-
-                case "1000": // GS3
-                    return noteNumber == 56;
-                case "0100": // DS4
-                    return noteNumber == 63;
-                case "0010": // AS4
-                    return noteNumber == 70;
-                case "0001": // F5
-                    return noteNumber == 77;
-
-                case "2000": // A3
-                    return noteNumber == 57;
-                case "0200": // E4
-                    return noteNumber == 64;
-                case "0020": // B4
-                    return noteNumber == 71;
-                case "0002": // F5
-                    return noteNumber == 78;
-
-                case "3000": // AS3
-                    return noteNumber == 58;
-                case "0300": // F4
-                    return noteNumber == 65;
-                case "0030": // C5
-                    return noteNumber == 72;
-                case "0003": // G5
-                    return noteNumber == 79;
-
-                case "4000": // B4
-                    return noteNumber == 59;
-                case "0400": // FS4
-                    return noteNumber == 66;
-                case "0040": // CS5
-                    return noteNumber == 73;
-                case "0004": // GS5
-                    return noteNumber == 80;
-
-                case "5000": // C4
-                    return noteNumber == 60;
-                case "0500": // G4
-                    return noteNumber == 67;
-                case "0050": // D5
-                    return noteNumber == 74;
-                case "0005": // A5
-                    return noteNumber == 81;
-
-                case "6000": // CS4
-                    return noteNumber == 61;
-                case "0600": // GS4
-                    return noteNumber == 68;
-                case "0060": // DS5
-                    return noteNumber == 75;
-                case "0006": // AS5
-                    return noteNumber == 82;
-
-                case "7000": // D4
-                    return noteNumber == 62;
-                case "0700": // A4
-                    return noteNumber == 69;
-                case "0070": // E5
-                    return noteNumber == 76;
-                case "0007": // B5
-                    return noteNumber == 83;
-
-                default: // does not match the note
-                    return false;
-            }*/
         }
 
 
@@ -576,11 +505,9 @@ namespace Symphonary {
             InitializeComponent();
         }
 
-
         public void changeText(string text) {
             textbox1.Text = text;
             textbox1.ScrollToEnd();
         }
-
     }
 }
