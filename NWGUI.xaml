@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Symphonary" ResizeMode="CanResizeWithGrip"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
-        xmlns:Symphonary="clr-namespace:Symphonary" Width="1280" Height="744" Name="window" LayoutUpdated="layout_Updated" SizeChanged="size_Changed">
+        xmlns:Symphonary="clr-namespace:Symphonary"
+        Width="1280" Height="744" Name="window" LayoutUpdated="layout_Updated" SizeChanged="size_Changed">
     <Grid Name="grid">
         <StackPanel Orientation="Vertical" Canvas.ZIndex="2" Margin="0" VerticalAlignment="Top">
             <Menu IsMainMenu="True" Height="22" VerticalAlignment="Top" Width="{Binding ElementName=Window,Path=ActualWidth}">
@@ -23,7 +24,6 @@
                         </Grid>
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-
 
                 <MenuItem Header="_File" Grid.Column="0">
                     <MenuItem Header="_Open..." Click="open_Clicked"/>
@@ -63,6 +63,11 @@
             <TextBlock Name="tb_SongTitle" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="10,0,0,0" />
             <TextBlock Name="tb_ScoreDisplay" DockPanel.Dock="Right" Width="500" HorizontalAlignment="Right" Margin="0,0,25,0" />
         </DockPanel>
+        <Grid Name="loadingScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
+            <Image Source="Images/SDLoading.png" Width="170" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
+            <TextBlock Name="percentageText" FontSize="32" FontFamily="Arial" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
+            <Image Source="Images/SDLoading2.png" Name="boat" Width="60" VerticalAlignment="Bottom" HorizontalAlignment="Left"></Image>
+        </Grid>
         <Rectangle Name="r_KeyLine" Width="3" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
         <Viewbox Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,72,0,0">
             <Canvas Name="canv" HorizontalAlignment="Stretch" Height="720" Margin="0">

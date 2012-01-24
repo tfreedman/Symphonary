@@ -7,13 +7,11 @@ C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI.baml
 C:\Users\Tyler\Symphonary\obj\x86\Debug\About.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\SerialPortSelector.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\ChannelSelector.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\LoadingScreen.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\MainWindow.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\App.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-C:\Users\Tyler\Symphonary\obj\x86\Debug\LoadingScreen.baml
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.g.resources
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.pdb
 C:\Users\Tyler\Symphonary\bin\Debug\Symphonary.exe

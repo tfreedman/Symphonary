@@ -83,14 +83,12 @@
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemExtensions.cs" />
+    <Compile Include="Score.cs" />
     <Compile Include="SerialPortSelector.xaml.cs">
       <DependentUpon>SerialPortSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="ChannelSelector.xaml.cs">
       <DependentUpon>ChannelSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LoadingScreen.xaml.cs">
-      <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="NWGUI.xaml.cs">
       <DependentUpon>NWGUI.xaml</DependentUpon>
@@ -104,10 +102,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ChannelSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

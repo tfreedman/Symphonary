@@ -27,73 +27,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Windows.Threading;
+using WpfAnimatedControl;
 
 namespace Symphonary {
-    public class Score {
-        public int i_NumNotesScored = 0;
-        public string s_CurrentFingering = string.Empty;
-
-        NoteMatcher noteMatcher = new NoteMatcher();
-
-        public void resetScore() {
-            i_NumNotesScored = 0;
-        }
-
-        public void updateScore(ref MidiPlayer midiPlayer) {
-            if (midiPlayer == null)
-                return;
-
-            // this is a hack, we shouldn't be modifying this list in the MidiPlayer, it should be used for
-            // informational purposes
-            for (int i = 0; i < midiPlayer.al_CurrentPlayingChannelNotes.Count; i++) {
-                if (noteMatcher.noteMatches(s_CurrentFingering, (int)midiPlayer.al_CurrentPlayingChannelNotes[i])) {
-                    i_NumNotesScored++;
-                    midiPlayer.al_CurrentPlayingChannelNotes.RemoveAt(i);
-                    break;
-                }
-            }
-        }
-
-        public string scoreGrade(int i_NumChannelNotesPlayed) {
-            try {
-                if (i_NumChannelNotesPlayed == 0) {
-                    return "...";
-                }
-            } catch (NullReferenceException e) {
-                return "...";
-            }
-
-            double percentage = ((double)i_NumNotesScored / (double)(i_NumChannelNotesPlayed)) * 100;
-
-            if (percentage >= 90)
-                return "A+";
-            else if (percentage >= 85)
-                return "A";
-            else if (percentage >= 80)
-                return "A-";
-            else if (percentage >= 76)
-                return "B+";
-            else if (percentage >= 73)
-                return "B";
-            else if (percentage >= 70)
-                return "B-";
-            else if (percentage >= 67)
-                return "C+";
-            else if (percentage >= 63)
-                return "C";
-            else if (percentage >= 60)
-                return "C-";
-            else if (percentage >= 57)
-                return "D+";
-            else if (percentage >= 53)
-                return "D";
-            else if (percentage >= 50)
-                return "D-";
-            else
-                return "F";
-        }
-    }
-
     public partial class NWGUI : Window {
 
         bool b_AnimationStarted = false;
@@ -104,7 +40,6 @@ namespace Symphonary {
         MainWindow debugConsole;
         ChannelSelector channelSelector;
         SerialPortSelector serialPortSelector;
-        LoadingScreen loadingScreen;
         long starterTime = 0;
         int i_Channel = -1;
         double scrollSpeed = 2.00000;
@@ -164,7 +99,7 @@ namespace Symphonary {
                         item.IsChecked = true;
             }
 
-                        i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
+            i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
 
             r_HeaderBackground.Background = new SolidColorBrush(Color.FromRgb(51, 51, 51));
 
@@ -298,6 +233,8 @@ namespace Symphonary {
                 runner++;
             }
         }
+
+
 
         private void fingering(int note, int instrument, long startTime, long endTime) {
             string noteString = "";
@@ -481,11 +418,10 @@ namespace Symphonary {
                 CompositionTarget.Rendering -= new EventHandler(moveCanvas);
 
                 try {
-                    loadingScreen.Close();
+                    loadingScreen.Visibility = Visibility.Hidden;
                 } catch (NullReferenceException ex) { }
 
-                loadingScreen = new LoadingScreen();
-                loadingScreen.Show();
+                loadingScreen.Visibility = Visibility.Visible;
                 i_Channel = -1;
 
                 midiPlayer = new MidiPlayer(openFileDialog.FileName, handleMIDILoadProgressChanged,
@@ -804,6 +740,7 @@ namespace Symphonary {
         }
 
         private void size_Changed(object sender, RoutedEventArgs e) {
+            boat.Margin = new Thickness(((Convert.ToDouble(boat.Tag) / 100) * window.ActualWidth), 0, 0, 0);
             r_HeaderBackground.Width = window.ActualWidth;
             ScaleTransform sc;
             if (hInst == 1) {
@@ -845,14 +782,14 @@ namespace Symphonary {
 
         private void handleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) {
             try {
-                loadingScreen.setProgress(e.ProgressPercentage);
+                setProgress(e.ProgressPercentage);
             } catch (NullReferenceException ex) { }
         }
 
 
         private void handleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) {
             try {
-                loadingScreen.Close();
+                loadingScreen.Visibility = Visibility.Hidden;
             } catch (NullReferenceException ex) { }
 
             channelSelector = new ChannelSelector(ref midiInfo, i_Channel, channelSelectorOkClicked);
@@ -930,6 +867,12 @@ namespace Symphonary {
                 }
                 fingering(midiInfo.l_Notes[i].i_NoteNumber, instrument, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
             }
+        }
+
+        public void setProgress(int i_ProgressPercentage) {
+            boat.Margin = new Thickness((window.ActualWidth * ((double)i_ProgressPercentage / 100)) - 60, 0, 0, 0);
+            boat.Tag = i_ProgressPercentage;
+            percentageText.Text = i_ProgressPercentage + "% Complete";
         }
 
         long previousTime;
