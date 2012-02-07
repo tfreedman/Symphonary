@@ -1,0 +1,4 @@
+<Modules>
+  <Module PersistentId="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF" ModuleId="Symphonary" />
+  <Module PersistentId="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" ModuleId="System.Windows.Forms" />
+</Modules>

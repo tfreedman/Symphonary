@@ -1,0 +1,156 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="FullScreen" priority="1" />
+      <Item value="namespace" priority="4" />
+      <Item value="Symphonary" priority="5" />
+      <Item value="using" priority="12" />
+      <Item value="System" priority="9" />
+      <Item value="Windows" priority="4" />
+      <Item value="Media" priority="0" />
+      <Item value="Microsoft" priority="0" />
+      <Item value="Win32" priority="0" />
+      <Item value="Controls" priority="0" />
+      <Item value="Shapes" priority="0" />
+      <Item value="Collections" priority="2" />
+      <Item value="public" priority="5" />
+      <Item value="bool" priority="0" />
+      <Item value="return" priority="3" />
+      <Item value="b_PlayPersistentChannel" priority="1" />
+      <Item value="value" priority="1" />
+      <Item value="int" priority="4" />
+      <Item value="i_PersistentChannel" priority="1" />
+      <Item value="i_NumChannelNotesPlayed" priority="1" />
+      <Item value="tb_ScoreDisplay" priority="0" />
+      <Item value="string" priority="0" />
+      <Item value="midiPlayer" priority="1" />
+      <Item value="score" priority="0" />
+      <Item value="Generic" priority="0" />
+      <Item value="DebugWindow`0" priority="1" />
+      <Item value="NWGUI`0" priority="4" />
+      <Item value="channelsListView" priority="0" />
+      <Item value="this" priority="0" />
+      <Item value="ChannelSelector`0" priority="1" />
+      <Item value="new" priority="3" />
+      <Item value="ChannelSelector" priority="2" />
+      <Item value="_Channels" priority="1" />
+      <Item value="Channel" priority="0" />
+      <Item value="i_ChannelNumber" priority="0" />
+      <Item value="s_Instrument" priority="0" />
+      <Item value="i_NoteCount" priority="1" />
+      <Item value="void" priority="0" />
+      <Item value="ref" priority="4" />
+      <Item value="MidiInfo`0" priority="0" />
+      <Item value="RoutedEvent`0" priority="0" />
+      <Item value="channelSelector" priority="1" />
+      <Item value="midiInfo" priority="1" />
+      <Item value="i_Channel" priority="3" />
+      <Item value="ChannelSelectorOkClicked`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Controls.MenuItem">
+      <Item value="Header" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Controls.TextBlock">
+      <Item value="Text" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.String">
+      <Item value="Format`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Symphonary.MidiPlayer">
+      <Item value="NumChannelNotesPlayed" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Symphonary.Score">
+      <Item value="scoreGrade`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@Symphonary.NWGUI">
+      <Item value="GetWindow`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Controls.ListView">
+      <Item value="DataContext" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Symphonary.NWGUI">
+      <Item value="channelSelector" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Symphonary.ChannelSelector">
+      <Item value="Channels" priority="0" />
+      <Item value="Refresh`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.ObjectModel.ObservableCollection`1">
+      <Item value="Add`0" priority="0" />
+      <Item value="Clear`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Symphonary.MidiInfo">
+      <Item value="midiEventCollection" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.Generic.IList`1">
+      <Item value="Count" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/f:App.xaml" caret="317" fromTop="7" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="4688" fromTop="19" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:DebugWindow.xaml" caret="437" fromTop="8" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:DebugWindow.xaml.cs" caret="282" fromTop="11" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemExtensions.cs" caret="452" fromTop="8" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:SerialPortSelector.xaml" caret="1" fromTop="0" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="8972" fromTop="32" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Score.cs" caret="831" fromTop="0" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:NoteMatcher.cs" caret="1669" fromTop="6" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:MidiInfo.cs" caret="8725" fromTop="26" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="443" fromTop="6" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4023" fromTop="16" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="3980" fromTop="17" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="5303" fromTop="22" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="3916" fromTop="4" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="3197" fromTop="39" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="60" fromTop="1" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="15249" fromTop="20" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="333" fromTop="5" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="1790" fromTop="10" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="34" fromTop="0" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="2382" fromTop="21" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="2295" fromTop="22" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="2671" fromTop="33" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="2870" fromTop="25" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="3153" fromTop="30" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="8972" fromTop="32" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="15492" fromTop="20" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4588" fromTop="25" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="1086" fromTop="20" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="264" fromTop="9" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4561" fromTop="22" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="1045" fromTop="10" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="23082" fromTop="22" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4756" fromTop="26" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="5105" fromTop="30" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="18771" fromTop="12" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="19351" fromTop="32" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="1552" fromTop="26" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="571" fromTop="9" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="2930" fromTop="18" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="4541" fromTop="30" />
+      <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="443" fromTop="6" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+</Configuration>
