@@ -79,33 +79,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="About.xaml.cs">
+    <Compile Include="Data\ChannelSelector.cs" />
+    <Compile Include="Data\MidiInfo.cs" />
+    <Compile Include="Data\NoteMatcher.cs" />
+    <Compile Include="Data\SerialPortSelector.cs" />
+    <Compile Include="NWGUI\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MenuItemExtensions.cs" />
-    <Compile Include="Score.cs" />
-    <Compile Include="SerialPortSelector.xaml.cs">
-      <DependentUpon>SerialPortSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ChannelSelector.xaml.cs">
-      <DependentUpon>ChannelSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="NWGUI.xaml.cs">
+    <Compile Include="NWGUI\MenuItemEvents.cs" />
+    <Compile Include="NWGUI\MenuItemExtensions.cs" />
+    <Compile Include="Player\MidiPlayer.cs" />
+    <Compile Include="Data\Score.cs" />
+    <Compile Include="NWGUI\NWGUI.xaml.cs">
       <DependentUpon>NWGUI.xaml</DependentUpon>
     </Compile>
-    <Page Include="About.xaml">
+    <Page Include="NWGUI\About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SerialPortSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ChannelSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="NWGUI\DebugWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -113,11 +105,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="NWGUI\DebugWindow.xaml.cs">
+      <DependentUpon>DebugWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="NWGUI.xaml">
+    <Page Include="NWGUI\NWGUI.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -156,6 +148,7 @@
   <ItemGroup>
     <Resource Include="Images\Banner.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
