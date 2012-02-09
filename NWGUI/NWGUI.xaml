@@ -3,11 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Symphonary" ResizeMode="CanResizeWithGrip"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
+        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+             
         xmlns:Symphonary="clr-namespace:Symphonary"
         Width="1280" Height="744" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
+    
     <Grid Name="grid">
         <StackPanel Orientation="Vertical" Canvas.ZIndex="2" Margin="0" VerticalAlignment="Top">
-            <Menu IsMainMenu="True" Height="22" VerticalAlignment="Top" Width="{Binding ElementName=Window,Path=ActualWidth}">
+            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Width="{Binding ElementName=Window,Path=ActualWidth}">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -24,22 +27,14 @@
                         </Grid>
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-
-                <MenuItem Header="_File" Grid.Column="0">
-                    <MenuItem Header="_Open..." Click="Open_Clicked"/>
-                    <Separator />
-                    <MenuItem Header="_Exit" Click="Exit_Clicked"/>
-                </MenuItem>
+                <MenuItem Header="_Open" Click="Open_Clicked" Grid.Column="0"/>
 
                 <MenuItem Header="_Run" Grid.Column="1">
                     <MenuItem Name="Start" Header="_Start" Click="Start_Clicked" />
                     <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked"/>
-                    <MenuItem Header="_Show debug console" Click="Debug_Clicked"/>
                 </MenuItem>
 
                 <MenuItem Header="_Options" Grid.Column="2">
-                    <!--<MenuItem Header="_Select Channel" Click="SelectChannel_Clicked"/>
-                    <MenuItem Header="_Select Serial Port" Click="SelectSerialPort_Clicked"/>-->
                     <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
                 </MenuItem>
 
@@ -50,71 +45,77 @@
                     <MenuItem Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
                 </MenuItem>
 
-                <MenuItem Header="_Help" Grid.Column="4">
-                    <MenuItem Header="_About" Click="About_Clicked"/>
-                </MenuItem>
-
-                <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="6" Focusable="False" IsHitTestVisible="False" />
+                <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="5" Focusable="False" IsHitTestVisible="False" />
+                <MenuItem Name="Console" Header="_Console" Click="Debug_Clicked" Grid.Column="6"/>
                 <MenuItem Name="FullScreen" Header="_Full Screen" Click="Fullscreen_Clicked" HorizontalAlignment="Right" Grid.Column="7"/>
 
             </Menu>
-            <Grid Name="listViewGrid" Visibility="Hidden">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="300"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Text="Select channel:" 
-                           Grid.Row="0" Grid.Column="0" Margin="10"/>
-                <TextBlock Text="Select serial port:" 
-                           Grid.Row="0" Grid.Column="1" Margin="10"/>
-                <ListView Name="channelsListView" 
-                          Grid.Row="1" Grid.Column="0" Margin="10"
-                          ItemsSource="{Binding}"
-                          SelectionMode="Single">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Channel #" Width="100"
-                                            DisplayMemberBinding="{Binding Path=i_ChannelNumber}"/>
-                            <GridViewColumn Header="Instrument" Width="150"
-                                            DisplayMemberBinding="{Binding Path=s_Instrument}"/>
-                            <GridViewColumn Header="Note Count" Width="100"
-                                            DisplayMemberBinding="{Binding Path=i_NoteCount}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-                <ListView Name="serialPortsListView" 
-                          Grid.Row="1" Grid.Column="1" Margin="10"
-                          ItemsSource="{Binding}"
-                          SelectionMode="Single">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Serial Port" Width="100"
-                                            DisplayMemberBinding="{Binding Path=s_PortName}"/>
-                            <GridViewColumn Header="Status" Width="70"
-                                            DisplayMemberBinding="{Binding Path=s_Status}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-                
-                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
-                        Margin="10"
-                        Click="ListViewGridDone_Clicked">Done</Button>
-            </Grid>
         </StackPanel>
         <DockPanel Name="r_HeaderBackground" VerticalAlignment="Top" Height="50" Canvas.ZIndex="1" Margin="0,22,0,0">
             <TextBlock Name="tb_SongTitle" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="10,0,0,0" />
             <TextBlock Name="tb_ScoreDisplay" DockPanel.Dock="Right" Width="500" HorizontalAlignment="Right" Margin="0,0,25,0" />
         </DockPanel>
+        <Grid Name="listViewGrid" Visibility="Hidden" Margin="0, 22, 0, 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Select channel:" Grid.Row="0" Grid.Column="0" Margin="10"/>
+            <TextBlock Text="Select serial port:" Grid.Row="0" Grid.Column="1" Margin="10"/>
+            <ListView Name="channelsListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Channel #" Width="100" DisplayMemberBinding="{Binding Path=i_ChannelNumber}"/>
+                        <GridViewColumn Header="Instrument" Width="150" DisplayMemberBinding="{Binding Path=s_Instrument}"/>
+                        <GridViewColumn Header="Note Count" Width="100" DisplayMemberBinding="{Binding Path=i_NoteCount}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <ListView Name="serialPortsListView" Grid.Row="1" Grid.Column="1" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Serial Port" Width="100" DisplayMemberBinding="{Binding Path=s_PortName}"/>
+                        <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding Path=s_Status}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="ListViewGridDone_Clicked">Done</Button>
+        </Grid>
         <Grid Name="loadingScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
-            <Image Source="../Images/SDLoading.png" Width="170" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
-            <TextBlock Name="percentageText" FontSize="32" FontFamily="Arial" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
-            <Image Source="../Images/SDLoading2.png" Name="boat" Width="60" VerticalAlignment="Bottom" HorizontalAlignment="Left"></Image>
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
+            <!-- <Image Source="../Images/mark.png" Width="98" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18, 18, 0, 0"></Image> -->
+            <TextBlock Name="percentageText" FontSize="32" FontFamily="Segoe UI" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
+            <Canvas>
+                <Border Name="progressBar" Width="400"></Border>
+            </Canvas>
+        </Grid>
+        <Grid Name="aboutScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
+
+            <Canvas>
+                <Image Source="../Images/logo.png" Width="620" Height="251" Name="Logo"></Image>
+            </Canvas>
+        </Grid>
+        <Grid Name="normal" Visibility="Visible" Margin="0, 22, 0, 0">
+            <Canvas>
+                <Image Source="../Images/logo.png" Width="620" Height="251" Name="NormalLogo"></Image>
+            </Canvas>
+            <Button Click="Open_Clicked" Width="100" Height="30">Open</Button>
+            <!--<Button Click="About_Clicked" Width="100" Height="30">About</Button>-->
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
         </Grid>
         <Rectangle Name="r_KeyLine" Width="3" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
         <Viewbox Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,72,0,0">
@@ -123,8 +124,5 @@
                 <Canvas Name="subcanv"></Canvas>
             </Canvas>
         </Viewbox>
-
-        
-        
     </Grid>
 </Window>

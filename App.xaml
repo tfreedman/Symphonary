@@ -1,8 +1,13 @@
 ﻿<Application x:Class="Symphonary.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
              StartupUri="NWGUI\NWGUI.xaml">
     <Application.Resources>
-         
+        <!-- <ResourceDictionary Source="ExpressionDark.xaml"/>  -->
+        <Style TargetType="{x:Type MenuItem}">
+            <Setter Property="Foreground" Value="#FFFFFFFF" />
+        </Style>
+
     </Application.Resources>
 </Application>

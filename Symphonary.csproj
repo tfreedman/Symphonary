@@ -73,6 +73,7 @@
     <Reference Include="WpfAnimatedControl">
       <HintPath>bin\Debug\WpfAnimatedControl.dll</HintPath>
     </Reference>
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -83,9 +84,6 @@
     <Compile Include="Data\MidiInfo.cs" />
     <Compile Include="Data\NoteMatcher.cs" />
     <Compile Include="Data\SerialPortSelector.cs" />
-    <Compile Include="NWGUI\About.xaml.cs">
-      <DependentUpon>About.xaml</DependentUpon>
-    </Compile>
     <Compile Include="NWGUI\MenuItemEvents.cs" />
     <Compile Include="NWGUI\MenuItemExtensions.cs" />
     <Compile Include="Player\MidiPlayer.cs" />
@@ -93,9 +91,9 @@
     <Compile Include="NWGUI\NWGUI.xaml.cs">
       <DependentUpon>NWGUI.xaml</DependentUpon>
     </Compile>
-    <Page Include="NWGUI\About.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="ExpressionDark.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="NWGUI\DebugWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -140,15 +138,20 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\SDLoading.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\SDLoading2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\Banner.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\mark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\bg_light.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

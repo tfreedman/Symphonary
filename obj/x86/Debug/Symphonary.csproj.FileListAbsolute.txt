@@ -1,14 +1,4 @@
 C:\Users\Tyler\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Tyler\Symphonary\obj\x86\Debug\About.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\SerialPortSelector.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\ChannelSelector.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\MainWindow.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\About.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\SerialPortSelector.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\ChannelSelector.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\MainWindow.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\App.g.cs
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
@@ -22,7 +12,6 @@ C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Threading.dll
-C:\Users\Tyler\Symphonary\bin\Debug\WpfAnimatedControl.pdb
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
 C:\Users\Tyler\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\Tyler\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
@@ -112,3 +101,11 @@ E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\About.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
+C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.dll
+C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.pdb
+C:\Users\Tyler\Symphonary\obj\x86\Debug\App.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\ExpressionDark.baml

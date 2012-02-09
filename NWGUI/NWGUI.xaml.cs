@@ -349,9 +349,6 @@ namespace Symphonary
             }
         }
 
-        
-        
-
         /// <summary>
         /// Event handler for the "Done" button below the two listviews for channel and serial port selection
         /// </summary>
@@ -384,7 +381,7 @@ namespace Symphonary
             }
 
             listViewGrid.Visibility = Visibility.Hidden;
-
+            Start_Clicked(sender, e);
             //MessageBox.Show(i_Channel.ToString());
         }
 
@@ -525,8 +522,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Size_Changed(object sender, RoutedEventArgs e) 
         {
-            boat.Margin = new Thickness(((Convert.ToDouble(boat.Tag) / 100) * window.ActualWidth), 0, 0, 0);
-            r_HeaderBackground.Width = window.ActualWidth;
+           r_HeaderBackground.Width = window.ActualWidth;
             ScaleTransform sc;
             if (hInst == 1) {
                 sc = new ScaleTransform(1, 2);
@@ -536,6 +532,19 @@ namespace Symphonary
                 sc = new ScaleTransform(2, 1);
                 r_KeyLine.Width = window.ActualWidth;
             }
+
+            int progressBarX = (int)(((window.ActualWidth / 2) - 200) / 9) * 9;
+            int progressBarY = (int)(((window.ActualHeight / 2) - 4) / 9) * 9;
+            progressBar.Margin = new Thickness(progressBarX + 1, progressBarY + 1, 0, 0);
+
+            int NormalLogoX = (int)(((window.ActualWidth / 2) - 310) / 9) * 9;
+            int NormalLogoY = (int)(((window.ActualHeight / 2) - 125) / 9) * 9;
+            NormalLogo.Margin = new Thickness(NormalLogoX + 1, NormalLogoY + 1, 0, 0);
+
+            int LogoX = (int)(((window.ActualWidth / 2) - 310) / 9) * 9;
+            int LogoY = (int)(((window.ActualHeight / 2) - 125) / 9) * 9;
+            Logo.Margin = new Thickness(LogoX + 1, LogoY + 1, 0, 0);
+                        
             gridlines.LayoutTransform = sc;
             gridlines.UpdateLayout();
             canv.Width = window.ActualWidth;
@@ -632,7 +641,8 @@ namespace Symphonary
                 Stop.IsEnabled = false;
                 Instruments.IsEnabled = true;
                 Instrument_Clicked(instrument);
-
+                HideSubCanvas();
+                normal.Visibility = Visibility.Visible;
                 b_AnimationStarted = false;
                 CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
             }));
@@ -719,8 +729,10 @@ namespace Symphonary
         /// <param name="i_ProgressPercentage"></param>
         public void SetProgress(int i_ProgressPercentage) 
         {
-            boat.Margin = new Thickness((window.ActualWidth * ((double)i_ProgressPercentage / 100)) - 60, 0, 0, 0);
-            boat.Tag = i_ProgressPercentage;
+            progressBar.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            progressBar.BorderThickness = new Thickness(i_ProgressPercentage * 4, 0, 0, 0);
+            progressBar.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            progressBar.Height = 8;
             percentageText.Text = i_ProgressPercentage + "% Complete";
         }
 

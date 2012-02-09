@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
-
 using Sanford.Collections;
 using Sanford.Multimedia;
 using Sanford.Multimedia.Midi;
 using Sanford.Multimedia.Timers;
 using Sanford.Threading;
-
 
 namespace Symphonary
 {

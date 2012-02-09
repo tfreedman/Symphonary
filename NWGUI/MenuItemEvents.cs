@@ -17,15 +17,13 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Fullscreen_Clicked(object sender, RoutedEventArgs e)
         {
-            if (isFullScreen)
-            {
+            if (isFullScreen) {
                 WindowStyle = WindowStyle.SingleBorderWindow;
                 Topmost = false;
                 WindowState = WindowState.Normal;
                 FullScreen.Header = "Full Screen";
             }
-            else
-            {
+            else {
                 WindowStyle = WindowStyle.None;
                 Topmost = true;
                 WindowState = WindowState.Maximized;
@@ -44,22 +42,18 @@ namespace Symphonary
         private void Start_Clicked(object sender, RoutedEventArgs e)
         {
             Instrument_Clicked(instrument);
-            try
-            {
-                if (midiPlayer.IsPlaying)
-                {
+            try {
+                if (midiPlayer.IsPlaying) {
                     MessageBox.Show("The file is currently being played, please have it finish first.");
                     return;
                 }
 
-                if (i_Channel < 0)
-                {
+                if (i_Channel < 0) {
                     MessageBox.Show("Please select a channel to play first.");
                     return;
                 }
 
-                if (!midiPlayer.IsFinishedLoading)
-                {
+                if (!midiPlayer.IsFinishedLoading) {
                     MessageBox.Show("Please wait for the MIDI file to finish loading");
                     return;
                 }
@@ -79,9 +73,7 @@ namespace Symphonary
                 midiPlayer.StartPlaying();
                 starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
-            }
-            catch (NullReferenceException ex)
-            {
+            } catch (NullReferenceException ex) {
                 MessageBox.Show(
                     "Please load a MIDI file first! (or some other weird error occured, so read the proceeding message)");
                 MessageBox.Show(ex.ToString());
@@ -102,33 +94,20 @@ namespace Symphonary
             Instrument_Clicked(instrument);
             HideCanvasChildren();
 
-            try
-            {
+            try {
                 //midiPlayer.OnClosingOperations();
                 //midiPlayer.OnClosedOperations();
+                normal.Visibility = Visibility.Visible;
                 midiPlayer.StopPlaying();
-
+                
                 HideSubCanvas();
                 ResetSubCanvas(false);
 
                 b_AnimationStarted = false;
                 CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
 
-            }
-            catch (NullReferenceException ex) { }
+            } catch (NullReferenceException ex) { }
         }
-
-
-        /// <summary>
-        /// Event handler for "Exit" menu item
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Exit_Clicked(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
 
         /// <summary>
         /// Event handler for "Open" menu item
@@ -141,14 +120,11 @@ namespace Symphonary
             openFileDialog.Filter = "MIDI Files (*.mid)|*.mid|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 
-            if (openFileDialog.ShowDialog().Value)
-            {
-                try
-                {
+            if (openFileDialog.ShowDialog().Value) {
+                try {
                     midiPlayer.OnClosingOperations();
                     midiPlayer.OnClosedOperations();
-                }
-                catch (NullReferenceException ex) { }
+                } catch (NullReferenceException ex) { }
 
                 HideSubCanvas();
                 ResetSubCanvas(true);
@@ -157,12 +133,10 @@ namespace Symphonary
 
                 b_AnimationStarted = false;
                 CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
-
-                try
-                {
+                normal.Visibility = Visibility.Hidden;
+                try {
                     loadingScreen.Visibility = Visibility.Hidden;
-                }
-                catch (NullReferenceException ex) { }
+                } catch (NullReferenceException ex) { }
 
                 listViewGrid.Visibility = Visibility.Hidden;
                 loadingScreen.Visibility = Visibility.Visible;
@@ -180,6 +154,7 @@ namespace Symphonary
         }
 
 
+
         /// <summary>
         /// Event handler for "Debug" menu item
         /// </summary>
@@ -191,8 +166,7 @@ namespace Symphonary
             debugConsole.Show();
             //serialPortReadTimer.Start();
 
-            try
-            {
+            try {
                 debugConsole.textbox1.Text += midiInfo.l_Notes.Count + Environment.NewLine;
 
                 /*
@@ -204,8 +178,7 @@ namespace Symphonary
                 */
 
 
-                foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata)
-                {
+                foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata) {
                     debugConsole.textbox1.Text += metadata.ToString();
                 }
 
@@ -227,8 +200,7 @@ namespace Symphonary
                     debugConsole.textbox1.Text += midiInfo.midiEventCollection[midiInfo.a_ExistingChannelOrder[i_Channel]][i].ToString() + Environment.NewLine;
                 }*/
 
-            }
-            catch (NullReferenceException ex) { }
+            } catch (NullReferenceException ex) { }
         }
 
         /// <summary>
@@ -238,14 +210,12 @@ namespace Symphonary
         /// <param name="e"></param>
         private void SelectChannel_Clicked(object sender, RoutedEventArgs e)
         {
-            if (midiInfo == null)
-            {
+            if (midiInfo == null) {
                 MessageBox.Show("Please load a MIDI file first!");
                 return;
             }
 
-            if (midiPlayer.IsPlaying)
-            {
+            if (midiPlayer.IsPlaying) {
                 MessageBox.Show("The file is currently being played, please have it finish first.");
                 return;
             }
@@ -268,14 +238,12 @@ namespace Symphonary
 
             //MessageBox.Show(num.ToString());
 
-            if (num == 30 || num == 35)
-            {
+            if (num == 30 || num == 35) {
                 hInst = 1;
                 r_KeyLine.Height = 700;
                 r_KeyLine.Width = 3;
             }
-            else
-            {
+            else {
                 hInst = 0;
                 r_KeyLine.SetValue(Canvas.LeftProperty, 0.0);
                 r_KeyLine.SetValue(Canvas.BottomProperty, 20.0);
@@ -286,34 +254,27 @@ namespace Symphonary
 
             // remove the fingering rectangles from the canvas right now, because after they are re-initialized we'll
             // lose track of the ones already on the canvas
-            try
-            {
-                for (int i = 0; i < r_instrument.Length; i++)
-                {
+            try {
+                for (int i = 0; i < r_instrument.Length; i++) {
                     canv.Children.Remove(r_instrument[i]);
                 }
-            }
-            catch (NullReferenceException nr_e) { }
+            } catch (NullReferenceException nr_e) { }
 
-            if (num == 35 || num == 41)
-            {
+            if (num == 35 || num == 41) {
                 r_instrument = new Rectangle[4];
                 tb_instrument = new TextBlock[4];
             }
-            else if (num == 74)
-            {
+            else if (num == 74) {
                 r_instrument = new Rectangle[11];
                 tb_instrument = new TextBlock[11];
             }
-            else if (num == 30)
-            {
+            else if (num == 30) {
                 r_instrument = new Rectangle[6];
                 tb_instrument = new TextBlock[6];
             }
 
 
-            for (int i = 0; i < r_instrument.Length; i++)
-            {
+            for (int i = 0; i < r_instrument.Length; i++) {
                 r_instrument[i] = new Rectangle { };
                 tb_instrument[i] = new TextBlock { };
                 r_instrument[i].Visibility = Visibility.Hidden;
@@ -324,12 +285,10 @@ namespace Symphonary
 
 
             // this has been moved from updateFingeringDisplay --------------------
-            if (num == 41)
-            { // if violin
+            if (num == 41) { // if violin
                 int margin = 300;
                 int padding = 30;
-                for (int i = 0; i < r_instrument.Length; i++)
-                {
+                for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
                     tb_instrument[i].Width = 50;
                     r_instrument[i].Height = 50;
@@ -340,8 +299,7 @@ namespace Symphonary
                     tb_instrument[i].SetValue(Canvas.TopProperty, (double)630);
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)630);
 
-                    switch (i)
-                    {
+                    switch (i) {
                         case 0:
                             r_instrument[i].Fill = new SolidColorBrush(color[6]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[6]);
@@ -362,12 +320,10 @@ namespace Symphonary
 
                 }
             } // end if (num == 41)
-            else if (num >= 25 && num <= 32)
-            {
+            else if (num >= 25 && num <= 32) {
                 int margin = 220;
                 int padding = 20;
-                for (int i = 0; i < r_instrument.Length; i++)
-                {
+                for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
                     tb_instrument[i].Width = 50;
                     r_instrument[i].Height = 46;
@@ -376,8 +332,7 @@ namespace Symphonary
                     tb_instrument[i].SetValue(Canvas.TopProperty, (5 + margin + (i * r_instrument[i].Height * padding)));
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
 
-                    switch (i)
-                    {
+                    switch (i) {
                         case 5:
                             r_instrument[i].Fill = new SolidColorBrush(color[6]);
                             r_instrument[i].Stroke = new SolidColorBrush(border[6]);
@@ -409,8 +364,7 @@ namespace Symphonary
 
 
             // this has been moved from the NWGUI constructor --------------------------
-            for (int i = 0; i < r_instrument.Length; i++)
-            {
+            for (int i = 0; i < r_instrument.Length; i++) {
                 canv.Children.Add(tb_instrument[i]);
                 canv.Children.Add(r_instrument[i]);
                 Canvas.SetZIndex(tb_instrument[i], (int)99);
@@ -426,11 +380,9 @@ namespace Symphonary
         /// <param name="e"></param>
         private void MuteSelectedChannel_Clicked(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            try {
                 midiPlayer.PlayPersistentChannel = !(muteSelectedChannel.IsChecked);
-            }
-            catch (NullReferenceException ex) { }
+            } catch (NullReferenceException ex) { }
         }
 
         /// <summary>
@@ -440,8 +392,25 @@ namespace Symphonary
         /// <param name="e"></param>
         private void About_Clicked(object sender, RoutedEventArgs e)
         {
-            About about = new About();
-            about.Show();
+            if (aboutScreen.Visibility == Visibility.Visible)
+                aboutScreen.Visibility = Visibility.Hidden;
+            else
+                aboutScreen.Visibility = Visibility.Visible;
+
+            /* Border[] myRect = new Border[10000];
+            Random random = new Random();
+            for (int i = 0; i < 10000; i++) {
+                myRect[i] = new System.Windows.Controls.Border();
+                myRect[i].BorderBrush = new SolidColorBrush(Color.FromRgb(150, 150, 150));
+                myRect[i].BorderThickness = new Thickness(1, 1, 0, 0);
+                byte a = (byte)random.Next(30, 90);
+                myRect[i].Background = new SolidColorBrush(Color.FromRgb(a, a, a));
+                myRect[i].Height = 9;
+                myRect[i].Width = 9;
+                about_Background.Children.Add(myRect[i]);
+            }*/
+
         }
+
     }
 }
