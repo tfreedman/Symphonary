@@ -95,9 +95,7 @@ C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\About.g.cs
 C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\SerialPortSelector.g.cs
 C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
 C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\About.baml
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\About.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
@@ -109,3 +107,5 @@ C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.dll
 C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.pdb
 C:\Users\Tyler\Symphonary\obj\x86\Debug\App.baml
 C:\Users\Tyler\Symphonary\obj\x86\Debug\ExpressionDark.baml
+E:\miditool\Symphonary\Symphonary\obj\x86\Debug\ExpressionDark.baml
+E:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.baml

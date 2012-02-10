@@ -147,7 +147,7 @@ namespace Symphonary
 
                 //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
 
-                midiInfo = new MidiInfo(openFileDialog.FileName, i_Channel);
+                midiInfo.Refresh(openFileDialog.FileName, i_Channel);
                 Start.IsEnabled = true;
             }
 
@@ -167,8 +167,7 @@ namespace Symphonary
             //serialPortReadTimer.Start();
 
             try {
-                debugConsole.textbox1.Text += midiInfo.l_Notes.Count + Environment.NewLine;
-
+                
                 /*
                 debugConsole.textbox1.Text += midiInfo.s_Title + Environment.NewLine;
 
@@ -232,7 +231,7 @@ namespace Symphonary
         private void Instrument_Clicked(object sender, RoutedEventArgs e)
         {
             int num = Convert.ToInt32(((MenuItem)sender).Tag);
-            grid.Children.Remove(r_KeyLine);
+            grid.Children.Remove(keyLine);
             WriteSettingsToFile(num);
             instrument = num;
 
@@ -240,16 +239,16 @@ namespace Symphonary
 
             if (num == 30 || num == 35) {
                 hInst = 1;
-                r_KeyLine.Height = 700;
-                r_KeyLine.Width = 3;
+                keyLine.Height = 700;
+                keyLine.Width = 3;
             }
             else {
                 hInst = 0;
-                r_KeyLine.SetValue(Canvas.LeftProperty, 0.0);
-                r_KeyLine.SetValue(Canvas.BottomProperty, 20.0);
-                Canvas.SetZIndex(r_KeyLine, (int)97);
-                r_KeyLine.Height = 3;
-                r_KeyLine.Width = 1280;
+                keyLine.SetValue(Canvas.LeftProperty, 0.0);
+                keyLine.SetValue(Canvas.BottomProperty, 20.0);
+                Canvas.SetZIndex(keyLine, (int)97);
+                keyLine.Height = 3;
+                keyLine.Width = 1280;
             }
 
             // remove the fingering rectangles from the canvas right now, because after they are re-initialized we'll
@@ -280,8 +279,8 @@ namespace Symphonary
                 r_instrument[i].Visibility = Visibility.Hidden;
                 tb_instrument[i].Visibility = Visibility.Hidden;
             }
-            r_KeyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            grid.Children.Add(r_KeyLine);
+            keyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+            grid.Children.Add(keyLine);
 
 
             // this has been moved from updateFingeringDisplay --------------------

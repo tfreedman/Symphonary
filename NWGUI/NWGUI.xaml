@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Symphonary" ResizeMode="CanResizeWithGrip"
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
-        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
-             
+        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"             
         xmlns:Symphonary="clr-namespace:Symphonary"
         Width="1280" Height="744" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
     
     <Grid Name="grid">
+        <Grid.Resources>
+        </Grid.Resources>
         <StackPanel Orientation="Vertical" Canvas.ZIndex="2" Margin="0" VerticalAlignment="Top">
-            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Width="{Binding ElementName=Window,Path=ActualWidth}">
+            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Width="{Binding Path=ActualWidth, ElementName=window}">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -95,21 +96,27 @@
             <!-- <Image Source="../Images/mark.png" Width="98" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18, 18, 0, 0"></Image> -->
             <TextBlock Name="percentageText" FontSize="32" FontFamily="Segoe UI" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
             <Canvas>
-                <Border Name="progressBar" Width="400"></Border>
+                <Border Name="progressBar" Width="400"
+                        Margin="{Binding Path=ProgressBarMargin, ElementName=window}"></Border>
             </Canvas>
         </Grid>
         <Grid Name="aboutScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
-
             <Canvas>
-                <Image Source="../Images/logo.png" Width="620" Height="251" Name="Logo"></Image>
+                <Image Source="../Images/logo.png" 
+                       Width="620" Height="251" 
+                       Margin="{Binding Path=LogoMargin, ElementName=window}"
+                       Name="logo"></Image>
             </Canvas>
         </Grid>
         <Grid Name="normal" Visibility="Visible" Margin="0, 22, 0, 0">
             <Canvas>
-                <Image Source="../Images/logo.png" Width="620" Height="251" Name="NormalLogo"></Image>
+                <Image Source="../Images/logo.png" 
+                       Width="620" Height="251" 
+                       Margin="{Binding Path=LogoMargin, ElementName=window}"
+                       Name="normalLogo"></Image>
             </Canvas>
             <Button Click="Open_Clicked" Width="100" Height="30">Open</Button>
             <!--<Button Click="About_Clicked" Width="100" Height="30">About</Button>-->
@@ -117,7 +124,9 @@
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
         </Grid>
-        <Rectangle Name="r_KeyLine" Width="3" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
+        <Rectangle Name="keyLine" Width="3" Height="700" 
+                   Margin="{Binding Path=KeyLineMargin, ElementName=window}"
+                   HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
         <Viewbox Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,72,0,0">
             <Canvas Name="canv" HorizontalAlignment="Stretch" Height="720" Margin="0">
                 <Canvas Name="gridlines"></Canvas>

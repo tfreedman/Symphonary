@@ -138,9 +138,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Banner.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\bg.png" />
   </ItemGroup>
   <ItemGroup>

@@ -31,9 +31,8 @@ using WpfAnimatedControl;
 
 namespace Symphonary 
 {
-    public partial class NWGUI : Window 
+    public partial class NWGUI : Window, INotifyPropertyChanged
     {
-
         private bool b_AnimationStarted = false;
         private int i_CanvasMoveDirection = 1;
 
@@ -48,7 +47,7 @@ namespace Symphonary
         private double scrollSpeed = 2.00000;
         private double multiplier = 1;
         private MidiPlayer midiPlayer;
-        private MidiInfo midiInfo;
+        private MidiInfo midiInfo = new MidiInfo();
 
         private Rectangle[] r_instrument;
         private TextBlock[] tb_instrument;
@@ -136,8 +135,65 @@ namespace Symphonary
             channelsListView.DataContext = channelSelector.Channels;
             serialPortSelector = new SerialPortSelector(serialPortsListView);
             serialPortsListView.DataContext = serialPortSelector.SerialPorts;
+
+            //System.Console.WriteLine("{0}, {1}", window.ActualWidth, window.ActualHeight);
+            //System.Console.WriteLine("{0}, {1}", LogoPositionX, LogoPositionY);
         }
 
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged(String info)
+        {
+            if (PropertyChanged != null) {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
+
+        /// <summary>
+        /// Margin property for logo and normalLogo
+        /// </summary>
+        public Thickness LogoMargin
+        {
+            get
+            {
+                int logoX = (int) (((window.ActualWidth/2) - 310)/9)*9;
+                int logoY = (int) (((window.ActualHeight/2) - 125)/9)*9;
+                return new Thickness(logoX + 1, logoY + 1, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// Margin property for progressBar
+        /// </summary>
+        public Thickness ProgressBarMargin
+        {
+            get
+            {
+                int progressBarX = (int) (((window.ActualWidth/2) - 200)/9)*9;
+                int progressBarY = (int) (((window.ActualHeight/2) - 4)/9)*9;
+                return new Thickness(progressBarX + 1, progressBarY + 1, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// Margin property for keyLine
+        /// </summary>
+        public Thickness KeyLineMargin
+        {
+            get
+            {
+                if (r_instrument != null)
+                {
+                    return new Thickness(
+                        (r_instrument[0].PointToScreen(new Point(r_instrument[0].ActualWidth,
+                                                                 r_instrument[0].ActualHeight)) -
+                         r_instrument[0].PointToScreen(new Point(0, 0))).X, 0, 0, 0);
+                }
+
+                return new Thickness();
+            }
+        }
 
         
         /// <summary>
@@ -357,7 +413,7 @@ namespace Symphonary
         private void ListViewGridDone_Clicked(object sender, RoutedEventArgs e)
         {
             i_Channel = channelSelector.SelectedChannel;
-            midiInfo.LoadChannelNotes(i_Channel);
+            //midiInfo.LoadChannelNotes(i_Channel);
             midiPlayer.PersistentChannel = i_Channel;
             HideSubCanvas();
             ResetSubCanvas(true);
@@ -420,7 +476,7 @@ namespace Symphonary
                 TextReader tr = new StreamReader("settings.ini");
                 returner = Convert.ToInt32(tr.ReadLine());
                 tr.Close();
-            } catch (Exception e) { }
+            } catch (Exception) { }
             return returner;
         }
 
@@ -520,36 +576,26 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Size_Changed(object sender, RoutedEventArgs e) 
+        private void Size_Changed(object sender, RoutedEventArgs e)
         {
-           r_HeaderBackground.Width = window.ActualWidth;
+            NotifyPropertyChanged("LogoMargin");
+            NotifyPropertyChanged("ProgressBarMargin");
+            NotifyPropertyChanged("KeyLineMargin");
+
+            r_HeaderBackground.Width = window.ActualWidth;
             ScaleTransform sc;
             if (hInst == 1) {
                 sc = new ScaleTransform(1, 2);
-                r_KeyLine.Height = window.ActualHeight;
+                keyLine.Height = window.ActualHeight;
             }
             else {
                 sc = new ScaleTransform(2, 1);
-                r_KeyLine.Width = window.ActualWidth;
+                keyLine.Width = window.ActualWidth;
             }
-
-            int progressBarX = (int)(((window.ActualWidth / 2) - 200) / 9) * 9;
-            int progressBarY = (int)(((window.ActualHeight / 2) - 4) / 9) * 9;
-            progressBar.Margin = new Thickness(progressBarX + 1, progressBarY + 1, 0, 0);
-
-            int NormalLogoX = (int)(((window.ActualWidth / 2) - 310) / 9) * 9;
-            int NormalLogoY = (int)(((window.ActualHeight / 2) - 125) / 9) * 9;
-            NormalLogo.Margin = new Thickness(NormalLogoX + 1, NormalLogoY + 1, 0, 0);
-
-            int LogoX = (int)(((window.ActualWidth / 2) - 310) / 9) * 9;
-            int LogoY = (int)(((window.ActualHeight / 2) - 125) / 9) * 9;
-            Logo.Margin = new Thickness(LogoX + 1, LogoY + 1, 0, 0);
-                        
+            
             gridlines.LayoutTransform = sc;
             gridlines.UpdateLayout();
             canv.Width = window.ActualWidth;
-            r_KeyLine.Margin = new Thickness((r_instrument[0].PointToScreen(new Point(r_instrument[0].ActualWidth, r_instrument[0].ActualHeight)) - r_instrument[0].PointToScreen(new Point(0, 0))).X, 0, 0, 0);
-
         }
 
         /// <summary>
@@ -697,7 +743,7 @@ namespace Symphonary
             long lastNote = 0;
             long firstStart = 0;
             long smallestNoteLength = 0;
-            foreach (Note note in midiInfo.l_Notes) {
+            foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
                 j++;
                 if (smallestNoteLength == 0)
                     smallestNoteLength = note.li_EndTime - note.li_BeginTime;
@@ -715,11 +761,14 @@ namespace Symphonary
 
 
             DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
-            for (int i = j - 1; i >= 0; i--) {
+            Note noteTemp;
+            for (int i = j - 1; i >= 0; i--)
+            {
+                noteTemp = midiInfo.notesForAllChannels[i_Channel][i];
                 if (i == j - 1) {
-                    firstStart = midiInfo.l_Notes[i].li_BeginTime / 10;
+                    firstStart = noteTemp.li_BeginTime / 10;
                 }
-                Fingering(midiInfo.l_Notes[i].i_NoteNumber, instrument, (long)midiInfo.l_Notes[i].li_BeginTime / 10, (long)midiInfo.l_Notes[i].li_EndTime / 10);
+                Fingering(noteTemp.i_NoteNumber, instrument, noteTemp.li_BeginTime / 10, noteTemp.li_EndTime / 10);
             }
         }
 
@@ -737,9 +786,9 @@ namespace Symphonary
         }
 
 
-        long previousTime;
-        long currentTime;
-        long frameCount = 0;
+        private long previousTime;
+        private long currentTime;
+        private long frameCount = 0;
         /// <summary>
         /// Updates canvas position
         /// </summary>
@@ -778,7 +827,7 @@ namespace Symphonary
         private void HideCanvasChildren() 
         {
             r_HeaderBackground.Visibility = Visibility.Hidden;
-            r_KeyLine.Visibility = Visibility.Hidden;
+            keyLine.Visibility = Visibility.Hidden;
             tb_ScoreDisplay.Visibility = Visibility.Hidden;
             tb_SongTitle.Visibility = Visibility.Hidden;
             for (int i = 0; i < r_instrument.Length; i++) {
@@ -793,7 +842,7 @@ namespace Symphonary
         private void ShowCanvasChildren() 
         {
             r_HeaderBackground.Visibility = Visibility.Visible;
-            r_KeyLine.Visibility = Visibility.Visible;
+            keyLine.Visibility = Visibility.Visible;
             tb_ScoreDisplay.Visibility = Visibility.Visible;
             tb_SongTitle.Visibility = Visibility.Visible;
             for (int i = 0; i < r_instrument.Length; i++) {

@@ -34,6 +34,11 @@ namespace Symphonary
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="midiInfo"></param>
+        /// <param name="i_Channel"></param>
         public void Refresh(ref MidiInfo midiInfo, int i_Channel)
         {
             _Channels.Clear();
@@ -46,8 +51,8 @@ namespace Symphonary
                                       {
                                           i_ChannelNumber = i,
                                           s_Instrument = midiInfo.a_ChannelInstrumentNames[i],
-                                          //i_NoteCount = midiInfo.midiEventCollection[i + 1].Count// this is not right
-                                          i_NoteCount = -1
+                                          i_NoteCount = midiInfo.notesForAllChannels[i].Count
+                                          //i_NoteCount = -1
                                       });
                 }
             }
