@@ -5,7 +5,7 @@
         KeyUp="NWGUI_KeyUp" KeyDown="NWGUI_KeyDown"
         xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"             
         xmlns:Symphonary="clr-namespace:Symphonary"
-        Width="1280" Height="744" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
+        Width="1280" Height="744" Closing="WindowClosing" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
     
     <Grid Name="grid">
         <Grid.Resources>
@@ -20,20 +20,16 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                <MenuItem Header="_Open" Click="Open_Clicked" Grid.Column="0"/>
-
-                <MenuItem Header="_Run" Grid.Column="1">
-                    <MenuItem Name="Start" Header="_Start" Click="Start_Clicked" />
-                    <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked"/>
-                </MenuItem>
+                
+                <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked"/>
 
                 <MenuItem Header="_Options" Grid.Column="2">
                     <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
@@ -48,8 +44,7 @@
 
                 <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="5" Focusable="False" IsHitTestVisible="False" />
                 <MenuItem Name="Console" Header="_Console" Click="Debug_Clicked" Grid.Column="6"/>
-                <MenuItem Name="FullScreen" Header="_Full Screen" Click="Fullscreen_Clicked" HorizontalAlignment="Right" Grid.Column="7"/>
-
+                <MenuItem Name="FullScreen" Header="_Full Screen    " Click="Fullscreen_Clicked" HorizontalAlignment="Left" Grid.Column="7"/>
             </Menu>
         </StackPanel>
         <DockPanel Name="r_HeaderBackground" VerticalAlignment="Top" Height="50" Canvas.ZIndex="1" Margin="0,22,0,0">
@@ -66,7 +61,6 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
             <TextBlock Text="Select channel:" Grid.Row="0" Grid.Column="0" Margin="10"/>
             <TextBlock Text="Select serial port:" Grid.Row="0" Grid.Column="1" Margin="10"/>
             <ListView Name="channelsListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
@@ -86,8 +80,10 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-
             <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="ListViewGridDone_Clicked">Done</Button>
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
         </Grid>
         <Grid Name="loadingScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
             <Grid.Background>
@@ -101,15 +97,16 @@
             </Canvas>
         </Grid>
         <Grid Name="aboutScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
-            <Grid.Background>
-                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
-            </Grid.Background>
-            <Canvas>
+           <Canvas>
                 <Image Source="../Images/logo.png" 
                        Width="620" Height="251" 
                        Margin="{Binding Path=LogoMargin, ElementName=window}"
                        Name="logo"></Image>
-            </Canvas>
+                <Button Click="About_Clicked" Width="100" Height="30" Margin="120, 210, 0, 0">About</Button>
+           </Canvas>
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
         </Grid>
         <Grid Name="normal" Visibility="Visible" Margin="0, 22, 0, 0">
             <Canvas>
@@ -118,8 +115,8 @@
                        Margin="{Binding Path=LogoMargin, ElementName=window}"
                        Name="normalLogo"></Image>
             </Canvas>
-            <Button Click="Open_Clicked" Width="100" Height="30">Open</Button>
-            <!--<Button Click="About_Clicked" Width="100" Height="30">About</Button>-->
+            <Button Click="Open_Clicked" Width="100" Height="30" Margin="-120, 210, 0, 0">Open</Button>
+            <Button Click="About_Clicked" Width="100" Height="30" Margin="120, 210, 0, 0">About</Button>
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>

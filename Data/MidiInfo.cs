@@ -32,6 +32,7 @@ namespace Symphonary
 
     public class MidiInfo
     {
+        public DebugWindow debugConsole;
         // length of 1 tick = microseconds per beat / 60 
 
         public double d_MilisecondsPerQuarterNote;
@@ -77,8 +78,9 @@ namespace Symphonary
         /// </summary>
         /// <param name="s_Filename"></param>
         /// <param name="i_Channel"></param>
-        public MidiInfo()
+        public MidiInfo(DebugWindow console)
         {
+            debugConsole = console;
             for (int channel = 0; channel < 16; channel++)
             {
                 notesForAllChannels[channel] = new List<Note>();
@@ -146,7 +148,7 @@ namespace Symphonary
         //            }
         //            else
         //            {
-        //                MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+        //                debugConsole.AddText("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
         //            }
         //        }
         //        else if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
@@ -158,7 +160,7 @@ namespace Symphonary
         //            }
         //            catch (ArgumentException e)
         //            {
-        //                MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
+        //                debugConsole.AddText("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
         //            }
         //        }
         //        else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack)
@@ -170,7 +172,7 @@ namespace Symphonary
 
         //    if (d_NoteOnTimes.Count != 0)
         //    {
-        //        MessageBox.Show("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
+        //        debugConsole.AddText("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
         //    }
 
         //    return true;
@@ -336,7 +338,7 @@ namespace Symphonary
                             d_NoteOnTimes.Remove(noteOff.NoteNumber);
                         }
                         else {
-                            MessageBox.Show("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
+                            debugConsole.AddText("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
                         }
                     }
                     else if (midiEvent.CommandCode == MidiCommandCode.NoteOn) {
@@ -345,7 +347,7 @@ namespace Symphonary
                             d_NoteOnTimes.Add(noteOn.NoteNumber, ActualTime(noteOn.AbsoluteTime));
                         }
                         catch (ArgumentException e) {
-                            MessageBox.Show("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
+                            debugConsole.AddText("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
                         }
                     }
                     else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack) {
@@ -355,7 +357,7 @@ namespace Symphonary
                 }
 
                 if (d_NoteOnTimes.Count != 0) {
-                    MessageBox.Show("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
+                    debugConsole.AddText("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
                 }
             }
         }

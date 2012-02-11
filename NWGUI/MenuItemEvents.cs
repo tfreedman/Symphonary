@@ -21,13 +21,13 @@ namespace Symphonary
                 WindowStyle = WindowStyle.SingleBorderWindow;
                 Topmost = false;
                 WindowState = WindowState.Normal;
-                FullScreen.Header = "Full Screen";
+                FullScreen.Header = "Full Screen    ";
             }
             else {
                 WindowStyle = WindowStyle.None;
                 Topmost = true;
                 WindowState = WindowState.Maximized;
-                FullScreen.Header = "Undo Full Screen";
+                FullScreen.Header = "Undo Full Screen    ";
             }
             Size_Changed(this, e);
             isFullScreen = !isFullScreen;
@@ -58,7 +58,6 @@ namespace Symphonary
                     return;
                 }
 
-                Start.IsEnabled = false;
                 Stop.IsEnabled = true;
                 Instruments.IsEnabled = false;
 
@@ -88,7 +87,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Stop_Clicked(object sender, RoutedEventArgs e)
         {
-            Start.IsEnabled = true;
+            debugConsole.ChangeText("");
             Stop.IsEnabled = false;
             Instruments.IsEnabled = true;
             Instrument_Clicked(instrument);
@@ -148,7 +147,6 @@ namespace Symphonary
                 //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
 
                 midiInfo.Refresh(openFileDialog.FileName, i_Channel);
-                Start.IsEnabled = true;
             }
 
         }
@@ -391,12 +389,15 @@ namespace Symphonary
         /// <param name="e"></param>
         private void About_Clicked(object sender, RoutedEventArgs e)
         {
-            if (aboutScreen.Visibility == Visibility.Visible)
+            if (aboutScreen.Visibility == Visibility.Visible) {
                 aboutScreen.Visibility = Visibility.Hidden;
-            else
+                normal.Visibility = Visibility.Visible;
+            }
+            else {
                 aboutScreen.Visibility = Visibility.Visible;
-
-            /* Border[] myRect = new Border[10000];
+                normal.Visibility = Visibility.Hidden;
+            }
+            /*Border[] myRect = new Border[10000];
             Random random = new Random();
             for (int i = 0; i < 10000; i++) {
                 myRect[i] = new System.Windows.Controls.Border();
@@ -406,7 +407,7 @@ namespace Symphonary
                 myRect[i].Background = new SolidColorBrush(Color.FromRgb(a, a, a));
                 myRect[i].Height = 9;
                 myRect[i].Width = 9;
-                about_Background.Children.Add(myRect[i]);
+                aboutScreen.Children.Add(myRect[i]);
             }*/
 
         }

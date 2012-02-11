@@ -38,7 +38,7 @@ namespace Symphonary
 
         private double i_InitialCanvasPosY;
 
-        private DebugWindow debugConsole;
+        private DebugWindow debugConsole = new DebugWindow();
         
         private long starterTime = 0;
         
@@ -47,7 +47,7 @@ namespace Symphonary
         private double scrollSpeed = 2.00000;
         private double multiplier = 1;
         private MidiPlayer midiPlayer;
-        private MidiInfo midiInfo = new MidiInfo();
+        private MidiInfo midiInfo;
 
         private Rectangle[] r_instrument;
         private TextBlock[] tb_instrument;
@@ -97,9 +97,9 @@ namespace Symphonary
         /// </summary>
         public NWGUI() 
         {
+            midiInfo = new MidiInfo(debugConsole);
             InitializeComponent();
             Stop.IsEnabled = false;
-            Start.IsEnabled = false;
 
             instrument = ReadSettingsFromFile();
             if (instrument != 0) {
@@ -290,7 +290,7 @@ namespace Symphonary
                 textBlock.Height = 50;
                 textBlock.Width = 50;
                 r.Height = 46;
-                int[,] guitar = new int[6, 2] { { 64, 68 }, { 59, 63 }, { 55, 58 }, { 50, 54 }, { 45, 49 }, { 40, 44 } };
+                int[,] guitar = new int[6, 2] { { 64, 80 }, { 59, 63 }, { 55, 58 }, { 50, 54 }, { 45, 49 }, { 40, 44 } };
                 int[] ctrl_guitar = {1,8,9,10,0,2,6};
                 for (int i = guitar.GetLength(0); i > 0; i--) {
                     if (note >= guitar[i-1,0] && note <= guitar[i-1,1]) {
@@ -683,7 +683,7 @@ namespace Symphonary
         private void HandleMIDIPlayingCompleted(object sender, EventArgs e) 
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(delegate() {
-                Start.IsEnabled = true;
+                debugConsole.ChangeText("");
                 Stop.IsEnabled = false;
                 Instruments.IsEnabled = true;
                 Instrument_Clicked(instrument);
@@ -879,6 +879,8 @@ namespace Symphonary
         /// </summary>
         private void HideSubCanvas() 
         {
+            r_HeaderBackground.Visibility = Visibility.Hidden;
+            keyLine.Visibility = Visibility.Hidden;
             subcanv.Visibility = Visibility.Hidden;
             gridlines.Visibility = Visibility.Hidden;
         }
@@ -898,6 +900,16 @@ namespace Symphonary
                                                      score.ScoreGrade(midiPlayer.NumChannelNotesPlayed));
             }
             catch (NullReferenceException ex) { }
+        }
+
+        /// <summary>
+        /// Kills all open windows on app shutdown
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void WindowClosing(object sender, CancelEventArgs e)
+        {
+            App.Current.Shutdown();
         }
 
         /// <summary>
