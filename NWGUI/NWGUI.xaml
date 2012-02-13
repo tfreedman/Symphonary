@@ -32,14 +32,14 @@
                 <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked"/>
 
                 <MenuItem Header="_Options" Grid.Column="2">
-                    <MenuItem Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
+                    <MenuItem Background="Black" Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
                 </MenuItem>
 
                 <MenuItem Name="Instruments" Header="_Instruments" Grid.Column="3">
-                    <MenuItem Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>
-                    <MenuItem Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="74"/>
-                    <MenuItem Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="30"/>
-                    <MenuItem Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
+                    <MenuItem Background="Black" Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>
+                    <MenuItem Background="Black" Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="74"/>
+                    <MenuItem Background="Black" Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="30"/>
+                    <MenuItem Background="Black" Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
                 </MenuItem>
 
                 <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="5" Focusable="False" IsHitTestVisible="False" />
@@ -80,7 +80,11 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="ListViewGridDone_Clicked">Done</Button>
+            <StackPanel Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Height="30" Name="previewChannelButton" Width="200" Margin="10,0,0,0" Click="PreviewChannel_Clicked">Preview Channel</Button>
+                <Button Height="30" Width="100" Margin="10,0,0,0" Click="ListViewGridDone_Clicked">Done</Button>
+            </StackPanel>
+            
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>

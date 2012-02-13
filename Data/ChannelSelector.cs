@@ -21,17 +21,10 @@ namespace Symphonary
         private ObservableCollection<Channel> _Channels = new ObservableCollection<Channel>();
         private ListView channelsListView;
 
-        public ChannelSelector(ListView channelsListView)
+        public ChannelSelector(ListView channelsListView, SelectionChangedEventHandler extChannelsListViewSelectionChanged)
         {
             this.channelsListView = channelsListView;
-            
-            //_Channels.Add(new Channel
-            //                  {
-            //                      i_ChannelNumber = 0,
-            //                      s_Instrument = "THIS IS A TEST",
-            //                      i_NoteCount = 42
-            //                  });
-
+            this.channelsListView.SelectionChanged += extChannelsListViewSelectionChanged;
         }
 
         /// <summary>

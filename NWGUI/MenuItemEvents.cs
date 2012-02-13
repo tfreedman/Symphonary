@@ -141,8 +141,13 @@ namespace Symphonary
                 loadingScreen.Visibility = Visibility.Visible;
                 i_Channel = -1;
 
-                midiPlayer = new MidiPlayer(openFileDialog.FileName, HandleMIDILoadProgressChanged,
-                    HandleMIDILoadCompleted, HandleMIDIChannelMessagePlayed, HandleMIDIPlayingCompleted);
+                midiPlayer = new MidiPlayer(
+                    openFileDialog.FileName, 
+                    HandleMIDILoadProgressChanged, 
+                    HandleMIDILoadCompleted,
+                    HandleMIDIChannelMessagePlayed, 
+                    HandleMIDIPlayingCompleted);
+                //midiPlayerForPreview = new MidiPlayer(midiPlayer.Sequence, midiPlayer.Sequencer);
 
                 //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
 
@@ -217,7 +222,7 @@ namespace Symphonary
                 return;
             }
 
-            channelSelector = new ChannelSelector(channelsListView);
+            //channelSelector = new ChannelSelector(channelsListView);
             //channelSelector.Show();
         }
 

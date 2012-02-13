@@ -46,7 +46,7 @@ namespace Symphonary
         
         private double scrollSpeed = 2.00000;
         private double multiplier = 1;
-        private MidiPlayer midiPlayer;
+        private MidiPlayer midiPlayer, midiPlayerForPreview;
         private MidiInfo midiInfo;
 
         private Rectangle[] r_instrument;
@@ -97,8 +97,10 @@ namespace Symphonary
         /// </summary>
         public NWGUI() 
         {
-            midiInfo = new MidiInfo(debugConsole);
             InitializeComponent();
+
+            midiInfo = new MidiInfo(debugConsole);
+            
             Stop.IsEnabled = false;
 
             instrument = ReadSettingsFromFile();
@@ -131,7 +133,7 @@ namespace Symphonary
             serialPortReadThread = new Thread(new ThreadStart(GetSerialData));
             serialPortReadThread.Start();
 
-            channelSelector = new ChannelSelector(channelsListView);
+            channelSelector = new ChannelSelector(channelsListView, ChannelsListViewSelectionChanged);
             channelsListView.DataContext = channelSelector.Channels;
             serialPortSelector = new SerialPortSelector(serialPortsListView);
             serialPortsListView.DataContext = serialPortSelector.SerialPorts;
@@ -405,6 +407,23 @@ namespace Symphonary
             }
         }
 
+
+        /// <summary>
+        /// Event handler for the "Preview Channel" button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PreviewChannel_Clicked(object sender, RoutedEventArgs e)
+        {
+            midiPlayer.PersistentChannel = channelSelector.SelectedChannel;
+
+            if (midiPlayer.PersistentChannel >= 0)
+            {
+                midiPlayer.StartPlaying();
+                previewChannelButton.Foreground = Brushes.Green;
+            }
+        }
+
         /// <summary>
         /// Event handler for the "Done" button below the two listviews for channel and serial port selection
         /// </summary>
@@ -413,11 +432,13 @@ namespace Symphonary
         private void ListViewGridDone_Clicked(object sender, RoutedEventArgs e)
         {
             i_Channel = channelSelector.SelectedChannel;
-            //midiInfo.LoadChannelNotes(i_Channel);
             midiPlayer.PersistentChannel = i_Channel;
+
+            MidiPlayerExitPreviewMode();
+            midiPlayer.StopPlaying();
+
             HideSubCanvas();
             ResetSubCanvas(true);
-            //InitializeCanvas();
             InitializeSubCanvas();
 
             s_SelectedSerialPort = serialPortSelector.SelectedSerialPort;
@@ -453,6 +474,34 @@ namespace Symphonary
             MenuItem sender = new MenuItem { Tag = num };
             Instrument_Clicked(sender, e);
         }
+
+
+        /// <summary>
+        /// Configure player for preview mode, stashes settings for which channels are played,
+        /// detaches event handlers related to gameplay, attaches preview completion event handler
+        /// </summary>
+        private void MidiPlayerEnterPreviewMode()
+        {
+            midiPlayer.StashChannelPlaySettings();
+            midiPlayer.UnHookExternalPlaybackEventHandles();
+            midiPlayer.PlayPersistentChannel = true;
+            midiPlayer.PlayOtherChannels = false;            
+            midiPlayer.Sequencer.PlayingCompleted += HandleMIDIPreviewPlayingCompleted;
+        }
+
+        /// <summary>
+        /// Resets player configuration from preview mode, restores settings for which channels are played,
+        /// re-attaches event handlers related to gameplay, detaches preview completion event handler
+        /// </summary>
+        private void MidiPlayerExitPreviewMode()
+        {
+            midiPlayer.RecoverChannelPlaySettings();
+            midiPlayer.ReattachExternalPlaybackEventHandles();
+            //midiPlayer.Sequencer.ChannelMessagePlayed += HandleMIDIChannelMessagePlayed;
+            //midiPlayer.Sequencer.PlayingCompleted += HandleMIDIPlayingCompleted;
+            midiPlayer.Sequencer.PlayingCompleted -= HandleMIDIPreviewPlayingCompleted;
+        }
+
 
         /// <summary>
         /// 
@@ -663,6 +712,8 @@ namespace Symphonary
             serialPortSelector.Refresh(s_SelectedSerialPort);
             
             listViewGrid.Visibility = Visibility.Visible;
+
+            MidiPlayerEnterPreviewMode();
         }
 
         /// <summary>
@@ -680,18 +731,47 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleMIDIPlayingCompleted(object sender, EventArgs e) 
+        private void HandleMIDIPlayingCompleted(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(delegate() {
-                debugConsole.ChangeText("");
-                Stop.IsEnabled = false;
-                Instruments.IsEnabled = true;
-                Instrument_Clicked(instrument);
-                HideSubCanvas();
-                normal.Visibility = Visibility.Visible;
-                b_AnimationStarted = false;
-                CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
-            }));
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                   new Action(delegate()
+                                                  {
+                                                      debugConsole.ChangeText("");
+                                                      Stop.IsEnabled = false;
+                                                      Instruments.IsEnabled = true;
+                                                      Instrument_Clicked(instrument);
+                                                      HideSubCanvas();
+                                                      normal.Visibility = Visibility.Visible;
+                                                      b_AnimationStarted = false;
+                                                      CompositionTarget.Rendering -=
+                                                          new EventHandler(MoveCanvas);
+                                                  }));
+        }
+
+        /// <summary>
+        /// Do these procedures when the channel preview has finished playing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleMIDIPreviewPlayingCompleted(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                   new Action(delegate()
+                                                  {
+                                                      previewChannelButton.Foreground
+                                                          = Brushes.Black;
+                                                  }));
+        }
+
+        /// <summary>
+        /// When the selection on the Channels list view of the Channel Selector changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChannelsListViewSelectionChanged(object sender, EventArgs e)
+        {
+            midiPlayer.StopPlaying();
+            previewChannelButton.Foreground = Brushes.Black;
         }
 
         /// <summary>

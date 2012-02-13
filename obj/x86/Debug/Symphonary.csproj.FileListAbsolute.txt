@@ -109,3 +109,4 @@ C:\Users\Tyler\Symphonary\obj\x86\Debug\App.baml
 C:\Users\Tyler\Symphonary\obj\x86\Debug\ExpressionDark.baml
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\ExpressionDark.baml
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.baml
+E:\miditool\Symphonary\Symphonary\bin\Debug\WPFToolkit.pdb

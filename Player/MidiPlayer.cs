@@ -12,15 +12,24 @@ namespace Symphonary
     public class MidiPlayer
     {
         private bool b_FinishedLoading = false;
-        private bool b_MuteOtherTracks = false;
+        //private bool b_MuteOtherTracks = false;
         private bool b_Playing = false;
-        private bool b_PlayPersistentChannel = true;        
         private bool b_ProgramClosing = false;
         
         private ChannelStopper channelStopper = new ChannelStopper();
         private OutputDevice outputDevice = new OutputDevice(0);
+        
         private Sequence sequence = new Sequence();
+        public Sequence Sequence
+        {
+            get { return sequence; }
+        }
+
         private Sequencer sequencer = new Sequencer();
+        public Sequencer Sequencer
+        {
+            get { return sequencer; }
+        }
 
         private int i_PersistentChannel = -1;
         private int i_NumChannelNotesPlayed = 0;
@@ -28,6 +37,9 @@ namespace Symphonary
         
         // lame hack is lame
         public ArrayList al_CurrentPlayingChannelNotes = new ArrayList();
+
+        private EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed;
+        private EventHandler extHandlePlayingCompleted;
 
         /// <summary>
         /// Constructor for the class. Several additional event handlers are hooked up, these are for driving changes in the UI
@@ -38,10 +50,10 @@ namespace Symphonary
         /// <param name="extHandleChannelMessagePlayed">external event handler for channel message played</param>
         /// <param name="extHandlePlayingCompleted">external event handler for loading completed</param>
         public MidiPlayer(string s_Filename,
-            System.ComponentModel.ProgressChangedEventHandler extHandleLoadProgressChanged,
-            System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> extHandleLoadCompleted,
-            System.EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed,
-            System.EventHandler extHandlePlayingCompleted)
+            ProgressChangedEventHandler extHandleLoadProgressChanged,
+            EventHandler<AsyncCompletedEventArgs> extHandleLoadCompleted,
+            EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed,
+            EventHandler extHandlePlayingCompleted)
         {
             sequence.Format = 1;
             sequence.LoadProgressChanged += extHandleLoadProgressChanged;
@@ -56,17 +68,27 @@ namespace Symphonary
             sequencer.Stopped += HandleStopped;
             sequencer.PlayingCompleted += HandlePlayingCompleted;
             sequencer.PlayingCompleted += extHandlePlayingCompleted;
+
+            this.extHandleChannelMessagePlayed = extHandleChannelMessagePlayed;
+            this.extHandlePlayingCompleted = extHandlePlayingCompleted;
+
+            PlayPersistentChannel = true;
+            PlayOtherChannels = true;
+
+            
         }
 
+        
         /// <summary>
         /// Gets or sets whether to play the persistent channel
         /// </summary>
-        public bool PlayPersistentChannel
-        {
-            get { return b_PlayPersistentChannel; }
-            set { b_PlayPersistentChannel = value; }
-        }
-        
+        public bool PlayPersistentChannel { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to play the other non-persistent channels
+        /// </summary>
+        public bool PlayOtherChannels { get; set; }
+
         /// <summary>
         /// Property to indicate whether file has finished loading
         /// </summary>
@@ -105,6 +127,44 @@ namespace Symphonary
         }
 
 
+        private bool playPersistentChannelStashed, playOtherChannelsStashed; 
+
+        /// <summary>
+        /// Used by preview mode
+        /// </summary>
+        public void StashChannelPlaySettings()
+        {
+            playPersistentChannelStashed = PlayPersistentChannel;
+            playOtherChannelsStashed = PlayOtherChannels;
+        }
+
+        /// <summary>
+        /// Used by preview mode
+        /// </summary>
+        public void RecoverChannelPlaySettings()
+        {
+            PlayPersistentChannel = playPersistentChannelStashed;
+            PlayOtherChannels = playOtherChannelsStashed;
+        }
+
+        /// <summary>
+        /// Used by preview mode
+        /// </summary>
+        public void UnHookExternalPlaybackEventHandles()
+        {
+            sequencer.ChannelMessagePlayed -= extHandleChannelMessagePlayed;
+            sequencer.PlayingCompleted -= extHandlePlayingCompleted;
+        }
+
+        /// <summary>
+        /// Used by preview mode
+        /// </summary>
+        public void ReattachExternalPlaybackEventHandles()
+        {
+            sequencer.ChannelMessagePlayed += extHandleChannelMessagePlayed;
+            sequencer.PlayingCompleted += extHandlePlayingCompleted;
+        }
+
         /// <summary>
         /// Mutes all channels in the MIDI file. This is used to get rid of "hanging" notes when the MIDI 
         /// file stops playing
@@ -122,7 +182,7 @@ namespace Symphonary
         /// </summary>
         public void MuteOtherChannels()
         {
-            b_MuteOtherTracks = true;
+            PlayOtherChannels = false;
             for (int i = 0; i < 16; i++)
             {
                 if (i != i_PersistentChannel)
@@ -139,7 +199,7 @@ namespace Symphonary
         /// </summary>
         public void UnmuteOtherChannels()
         {
-            b_MuteOtherTracks = false;
+            PlayOtherChannels = true;
         }
 
         /// <summary>
@@ -194,9 +254,15 @@ namespace Symphonary
             if (b_ProgramClosing) // don't try playing anything if program is closing
                 return;
 
-            if (b_MuteOtherTracks && e.Message.MidiChannel != i_PersistentChannel)
-                return;
+            // always play NoteOff messages
+            if (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0)
+            {
+                if (!PlayOtherChannels && e.Message.MidiChannel != i_PersistentChannel)
+                    return;
 
+                if (!PlayPersistentChannel && e.Message.MidiChannel == i_PersistentChannel)
+                    return;
+            }
 
             if (e.Message.MidiChannel == i_PersistentChannel)
             {
@@ -211,11 +277,7 @@ namespace Symphonary
                 }
             }
 
-            if (e.Message.MidiChannel != i_PersistentChannel || b_PlayPersistentChannel ||
-                ((e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 <= 0) || e.Message.Command == ChannelCommand.NoteOff))
-            {
-                outputDevice.Send(e.Message);
-            }
+            outputDevice.Send(e.Message);              
         }
 
         /// <summary>
