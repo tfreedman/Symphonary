@@ -11,21 +11,21 @@ namespace Symphonary
 {
     public class Note
     {
-        public int i_NoteNumber;
-        public long li_BeginTime;
-        public long li_EndTime;
+        public int NoteNumber;
+        public long BeginTime;
+        public long EndTime;
         
         /// <summary>
-        /// Constructor
+        /// 
         /// </summary>
-        /// <param name="i_NoteNumber"></param>
-        /// <param name="li_BeginTime"></param>
-        /// <param name="li_EndTime"></param>
-        public Note(int i_NoteNumber, long li_BeginTime, long li_EndTime)
+        /// <param name="noteNumber"></param>
+        /// <param name="beginTime"></param>
+        /// <param name="endTime"></param>
+        public Note(int noteNumber, long beginTime, long endTime)
         {
-            this.i_NoteNumber = i_NoteNumber;
-            this.li_BeginTime = li_BeginTime;
-            this.li_EndTime = li_EndTime;
+            this.NoteNumber = noteNumber;
+            this.BeginTime = beginTime;
+            this.EndTime = endTime;
         }
     } // end Note
 
@@ -114,69 +114,6 @@ namespace Symphonary
             }
         }
 
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="i_Channel"></param>
-        ///// <returns></returns>
-        //public bool LoadChannelNotes(int i_Channel)
-        //{
-        //    if (i_Channel < 0 || i_Channel > 15 || !a_UsedChannels[i_Channel])
-        //    {
-        //        return false;
-        //    }
-
-        //    l_Notes.Clear();
-
-        //    Dictionary<int, long> d_NoteOnTimes = new Dictionary<int, long>();
-
-        //    for (int i = 0; i < midiEventCollection[a_ExistingChannelOrder[i_Channel]].Count; i++)
-        //    {
-        //        MidiEvent midiEvent = midiEventCollection[a_ExistingChannelOrder[i_Channel]][i];
-
-        //        if (midiEvent.CommandCode == MidiCommandCode.NoteOff ||
-        //            midiEvent.CommandCode == MidiCommandCode.NoteOn && ((NoteOnEvent)midiEvent).Velocity == 0)
-        //        {
-        //            NoteEvent noteOff = (NoteEvent)midiEvent;
-        //            long noteOnTime;
-        //            if (d_NoteOnTimes.TryGetValue(noteOff.NoteNumber, out noteOnTime))
-        //            {
-        //                l_Notes.Add(new Note(noteOff.NoteNumber, noteOnTime, ActualTime(noteOff.AbsoluteTime)));
-        //                d_NoteOnTimes.Remove(noteOff.NoteNumber);
-        //                //noteOff.
-        //            }
-        //            else
-        //            {
-        //                debugConsole.AddText("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
-        //            }
-        //        }
-        //        else if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
-        //        {
-        //            NoteOnEvent noteOn = (NoteOnEvent)midiEvent;
-        //            try
-        //            {
-        //                d_NoteOnTimes.Add(noteOn.NoteNumber, ActualTime(noteOn.AbsoluteTime));
-        //            }
-        //            catch (ArgumentException e)
-        //            {
-        //                debugConsole.AddText("Error: an event with NoteNumber " + noteOn.NoteNumber + " already exists");
-        //            }
-        //        }
-        //        else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack)
-        //        {
-        //            i_EndTime = ActualTime(midiEvent.AbsoluteTime);
-        //            break;
-        //        }
-        //    }
-
-        //    if (d_NoteOnTimes.Count != 0)
-        //    {
-        //        debugConsole.AddText("Error: there are still " + d_NoteOnTimes.Count + " NoteOn events for which there were no NoteOff event");
-        //    }
-
-        //    return true;
-        //}
 
         /// <summary>
         /// Calcuates the actual clock time given the time unit found in MIDI file

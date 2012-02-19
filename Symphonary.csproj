@@ -84,6 +84,8 @@
     <Compile Include="Data\MidiInfo.cs" />
     <Compile Include="Data\NoteMatcher.cs" />
     <Compile Include="Data\SerialPortSelector.cs" />
+    <Compile Include="Data\StringAllocator.cs" />
+    <Compile Include="Data\Transposer.cs" />
     <Compile Include="NWGUI\MenuItemEvents.cs" />
     <Compile Include="NWGUI\MenuItemExtensions.cs" />
     <Compile Include="Player\MidiPlayer.cs" />

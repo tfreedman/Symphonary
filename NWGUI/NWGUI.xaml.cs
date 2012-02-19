@@ -91,6 +91,8 @@ namespace Symphonary
 
         private ChannelSelector channelSelector;
         private SerialPortSelector serialPortSelector;
+
+        private StringAllocator stringAllocator = new StringAllocator();
         
         /// <summary>
         /// Constructor for window
@@ -248,7 +250,7 @@ namespace Symphonary
         /// <param name="instrument"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
-        private void Fingering(int note, int instrument, long startTime, long endTime) 
+        private void Fingering(int note, int instrument, long startTime, long endTime, int fretNumber, int stringNumber) 
         {
             string noteString = "";
             TextBlock textBlock = new TextBlock();
@@ -256,8 +258,8 @@ namespace Symphonary
             textBlock.FontWeight = FontWeights.Bold;
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
-            RoutedEventArgs e = new RoutedEventArgs();
-            Size_Changed(this, e);
+            //RoutedEventArgs e = new RoutedEventArgs();
+            //Size_Changed(this, e);
             Canvas.SetZIndex(textBlock, (int)99);
             Rectangle r = new Rectangle();
             r.StrokeThickness = 2;
@@ -293,16 +295,41 @@ namespace Symphonary
                 textBlock.Width = 50;
                 r.Height = 46;
                 int[,] guitar = new int[6, 2] { { 64, 80 }, { 59, 63 }, { 55, 58 }, { 50, 54 }, { 45, 49 }, { 40, 44 } };
-                int[] ctrl_guitar = {1,8,9,10,0,2,6};
-                for (int i = guitar.GetLength(0); i > 0; i--) {
-                    if (note >= guitar[i-1,0] && note <= guitar[i-1,1]) {
+                int[] ctrl_guitar = { 1, 8, 9, 10, 0, 2, 6 }; // color data begins at index 1
+                /*
+                for (int i = guitar.GetLength(0); i > 0; i--)
+                {
+                    if (note >= guitar[i - 1, 0] && note <= guitar[i - 1, 1])
+                    {
                         textBlock.Text = Convert.ToString(note - guitar[i - 1, 0]);
                         r.Fill = new SolidColorBrush(color[ctrl_guitar[i]]);
                         r.Stroke = new SolidColorBrush(border[ctrl_guitar[i]]);
-                        textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i-1) * (r.Height + padding))));
-                        r.SetValue(Canvas.TopProperty, (double)(margin + ((i-1)* (r.Height + padding))));
+                        textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i - 1)*(r.Height + padding))));
+                        r.SetValue(Canvas.TopProperty, (double) (margin + ((i - 1)*(r.Height + padding))));
                     }
                 }
+                */
+                /*
+                // index adjusted loop
+                for (int i = guitar.GetLength(0) - 1; i >= 0; i--) {
+                    if (note >= guitar[i, 0] && note <= guitar[i, 1]) {
+                        textBlock.Text = Convert.ToString(note - guitar[i, 0]);
+                        r.Fill = new SolidColorBrush(color[ctrl_guitar[i + 1]]);
+                        r.Stroke = new SolidColorBrush(border[ctrl_guitar[i + 1]]);
+                        textBlock.SetValue(Canvas.TopProperty, (5 + margin + (i * (r.Height + padding))));
+                        r.SetValue(Canvas.TopProperty, (margin + (i * (r.Height + padding))));
+                    }
+                }
+                */
+
+                // replaces loop above, makes use of given string and fret numbers
+                textBlock.Text = fretNumber.ToString();
+                textBlock.SetValue(Canvas.TopProperty, (5 + margin + (stringNumber * (r.Height + padding))));
+                r.Fill = new SolidColorBrush(color[ctrl_guitar[stringNumber + 1]]);
+                r.Stroke = new SolidColorBrush(border[ctrl_guitar[stringNumber + 1]]);
+                r.SetValue(Canvas.TopProperty, (margin + (stringNumber * (r.Height + padding))));
+
+
                 r.Width = (endTime - startTime) * multiplier;
                 textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
                 r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
@@ -316,8 +343,8 @@ namespace Symphonary
                 textBlock.Width = 50;
                 r.Height = 46;
 
-                int[,] bass = new int[4, 2] { { 28, 32 }, { 33, 37 }, { 38, 42 }, { 43, 47 }};
-                int[] ctrl_bass = { 1, 6, 2, 0, 10};
+                int[,] bass = new int[4, 2] { { 28, 32 }, { 33, 37 }, { 38, 42 }, { 43, 47 } };
+                int[] ctrl_bass = { 1, 6, 2, 0, 10 };
                 for (int i = bass.GetLength(0); i > 0; i--) {
                     if (note >= bass[i - 1, 0] && note <= bass[i - 1, 1]) {
                         textBlock.Text = Convert.ToString(note - bass[i - 1, 0]);
@@ -814,7 +841,7 @@ namespace Symphonary
         /// <summary>
         /// Initializes the inner scrolling canvas
         /// </summary>
-        private void InitializeSubCanvas() 
+        private void InitializeSubCanvas()
         {
             if (i_Channel < 0)
                 return;
@@ -826,11 +853,11 @@ namespace Symphonary
             foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
                 j++;
                 if (smallestNoteLength == 0)
-                    smallestNoteLength = note.li_EndTime - note.li_BeginTime;
-                else if (smallestNoteLength > (note.li_EndTime - note.li_BeginTime))
-                    smallestNoteLength = (note.li_EndTime - note.li_BeginTime);
-                if (note.li_EndTime > lastNote)
-                    lastNote = note.li_EndTime;
+                    smallestNoteLength = note.EndTime - note.BeginTime;
+                else if (smallestNoteLength > (note.EndTime - note.BeginTime))
+                    smallestNoteLength = (note.EndTime - note.BeginTime);
+                if (note.EndTime > lastNote)
+                    lastNote = note.EndTime;
             }
 
             if (smallestNoteLength < 300)
@@ -841,14 +868,64 @@ namespace Symphonary
 
 
             DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
-            Note noteTemp;
-            for (int i = j - 1; i >= 0; i--)
+
+
+            Note[] notesTempArray = new Note[midiInfo.notesForAllChannels[i_Channel].Count];
+            //MessageBox.Show("1");
             {
-                noteTemp = midiInfo.notesForAllChannels[i_Channel][i];
-                if (i == j - 1) {
-                    firstStart = noteTemp.li_BeginTime / 10;
+                int i = 0;
+                foreach (Note note in midiInfo.notesForAllChannels[i_Channel])
+                {
+                    notesTempArray[i] = note;
+                    i++;
                 }
-                Fingering(noteTemp.i_NoteNumber, instrument, noteTemp.li_BeginTime / 10, noteTemp.li_EndTime / 10);
+            }
+
+            // Transpose for guitar
+            Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(notesTempArray, 40, 80);
+
+            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange)
+            {
+                debugConsole.AddText("All channel notes in range, no need to transpose.\n");
+            }
+            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful)
+            {
+                debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
+            }
+            else
+            {
+                debugConsole.AddText("Transpose was successful.\n");
+            }
+
+
+            // Allocate strings for guitar
+            stringAllocator.Clear();
+            foreach (Note note in notesTempArray) {
+                stringAllocator.AddNote(note);
+            }
+
+            debugConsole.AddText(string.Format("StringAllocator # dropped notes: {0}\n", stringAllocator.NumDroppedNotes));
+            debugConsole.AddText(string.Format("StringAllocator # out of range notes: {0}\n", stringAllocator.NumOutOfRangeNotes));
+
+
+            /*
+            Note noteTemp;
+            for (int i = notesTempArray.Length - 1; i >= 0; i--) {
+                noteTemp = notesTempArray[i];
+                if (i == notesTempArray.Length - 1) {
+                    firstStart = noteTemp.BeginTime / 10;
+                }
+                Fingering(noteTemp.NoteNumber, instrument, noteTemp.BeginTime / 10, noteTemp.EndTime / 10);
+            }
+            */
+
+            for (int i = 0; i < stringAllocator.Alloc.Length; i++)
+            {
+                foreach (GuitarNote guitarNote in stringAllocator.Alloc[i])
+                {
+                    Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10, 
+                        guitarNote.FretNumber, guitarNote.StringNumber);
+                }
             }
         }
 

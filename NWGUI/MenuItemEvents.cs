@@ -165,7 +165,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Debug_Clicked(object sender, RoutedEventArgs e)
         {
-            debugConsole = new DebugWindow();
+            //debugConsole = new DebugWindow();
             debugConsole.Show();
             //serialPortReadTimer.Start();
 
@@ -180,9 +180,9 @@ namespace Symphonary
                 */
 
 
-                foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata) {
-                    debugConsole.textbox1.Text += metadata.ToString();
-                }
+                //foreach (NAudio.Midi.MidiEvent metadata in midiInfo.l_Metadata) {
+                //    debugConsole.textbox1.Text += metadata.ToString();
+                //}
 
                 /*
                 debugConsole.textbox1.Text += "-----" + Environment.NewLine;
@@ -287,7 +287,9 @@ namespace Symphonary
 
 
             // this has been moved from updateFingeringDisplay --------------------
-            if (num == 41) { // if violin
+
+            // if violin
+            if (num == 41) {
                 int margin = 300;
                 int padding = 30;
                 for (int i = 0; i < r_instrument.Length; i++) {
@@ -322,6 +324,8 @@ namespace Symphonary
 
                 }
             } // end if (num == 41)
+
+            // if guitar
             else if (num >= 25 && num <= 32) {
                 int margin = 220;
                 int padding = 20;
