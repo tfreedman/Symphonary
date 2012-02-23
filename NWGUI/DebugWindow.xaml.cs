@@ -23,7 +23,7 @@ namespace Symphonary
 
         public void AddText(string text)
         {
-            textbox1.Text = textbox1.Text + text;
+            textbox1.Text = textbox1.Text + "\n" + text;
             textbox1.ScrollToEnd();
         }
 

@@ -10,8 +10,8 @@
     <Grid Name="grid">
         <Grid.Resources>
         </Grid.Resources>
-        <StackPanel Orientation="Vertical" Canvas.ZIndex="2" Margin="0" VerticalAlignment="Top">
-            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Width="{Binding Path=ActualWidth, ElementName=window}">
+        <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
+            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -47,44 +47,59 @@
                 <MenuItem Name="FullScreen" Header="_Full Screen    " Click="Fullscreen_Clicked" HorizontalAlignment="Left" Grid.Column="7"/>
             </Menu>
         </StackPanel>
-        <DockPanel Name="r_HeaderBackground" VerticalAlignment="Top" Height="50" Canvas.ZIndex="1" Margin="0,22,0,0">
+        <DockPanel Name="r_HeaderBorder"  VerticalAlignment="Top" Height="1" Canvas.ZIndex="4" Margin="0,22,0,0" Background="#1a62b3">
+            
+        </DockPanel>
+        <DockPanel Name="r_HeaderBackground"  VerticalAlignment="Top" Height="49" Canvas.ZIndex="4" Margin="0,23,0,0">
             <TextBlock Name="tb_SongTitle" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="10,0,0,0" />
             <TextBlock Name="tb_ScoreDisplay" DockPanel.Dock="Right" Width="500" HorizontalAlignment="Right" Margin="0,0,25,0" />
+            <DockPanel.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <LinearGradientBrush.GradientStops>
+                        <GradientStop Offset="0.0" Color="#0b2a4c"/>
+                        <GradientStop Offset="0.5" Color="#1a62b3"/>
+                        <GradientStop Offset="1" Color="#0b2a4c"/>
+                    </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+            </DockPanel.Background>
         </DockPanel>
         <Grid Name="listViewGrid" Visibility="Hidden" Margin="0, 22, 0, 0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="300"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Select channel:" Grid.Row="0" Grid.Column="0" Margin="10"/>
-            <TextBlock Text="Select serial port:" Grid.Row="0" Grid.Column="1" Margin="10"/>
-            <ListView Name="channelsListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Channel #" Width="100" DisplayMemberBinding="{Binding Path=i_ChannelNumber}"/>
-                        <GridViewColumn Header="Instrument" Width="150" DisplayMemberBinding="{Binding Path=s_Instrument}"/>
-                        <GridViewColumn Header="Note Count" Width="100" DisplayMemberBinding="{Binding Path=i_NoteCount}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            <ListView Name="serialPortsListView" Grid.Row="1" Grid.Column="1" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Serial Port" Width="100" DisplayMemberBinding="{Binding Path=s_PortName}"/>
-                        <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding Path=s_Status}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            <StackPanel Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Height="30" Name="previewChannelButton" Width="200" Margin="10,0,0,0" Click="PreviewChannel_Clicked">Preview Channel</Button>
-                <Button Height="30" Width="100" Margin="10,0,0,0" Click="ListViewGridDone_Clicked">Done</Button>
-            </StackPanel>
-            
+            <Button Click="Back_Clicked" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50, 50, 0, 0">Back</Button>
+            <TextBlock Name="tb_listViewTitle" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Foreground="#000000" FontStyle="Italic" FontSize="30" TextAlignment="Left" Margin="120, 40, 0, 0">$SONGTITLE</TextBlock>
+            <Grid Name="listViewContent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="300"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Select channel:" Grid.Row="0" Grid.Column="0" Margin="10"/>
+                <TextBlock Text="Select serial port:" Grid.Row="0" Grid.Column="1" Margin="10"/>
+                <ListView Name="channelsListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Channel #" Width="100" DisplayMemberBinding="{Binding Path=i_ChannelNumber}"/>
+                            <GridViewColumn Header="Instrument" Width="150" DisplayMemberBinding="{Binding Path=s_Instrument}"/>
+                            <GridViewColumn Header="Note Count" Width="100" DisplayMemberBinding="{Binding Path=i_NoteCount}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <ListView Name="serialPortsListView" Grid.Row="1" Grid.Column="1" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Serial Port" Width="100" DisplayMemberBinding="{Binding Path=s_PortName}"/>
+                            <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding Path=s_Status}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Name="previewChannelButton" Width="200" Margin="10,0,0,0" Click="PreviewChannel_Clicked">Preview Channel</Button>
+                    <Button Width="100" Margin="10,0,0,0" Click="ListViewGridDone_Clicked">Done</Button>
+                </StackPanel>
+            </Grid>
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
@@ -96,7 +111,7 @@
             <!-- <Image Source="../Images/mark.png" Width="98" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18, 18, 0, 0"></Image> -->
             <TextBlock Name="percentageText" FontSize="32" FontFamily="Segoe UI" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
             <Canvas>
-                <Border Name="progressBar" Width="400"
+                <Border Name="progressBar" Width="395"
                         Margin="{Binding Path=ProgressBarMargin, ElementName=window}"></Border>
             </Canvas>
         </Grid>
@@ -106,7 +121,7 @@
                        Width="620" Height="251" 
                        Margin="{Binding Path=LogoMargin, ElementName=window}"
                        Name="logo"></Image>
-                <Button Click="About_Clicked" Width="100" Height="30" Margin="120, 210, 0, 0">About</Button>
+                <Button Click="About_Clicked" Width="100" Margin="120, 210, 0, 0">Close</Button>
            </Canvas>
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
@@ -119,17 +134,21 @@
                        Margin="{Binding Path=LogoMargin, ElementName=window}"
                        Name="normalLogo"></Image>
             </Canvas>
-            <Button Click="Open_Clicked" Width="100" Height="30" Margin="-120, 210, 0, 0">Open</Button>
-            <Button Click="About_Clicked" Width="100" Height="30" Margin="120, 210, 0, 0">About</Button>
+            <Button Click="Open_Clicked" Width="100" Margin="-120, 210, 0, 0">OPEN</Button>
+            <Button Click="About_Clicked" Width="100" Margin="120, 210, 0, 0">ABOUT</Button>
             <Grid.Background>
                 <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
         </Grid>
-        <Rectangle Name="keyLine" Width="3" Height="700" 
-                   Margin="{Binding Path=KeyLineMargin, ElementName=window}"
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom"></Rectangle>
-        <Viewbox Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,72,0,0">
+         <Canvas Canvas.ZIndex="1" Height="720" Margin="0,72,0,0" Name="background" Visibility="Hidden">
+            <Canvas.Background>
+                    <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
+                 </Canvas.Background>
+
+        </Canvas>
+        <Viewbox Grid.ZIndex="3" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,72,0,0">
             <Canvas Name="canv" HorizontalAlignment="Stretch" Height="720" Margin="0">
+                <Rectangle Name="keyLine" Margin="0, 161, 0, 0"></Rectangle> 
                 <Canvas Name="gridlines"></Canvas>
                 <Canvas Name="subcanv"></Canvas>
             </Canvas>

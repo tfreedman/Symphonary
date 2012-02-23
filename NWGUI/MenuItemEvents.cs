@@ -21,12 +21,14 @@ namespace Symphonary
                 WindowStyle = WindowStyle.SingleBorderWindow;
                 Topmost = false;
                 WindowState = WindowState.Normal;
+                ResizeMode = ResizeMode.CanResizeWithGrip;
                 FullScreen.Header = "Full Screen    ";
             }
             else {
                 WindowStyle = WindowStyle.None;
                 Topmost = true;
                 WindowState = WindowState.Maximized;
+                ResizeMode = ResizeMode.NoResize;
                 FullScreen.Header = "Undo Full Screen    ";
             }
             Size_Changed(this, e);
@@ -41,6 +43,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Start_Clicked(object sender, RoutedEventArgs e)
         {
+
             Instrument_Clicked(instrument);
             try {
                 if (midiPlayer.IsPlaying) {
@@ -79,6 +82,19 @@ namespace Symphonary
             }
         }
 
+        /// <summary>
+        /// Event handler for clicking the "Back" button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Back_Clicked(object sender, RoutedEventArgs e)
+        {
+            listViewGrid.Visibility = Visibility.Hidden;
+            MidiPlayerExitPreviewMode();
+            midiPlayer.StopPlaying();
+            normal.Visibility = Visibility.Visible;
+        }
+
 
         /// <summary>
         /// Event handler for clicking the "Stop" menu item
@@ -87,6 +103,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Stop_Clicked(object sender, RoutedEventArgs e)
         {
+            FPS.Header = "";
             debugConsole.ChangeText("");
             Stop.IsEnabled = false;
             Instruments.IsEnabled = true;
@@ -96,7 +113,8 @@ namespace Symphonary
             try {
                 //midiPlayer.OnClosingOperations();
                 //midiPlayer.OnClosedOperations();
-                normal.Visibility = Visibility.Visible;
+               
+                listViewGrid.Visibility = Visibility.Visible;
                 midiPlayer.StopPlaying();
                 
                 HideSubCanvas();
@@ -152,6 +170,8 @@ namespace Symphonary
                 //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
 
                 midiInfo.Refresh(openFileDialog.FileName, i_Channel);
+                tb_listViewTitle.Text = midiInfo.Title;
+                
             }
 
         }
@@ -234,7 +254,7 @@ namespace Symphonary
         private void Instrument_Clicked(object sender, RoutedEventArgs e)
         {
             int num = Convert.ToInt32(((MenuItem)sender).Tag);
-            grid.Children.Remove(keyLine);
+            canv.Children.Remove(keyLine);
             WriteSettingsToFile(num);
             instrument = num;
 
@@ -242,16 +262,16 @@ namespace Symphonary
 
             if (num == 30 || num == 35) {
                 hInst = 1;
-                keyLine.Height = 700;
-                keyLine.Width = 3;
+                //keyLine.Height = 400;
+                //keyLine.Width = 53;
             }
             else {
                 hInst = 0;
                 keyLine.SetValue(Canvas.LeftProperty, 0.0);
                 keyLine.SetValue(Canvas.BottomProperty, 20.0);
-                Canvas.SetZIndex(keyLine, (int)97);
-                keyLine.Height = 3;
-                keyLine.Width = 1280;
+                Canvas.SetZIndex(keyLine, (int)90);
+                //keyLine.Height = 3;
+                //keyLine.Width = 1280;
             }
 
             // remove the fingering rectangles from the canvas right now, because after they are re-initialized we'll
@@ -283,7 +303,7 @@ namespace Symphonary
                 tb_instrument[i].Visibility = Visibility.Hidden;
             }
             keyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
-            grid.Children.Add(keyLine);
+            canv.Children.Add(keyLine);
 
 
             // this has been moved from updateFingeringDisplay --------------------
@@ -327,13 +347,13 @@ namespace Symphonary
 
             // if guitar
             else if (num >= 25 && num <= 32) {
-                int margin = 220;
+                int margin = 170;
                 int padding = 20;
                 for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
-                    tb_instrument[i].Width = 50;
+                    tb_instrument[i].Width = 0;
                     r_instrument[i].Height = 46;
-                    r_instrument[i].Width = 50;
+                    r_instrument[i].Width = 60;
 
                     tb_instrument[i].SetValue(Canvas.TopProperty, (5 + margin + (i * r_instrument[i].Height * padding)));
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));

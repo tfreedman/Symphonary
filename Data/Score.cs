@@ -22,10 +22,14 @@ namespace Symphonary
             // this is a hack, we shouldn't be modifying this list in the MidiPlayer, it should be used for
             // informational purposes
             for (int i = 0; i < midiPlayer.al_CurrentPlayingChannelNotes.Count; i++) {
-                if (noteMatcher.NoteMatches(s_CurrentFingering, (int)midiPlayer.al_CurrentPlayingChannelNotes[i])) {
-                    i_NumNotesScored++;
-                    midiPlayer.al_CurrentPlayingChannelNotes.RemoveAt(i);
-                    break;
+                try {
+                    if (noteMatcher.NoteMatches(s_CurrentFingering, (int)midiPlayer.al_CurrentPlayingChannelNotes[i])) {
+                        i_NumNotesScored++;
+                        midiPlayer.al_CurrentPlayingChannelNotes.RemoveAt(i);
+                        break;
+                    }
+                } catch (Exception e) {
+                    //Got tired of it crashing randomly. Fix it later.
                 }
             }
         }

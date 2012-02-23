@@ -29,7 +29,7 @@ using System.Threading;
 using System.Windows.Threading;
 using WpfAnimatedControl;
 
-namespace Symphonary 
+namespace Symphonary
 {
     public partial class NWGUI : Window, INotifyPropertyChanged
     {
@@ -39,11 +39,11 @@ namespace Symphonary
         private double i_InitialCanvasPosY;
 
         private DebugWindow debugConsole = new DebugWindow();
-        
+
         private long starterTime = 0;
-        
+
         private int i_Channel = -1;
-        
+
         private double scrollSpeed = 2.00000;
         private double multiplier = 1;
         private MidiPlayer midiPlayer, midiPlayerForPreview;
@@ -51,7 +51,7 @@ namespace Symphonary
 
         private Rectangle[] r_instrument;
         private TextBlock[] tb_instrument;
-        
+
         //int i_NumNotesPlayed;
         private int i_NumNotesScored;
         private string s_ScoreGrade;
@@ -93,31 +93,30 @@ namespace Symphonary
         private SerialPortSelector serialPortSelector;
 
         private StringAllocator stringAllocator = new StringAllocator();
-        
+
         /// <summary>
         /// Constructor for window
         /// </summary>
-        public NWGUI() 
+        public NWGUI()
         {
             InitializeComponent();
 
             midiInfo = new MidiInfo(debugConsole);
-            
+
             Stop.IsEnabled = false;
 
             instrument = ReadSettingsFromFile();
             if (instrument != 0) {
                 Instrument_Clicked(instrument);
-                foreach (MenuItem item in Instruments.Items)
-                {
-                  if (instrument == Convert.ToInt32(item.Tag))
-                    item.IsChecked = true;
+                foreach (MenuItem item in Instruments.Items) {
+                    if (instrument == Convert.ToInt32(item.Tag))
+                        item.IsChecked = true;
                 }
             }
 
             i_InitialCanvasPosY = (double)(subcanv.GetValue(Canvas.TopProperty));
 
-            r_HeaderBackground.Background = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+            //r_HeaderBackground.Background = new SolidColorBrush(Color.FromRgb(51, 51, 51));
 
             tb_SongTitle.Height = 50;
             tb_SongTitle.Foreground = new SolidColorBrush(Colors.White);
@@ -161,8 +160,8 @@ namespace Symphonary
         {
             get
             {
-                int logoX = (int) (((window.ActualWidth/2) - 310)/9)*9;
-                int logoY = (int) (((window.ActualHeight/2) - 125)/9)*9;
+                int logoX = (int)(((window.ActualWidth / 2) - 310) / 9) * 9;
+                int logoY = (int)(((window.ActualHeight / 2) - 125) / 9) * 9;
                 return new Thickness(logoX + 1, logoY + 1, 0, 0);
             }
         }
@@ -174,8 +173,8 @@ namespace Symphonary
         {
             get
             {
-                int progressBarX = (int) (((window.ActualWidth/2) - 200)/9)*9;
-                int progressBarY = (int) (((window.ActualHeight/2) - 4)/9)*9;
+                int progressBarX = (int)(((window.ActualWidth / 2) - 200) / 9) * 9;
+                int progressBarY = (int)(((window.ActualHeight / 2) - 4) / 9) * 9;
                 return new Thickness(progressBarX + 1, progressBarY + 1, 0, 0);
             }
         }
@@ -187,8 +186,7 @@ namespace Symphonary
         {
             get
             {
-                if (r_instrument != null)
-                {
+                if (r_instrument != null) {
                     return new Thickness(
                         (r_instrument[0].PointToScreen(new Point(r_instrument[0].ActualWidth,
                                                                  r_instrument[0].ActualHeight)) -
@@ -199,17 +197,17 @@ namespace Symphonary
             }
         }
 
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="endTime"></param>
         /// <param name="bpm"></param>
         /// <param name="count"></param>
-        private void DrawGridLines(long endTime, int bpm, int count) 
+        private void DrawGridLines(long endTime, int bpm, int count)
         {
             int runner = 0;
-            for (double i = 0; i < (endTime + 1000); i = i + (1.775 * multiplier) + (bpm / count)) {
+            for (double i = 0; i < (endTime + 1000); i = i + (multiplier) + (bpm / count)) {
                 Rectangle r = new Rectangle();
                 if (hInst == 0) {
                     r.Width = 1280;
@@ -225,16 +223,18 @@ namespace Symphonary
                     }
                 }
                 else {
-                    r.Height = 700;
+                    r.Height = 376;
+                    r.SetValue(Canvas.TopProperty, (double)170);
+                    int left = (int)(((i * scrollSpeed) / 9) * 9) + 1;
                     if (runner % count == 0) {
-                        r.Fill = new SolidColorBrush(Color.FromRgb(221, 221, 221));
-                        r.SetValue(Canvas.LeftProperty, (double)i * scrollSpeed);
-                        r.Width = 3;
+                        r.Fill = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                        r.SetValue(Canvas.LeftProperty, (double)left);
+                        r.Width = 8;
                     }
                     else {
-                        r.Fill = new SolidColorBrush(Color.FromRgb(255, 222, 222));
-                        r.SetValue(Canvas.LeftProperty, (double)i * scrollSpeed);
-                        r.Width = 1;
+                        r.Fill = new SolidColorBrush(Color.FromRgb(230, 230, 230));
+                        r.SetValue(Canvas.LeftProperty, (double)left);
+                        r.Width = 8;
                     }
                 }
                 gridlines.Children.Add(r);
@@ -250,13 +250,13 @@ namespace Symphonary
         /// <param name="instrument"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
-        private void Fingering(int note, int instrument, long startTime, long endTime, int fretNumber, int stringNumber) 
+        private void Fingering(int note, int instrument, long startTime, long endTime, int fretNumber, int stringNumber, bool isShort)
         {
             string noteString = "";
             TextBlock textBlock = new TextBlock();
-            textBlock.FontSize = 26;
+            textBlock.FontSize = 24;
             textBlock.FontWeight = FontWeights.Bold;
-            textBlock.TextAlignment = TextAlignment.Center;
+            textBlock.TextAlignment = TextAlignment.Left;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
             //RoutedEventArgs e = new RoutedEventArgs();
             //Size_Changed(this, e);
@@ -268,7 +268,7 @@ namespace Symphonary
                 int margin = 300;
                 int padding = 30;
                 textBlock.Height = 50;
-                textBlock.Width = 50;
+                textBlock.Width = 60;
                 r.Width = 46;
 
                 int[,] violin = new int[4, 2] { { 55, 61 }, { 62, 68 }, { 69, 75 }, { 76, 83 } };
@@ -289,7 +289,7 @@ namespace Symphonary
                 subcanv.Children.Add(textBlock);
             }
             else if (instrument >= 25 && instrument <= 32) { //GUITAR
-                int margin = 220;
+                int margin = 170;
                 int padding = 20;
                 textBlock.Height = 50;
                 textBlock.Width = 50;
@@ -323,6 +323,8 @@ namespace Symphonary
                 */
 
                 // replaces loop above, makes use of given string and fret numbers
+                if (isShort)
+                    textBlock.Foreground = new SolidColorBrush(Colors.Black);
                 textBlock.Text = fretNumber.ToString();
                 textBlock.SetValue(Canvas.TopProperty, (5 + margin + (stringNumber * (r.Height + padding))));
                 r.Fill = new SolidColorBrush(color[ctrl_guitar[stringNumber + 1]]);
@@ -331,7 +333,7 @@ namespace Symphonary
 
 
                 r.Width = (endTime - startTime) * multiplier;
-                textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) - 14));
+                textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) + 3));
                 r.SetValue(Canvas.LeftProperty, (double)(startTime) * multiplier);
                 subcanv.Children.Add(r);
                 subcanv.Children.Add(textBlock);
@@ -444,8 +446,7 @@ namespace Symphonary
         {
             midiPlayer.PersistentChannel = channelSelector.SelectedChannel;
 
-            if (midiPlayer.PersistentChannel >= 0)
-            {
+            if (midiPlayer.PersistentChannel >= 0) {
                 midiPlayer.StartPlaying();
                 previewChannelButton.Foreground = Brushes.Green;
             }
@@ -471,15 +472,11 @@ namespace Symphonary
             s_SelectedSerialPort = serialPortSelector.SelectedSerialPort;
             serialPort.Close();
 
-            if (s_SelectedSerialPort != string.Empty)
-            {
-                try
-                {
+            if (s_SelectedSerialPort != string.Empty) {
+                try {
                     serialPort.PortName = s_SelectedSerialPort;
                     serialPort.Open();
-                }
-                catch (IOException ex)
-                {
+                } catch (IOException ex) {
                     MessageBox.Show("The selected serial port could not be opened");
                 }
             }
@@ -489,13 +486,13 @@ namespace Symphonary
             //MessageBox.Show(i_Channel.ToString());
         }
 
-        
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="num"></param>
-        private void Instrument_Clicked(int num) 
+        private void Instrument_Clicked(int num)
         {
             RoutedEventArgs e = new RoutedEventArgs { };
             MenuItem sender = new MenuItem { Tag = num };
@@ -512,7 +509,7 @@ namespace Symphonary
             midiPlayer.StashChannelPlaySettings();
             midiPlayer.UnHookExternalPlaybackEventHandles();
             midiPlayer.PlayPersistentChannel = true;
-            midiPlayer.PlayOtherChannels = false;            
+            midiPlayer.PlayOtherChannels = false;
             midiPlayer.Sequencer.PlayingCompleted += HandleMIDIPreviewPlayingCompleted;
         }
 
@@ -534,7 +531,7 @@ namespace Symphonary
         /// 
         /// </summary>
         /// <param name="inst"></param>
-        private void WriteSettingsToFile(int inst) 
+        private void WriteSettingsToFile(int inst)
         {
             TextWriter tw = new StreamWriter("settings.ini");
             tw.WriteLine(inst);
@@ -545,7 +542,7 @@ namespace Symphonary
         /// 
         /// </summary>
         /// <returns></returns>
-        private int ReadSettingsFromFile() 
+        private int ReadSettingsFromFile()
         {
             int returner = 0;
             try {
@@ -561,7 +558,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SelectSerialPort_Clicked(object sender, RoutedEventArgs e) 
+        private void SelectSerialPort_Clicked(object sender, RoutedEventArgs e)
         {
             // if the serial port is not closed, opening once again (SerialPortSelector opens ports for testing) 
             // will cause an exception
@@ -575,7 +572,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SerialPortSelectorOkClicked(object sender, RoutedEventArgs e) 
+        private void SerialPortSelectorOkClicked(object sender, RoutedEventArgs e)
         {
             s_SelectedSerialPort = serialPortSelector.SelectedSerialPort;
             serialPort.Close();
@@ -593,28 +590,21 @@ namespace Symphonary
             }
         }
 
-        
+
 
         /// <summary>
         /// Thread that gets the serial port data
         /// </summary>
         private void GetSerialData()
         {
-            while (true)
-            {
+            while (true) {
                 //score.s_CurrentFingering = string.Empty;
 
-                if (s_SelectedSerialPort != string.Empty && serialPort.IsOpen)
-                {
-                    try
-                    {
+                if (s_SelectedSerialPort != string.Empty && serialPort.IsOpen) {
+                    try {
                         score.s_CurrentFingering = serialPort.ReadLine().Trim();
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                    }
-                    catch (TimeoutException e)
-                    {
+                    } catch (InvalidOperationException e) {
+                    } catch (TimeoutException e) {
                         score.s_CurrentFingering = string.Empty;
                     }
                 }
@@ -641,7 +631,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Layout_Updated(object sender, EventArgs e) 
+        private void Layout_Updated(object sender, EventArgs e)
         {
             RoutedEventArgs d = new RoutedEventArgs();
             Size_Changed(this, d);
@@ -657,21 +647,24 @@ namespace Symphonary
             NotifyPropertyChanged("LogoMargin");
             NotifyPropertyChanged("ProgressBarMargin");
             NotifyPropertyChanged("KeyLineMargin");
-
+            //scaler.Margin = new Thickness(0, (window.ActualHeight / 2) - 360 - 35, 0, 0);
+            //Canvas.SetTop(subcanv, (window.ActualHeight / 2) - 360 - 35);
+            background.Height = window.ActualHeight;
             r_HeaderBackground.Width = window.ActualWidth;
-            ScaleTransform sc;
+            //ScaleTransform sc;
             if (hInst == 1) {
-                sc = new ScaleTransform(1, 2);
-                keyLine.Height = window.ActualHeight;
+            //    sc = new ScaleTransform(1, 2);
+                //keyLine.Height = window.ActualHeight;
             }
             else {
-                sc = new ScaleTransform(2, 1);
-                keyLine.Width = window.ActualWidth;
+            //    sc = new ScaleTransform(2, 1);
+                //keyLine.Width = window.ActualWidth;
             }
-            
-            gridlines.LayoutTransform = sc;
-            gridlines.UpdateLayout();
+
+            //gridlines.LayoutTransform = sc;
+            //gridlines.UpdateLayout();
             canv.Width = window.ActualWidth;
+            grid.Width = window.ActualWidth;
         }
 
         /// <summary>
@@ -679,7 +672,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e) 
+        private void NWGUI_KeyUp(object sender, KeyEventArgs e)
         {
             try {
                 if (!midiPlayer.IsPlaying)
@@ -696,7 +689,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e) 
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e)
         {
             try {
                 if (!midiPlayer.IsPlaying)
@@ -713,7 +706,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e) 
+        private void HandleMIDILoadProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             try {
                 SetProgress(e.ProgressPercentage);
@@ -725,7 +718,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e) 
+        private void HandleMIDILoadCompleted(object sender, AsyncCompletedEventArgs e)
         {
             try {
                 loadingScreen.Visibility = Visibility.Hidden;
@@ -737,7 +730,7 @@ namespace Symphonary
             // will cause an exception
             serialPort.Close();
             serialPortSelector.Refresh(s_SelectedSerialPort);
-            
+
             listViewGrid.Visibility = Visibility.Visible;
 
             MidiPlayerEnterPreviewMode();
@@ -748,7 +741,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e) 
+        private void HandleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
         {
             //i_NumNotesPlayed++;
         }
@@ -761,8 +754,7 @@ namespace Symphonary
         private void HandleMIDIPlayingCompleted(object sender, EventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                                   new Action(delegate()
-                                                  {
+                                   new Action(delegate() {
                                                       debugConsole.ChangeText("");
                                                       Stop.IsEnabled = false;
                                                       Instruments.IsEnabled = true;
@@ -783,8 +775,7 @@ namespace Symphonary
         private void HandleMIDIPreviewPlayingCompleted(object sender, EventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                                   new Action(delegate()
-                                                  {
+                                   new Action(delegate() {
                                                       previewChannelButton.Foreground
                                                           = Brushes.Black;
                                                   }));
@@ -805,7 +796,7 @@ namespace Symphonary
         /// Override some program event handlers to ensure extra things are properly processes when application is closing 
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnClosing(CancelEventArgs e) 
+        protected override void OnClosing(CancelEventArgs e)
         {
             serialPortReadThread.Abort();
 
@@ -820,7 +811,7 @@ namespace Symphonary
         /// Override some program event handlers to ensure extra things are properly processes when application is closed
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnClosed(EventArgs e) 
+        protected override void OnClosed(EventArgs e)
         {
             try {
                 midiPlayer.OnClosedOperations();
@@ -832,7 +823,7 @@ namespace Symphonary
         /// <summary>
         /// Initializes the main canvas that contains the scrolling canvas
         /// </summary>
-        private void InitializeCanvas() 
+        private void InitializeCanvas()
         {
             tb_SongTitle.Text = midiInfo.Title;
             ShowCanvasChildren();
@@ -845,37 +836,38 @@ namespace Symphonary
         {
             if (i_Channel < 0)
                 return;
-
-            int j = 0;
             long lastNote = 0;
-            long firstStart = 0;
             long smallestNoteLength = 0;
             foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
-                j++;
-                if (smallestNoteLength == 0)
-                    smallestNoteLength = note.EndTime - note.BeginTime;
-                else if (smallestNoteLength > (note.EndTime - note.BeginTime))
-                    smallestNoteLength = (note.EndTime - note.BeginTime);
-                if (note.EndTime > lastNote)
-                    lastNote = note.EndTime;
+                if ((note.EndTime - note.BeginTime) > 50) {
+                    if (smallestNoteLength == 0)
+                        smallestNoteLength = note.EndTime - note.BeginTime;
+                    else if (smallestNoteLength > (note.EndTime - note.BeginTime))
+                        smallestNoteLength = (note.EndTime - note.BeginTime);
+                    if (note.EndTime > lastNote)
+                        lastNote = note.EndTime;
+                }
+                else
+                    System.Console.WriteLine(note.EndTime - note.BeginTime);
             }
-
-            if (smallestNoteLength < 300)
+            background.Width = lastNote;
+            if (smallestNoteLength < 300 && smallestNoteLength > 0) {
                 multiplier = 300 / smallestNoteLength;
-
+                if (multiplier > 3) {
+                    debugConsole.AddText("Warning: shit's fast, multiplier = " + multiplier + ", shortest visible note is " + smallestNoteLength + "ms.");
+                    multiplier = 3;
+                }
+            }
             if (midiInfo.i_TimeSignatureNumerator == 0)
-                MessageBox.Show(Convert.ToString("Warning! Time Signature is 0"));
+                midiInfo.i_TimeSignatureNumerator = 4;
 
-
-            DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), 4);
-
+            DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), midiInfo.i_TimeSignatureNumerator);
 
             Note[] notesTempArray = new Note[midiInfo.notesForAllChannels[i_Channel].Count];
             //MessageBox.Show("1");
             {
                 int i = 0;
-                foreach (Note note in midiInfo.notesForAllChannels[i_Channel])
-                {
+                foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
                     notesTempArray[i] = note;
                     i++;
                 }
@@ -884,16 +876,13 @@ namespace Symphonary
             // Transpose for guitar
             Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(notesTempArray, 40, 80);
 
-            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange)
-            {
+            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange) {
                 debugConsole.AddText("All channel notes in range, no need to transpose.\n");
             }
-            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful)
-            {
+            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful) {
                 debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
             }
-            else
-            {
+            else {
                 debugConsole.AddText("Transpose was successful.\n");
             }
 
@@ -919,12 +908,16 @@ namespace Symphonary
             }
             */
 
-            for (int i = 0; i < stringAllocator.Alloc.Length; i++)
-            {
-                foreach (GuitarNote guitarNote in stringAllocator.Alloc[i])
-                {
-                    Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10, 
-                        guitarNote.FretNumber, guitarNote.StringNumber);
+            for (int i = 0; i < stringAllocator.Alloc.Length; i++) {
+                foreach (GuitarNote guitarNote in stringAllocator.Alloc[i]) {
+                    if ((guitarNote.EndTime - guitarNote.BeginTime) > 30) {
+                     if (((guitarNote.EndTime - guitarNote.BeginTime) > 50))
+                        Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
+                            guitarNote.FretNumber, guitarNote.StringNumber, false);
+                         else
+                        Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
+                            guitarNote.FretNumber, guitarNote.StringNumber, true);
+                    }
                 }
             }
         }
@@ -933,12 +926,12 @@ namespace Symphonary
         /// Sets the loading progress display 
         /// </summary>
         /// <param name="i_ProgressPercentage"></param>
-        public void SetProgress(int i_ProgressPercentage) 
+        public void SetProgress(int i_ProgressPercentage)
         {
             progressBar.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 255, 0));
             progressBar.BorderThickness = new Thickness(i_ProgressPercentage * 4, 0, 0, 0);
             progressBar.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            progressBar.Height = 8;
+            progressBar.Height = 17;
             percentageText.Text = i_ProgressPercentage + "% Complete";
         }
 
@@ -951,7 +944,7 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MoveCanvas(object sender, EventArgs e) 
+        private void MoveCanvas(object sender, EventArgs e)
         {
             UpdateScoreDisplay(sender, e);
             UpdateFingeringDisplay(sender, e);
@@ -967,13 +960,20 @@ namespace Symphonary
             long currentDelta = (milliseconds - starterTime) / 10;
             if (hInst == 0) {
                 double mover = 625;
-                Canvas.SetTop(subcanv,  (double)(currentDelta * multiplier) + mover);
+                //Canvas.SetTop(background, (double)(currentDelta * multiplier) + mover);
+                background.Margin = new Thickness(0, (double)(currentDelta * multiplier) + mover, 0, 0);
+                Canvas.SetTop(subcanv, (double)(currentDelta * multiplier) + mover);
                 Canvas.SetTop(gridlines, (double)(currentDelta * multiplier) + mover);
+
+                //Canvas.SetTop(gridlines, (double)(currentDelta * multiplier) + mover);
             }
             else {
                 double mover = 75;
-                Canvas.SetLeft(subcanv,(double)(-1 * currentDelta * multiplier) + mover);
+                //Canvas.SetLeft(background, (double)(-1 * currentDelta * multiplier) + mover);
+                background.Margin = new Thickness(((double)(-1 * currentDelta * multiplier) + mover), 0, 0, 0);
+                Canvas.SetLeft(subcanv, (double)(-1 * currentDelta * multiplier) + mover);
                 Canvas.SetLeft(gridlines, (double)(-1 * currentDelta * multiplier) + mover);
+                //Canvas.SetLeft(gridlines, (double)(-1 * currentDelta * multiplier) + mover);
             }
         }
 
@@ -981,7 +981,7 @@ namespace Symphonary
         /// <summary>
         /// Hides everything drawn on canvas
         /// </summary>
-        private void HideCanvasChildren() 
+        private void HideCanvasChildren()
         {
             r_HeaderBackground.Visibility = Visibility.Hidden;
             keyLine.Visibility = Visibility.Hidden;
@@ -996,7 +996,7 @@ namespace Symphonary
         /// <summary>
         /// Shows everything drawn on canvas
         /// </summary>
-        private void ShowCanvasChildren() 
+        private void ShowCanvasChildren()
         {
             r_HeaderBackground.Visibility = Visibility.Visible;
             keyLine.Visibility = Visibility.Visible;
@@ -1012,7 +1012,7 @@ namespace Symphonary
         /// Resets the subcanvas by clearing its children and restoring its original position
         /// </summary>
         /// <param name="clearCanvasChildren"></param>
-        private void ResetSubCanvas(bool clearCanvasChildren) 
+        private void ResetSubCanvas(bool clearCanvasChildren)
         {
             if (clearCanvasChildren) {
                 subcanv.Children.Clear();
@@ -1025,21 +1025,23 @@ namespace Symphonary
         /// <summary>
         /// Make the subcanvas visible
         /// </summary>
-        private void ShowSubCanvas() 
+        private void ShowSubCanvas()
         {
             subcanv.Visibility = Visibility.Visible;
             gridlines.Visibility = Visibility.Visible;
+            background.Visibility = Visibility.Visible;
         }
 
         /// <summary>
         /// Make the subcanvas hidden
         /// </summary>
-        private void HideSubCanvas() 
+        private void HideSubCanvas()
         {
             r_HeaderBackground.Visibility = Visibility.Hidden;
             keyLine.Visibility = Visibility.Hidden;
             subcanv.Visibility = Visibility.Hidden;
             gridlines.Visibility = Visibility.Hidden;
+            background.Visibility = Visibility.Hidden;
         }
 
 
@@ -1048,15 +1050,13 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateScoreDisplay(object sender, EventArgs e) 
+        private void UpdateScoreDisplay(object sender, EventArgs e)
         {
-            try
-            {
+            try {
                 tb_ScoreDisplay.Text = string.Format("{0}/{1} notes correct ~ {2}", score.i_NumNotesScored,
                                                      midiPlayer.NumChannelNotesPlayed,
                                                      score.ScoreGrade(midiPlayer.NumChannelNotesPlayed));
-            }
-            catch (NullReferenceException ex) { }
+            } catch (NullReferenceException ex) { }
         }
 
         /// <summary>
@@ -1074,10 +1074,10 @@ namespace Symphonary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateFingeringDisplay(object sender, EventArgs e) 
+        private void UpdateFingeringDisplay(object sender, EventArgs e)
         {
             for (int i = 0; i < r_instrument.Length; i++) {
-                r_instrument[i].StrokeThickness = 2;
+                r_instrument[i].StrokeThickness = 5;
                 tb_instrument[i].FontSize = 26;
                 tb_instrument[i].FontWeight = FontWeights.Bold;
                 tb_instrument[i].TextAlignment = TextAlignment.Center;
@@ -1090,8 +1090,7 @@ namespace Symphonary
                     try {
                         if (score.s_CurrentFingering.Length == 4)
                             tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
-                    }
-                    catch (Exception ex) { }
+                    } catch (Exception ex) { }
                 }
             }
             else if (instrument >= 25 && instrument <= 32) {
@@ -1099,8 +1098,7 @@ namespace Symphonary
                     try {
                         if (score.s_CurrentFingering.Length == 6)
                             tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
-                    }
-                    catch (Exception ex) {}
+                    } catch (Exception ex) { }
                 }
             }
         }
@@ -1108,24 +1106,27 @@ namespace Symphonary
         /// <summary>
         /// 
         /// </summary>
-        public struct ColorRGB 
+        public struct ColorRGB
         {
             public byte R;
             public byte G;
             public byte B;
 
-            public ColorRGB(Color value) {
+            public ColorRGB(Color value)
+            {
                 this.R = value.R;
                 this.G = value.G;
                 this.B = value.B;
             }
 
-            public static implicit operator Color(ColorRGB rgb) {
+            public static implicit operator Color(ColorRGB rgb)
+            {
                 Color c = Color.FromArgb(1, rgb.R, rgb.G, rgb.B);
                 return c;
             }
 
-            public static explicit operator ColorRGB(Color c) {
+            public static explicit operator ColorRGB(Color c)
+            {
                 return new ColorRGB(c);
             }
         }
@@ -1137,7 +1138,7 @@ namespace Symphonary
         /// <param name="sl"></param>
         /// <param name="l"></param>
         /// <returns></returns>
-        public ColorRGB HSL2RGB(double h, double sl, double l) 
+        public ColorRGB HSL2RGB(double h, double sl, double l)
         {
             double v;
             double r, g, b;
@@ -1200,15 +1201,15 @@ namespace Symphonary
         }
     }
 
-    public static class ExtensionMethods 
+    public static class ExtensionMethods
     {
         private static Action EmptyDelegate = delegate { };
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uiElement"></param>
-        public static void Refresh(this UIElement uiElement) 
+        public static void Refresh(this UIElement uiElement)
         {
             uiElement.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
         }
