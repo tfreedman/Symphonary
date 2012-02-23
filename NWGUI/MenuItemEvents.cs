@@ -351,11 +351,11 @@ namespace Symphonary
                 int padding = 20;
                 for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
-                    tb_instrument[i].Width = 0;
+                    tb_instrument[i].Width = 50;
                     r_instrument[i].Height = 46;
                     r_instrument[i].Width = 60;
 
-                    tb_instrument[i].SetValue(Canvas.TopProperty, (5 + margin + (i * r_instrument[i].Height * padding)));
+                    tb_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
 
                     switch (i) {

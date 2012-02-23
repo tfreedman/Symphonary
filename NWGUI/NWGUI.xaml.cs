@@ -1097,7 +1097,11 @@ namespace Symphonary
                 for (int i = 0; i < r_instrument.Length; i++) {
                     try {
                         if (score.s_CurrentFingering.Length == 6)
-                            tb_instrument[i].Text = Convert.ToString(score.s_CurrentFingering[i]);
+                        {
+                            debugConsole.AddText(score.s_CurrentFingering);
+                            int temp = System.Convert.ToInt32(score.s_CurrentFingering[5 - i] - 'A');
+                            tb_instrument[i].Text = Convert.ToString(temp);
+                        }
                     } catch (Exception ex) { }
                 }
             }
