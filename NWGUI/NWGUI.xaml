@@ -6,12 +6,10 @@
         xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"             
         xmlns:Symphonary="clr-namespace:Symphonary"
         Width="1280" Height="744" Closing="WindowClosing" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
-    
+
     <Grid Name="grid">
-        <Grid.Resources>
-        </Grid.Resources>
         <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
-            <Menu IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top">
+            <Menu Name="MenuBar" IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -28,23 +26,23 @@
                         </Grid>
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                
-                <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked"/>
 
-                <MenuItem Header="_Options" Grid.Column="2">
+                <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked" Grid.Column="0"/>
+
+                <MenuItem Header="_Options" Grid.Column="1">
                     <MenuItem Background="Black" Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
                 </MenuItem>
 
-                <MenuItem Name="Instruments" Header="_Instruments" Grid.Column="3">
+                <MenuItem Name="Instruments" Header="_Instruments" Grid.Column="2">
                     <MenuItem Background="Black" Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>
                     <MenuItem Background="Black" Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="74"/>
                     <MenuItem Background="Black" Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="30"/>
                     <MenuItem Background="Black" Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
                 </MenuItem>
 
-                <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="5" Focusable="False" IsHitTestVisible="False" />
-                <MenuItem Name="Console" Header="_Console" Click="Debug_Clicked" Grid.Column="6"/>
-                <MenuItem Name="FullScreen" Header="_Full Screen    " Click="Fullscreen_Clicked" HorizontalAlignment="Left" Grid.Column="7"/>
+                <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="4" Focusable="False" IsHitTestVisible="False" />
+                <MenuItem Name="Console" Header="_Console" Click="Debug_Clicked" Grid.Column="5"/>
+                <MenuItem Name="FullScreen" Header="_Full Screen" Click="Fullscreen_Clicked" Grid.Column="6"/>
             </Menu>
         </StackPanel>
         <DockPanel Name="r_HeaderBorder"  VerticalAlignment="Top" Height="1" Canvas.ZIndex="4" Margin="0,22,0,0" Background="#1a62b3">

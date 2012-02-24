@@ -250,11 +250,11 @@ namespace Symphonary
         /// <param name="instrument"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
-        private void Fingering(int note, int instrument, long startTime, long endTime, int fretNumber, int stringNumber, bool isShort)
+        private void Fingering(int note, int instrument, long startTime, long endTime, int fretNumber, int stringNumber)
         {
             string noteString = "";
             TextBlock textBlock = new TextBlock();
-            textBlock.FontSize = 24;
+            textBlock.FontSize = 20;
             textBlock.FontWeight = FontWeights.Bold;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
@@ -323,10 +323,8 @@ namespace Symphonary
                 */
 
                 // replaces loop above, makes use of given string and fret numbers
-                if (isShort)
-                    textBlock.Foreground = new SolidColorBrush(Colors.Black);
                 textBlock.Text = fretNumber.ToString();
-                textBlock.SetValue(Canvas.TopProperty, (5 + margin + (stringNumber * (r.Height + padding))));
+                textBlock.SetValue(Canvas.TopProperty, (8 + margin + (stringNumber * (r.Height + padding))));
                 r.Fill = new SolidColorBrush(color[ctrl_guitar[stringNumber + 1]]);
                 r.Stroke = new SolidColorBrush(border[ctrl_guitar[stringNumber + 1]]);
                 r.SetValue(Canvas.TopProperty, (margin + (stringNumber * (r.Height + padding))));
@@ -649,8 +647,22 @@ namespace Symphonary
             NotifyPropertyChanged("KeyLineMargin");
             //scaler.Margin = new Thickness(0, (window.ActualHeight / 2) - 360 - 35, 0, 0);
             //Canvas.SetTop(subcanv, (window.ActualHeight / 2) - 360 - 35);
-            background.Height = window.ActualHeight;
-            r_HeaderBackground.Width = window.ActualWidth;
+            if (!isFullScreen) {
+                background.Height = window.Height;
+                r_HeaderBackground.Width = window.Width;
+                canv.Width = window.Width;
+                grid.Width = window.Width;
+                grid.Height = window.Height;
+                MenuBar.Width = window.Width - 16;
+            }
+            else {
+                grid.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
+                canv.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
+                r_HeaderBackground.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
+                background.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
+                grid.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
+                MenuBar.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
+            }
             //ScaleTransform sc;
             if (hInst == 1) {
             //    sc = new ScaleTransform(1, 2);
@@ -663,8 +675,7 @@ namespace Symphonary
 
             //gridlines.LayoutTransform = sc;
             //gridlines.UpdateLayout();
-            canv.Width = window.ActualWidth;
-            grid.Width = window.ActualWidth;
+
         }
 
         /// <summary>
@@ -839,20 +850,16 @@ namespace Symphonary
             long lastNote = 0;
             long smallestNoteLength = 0;
             foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
-                if ((note.EndTime - note.BeginTime) > 50) {
-                    if (smallestNoteLength == 0)
+               if (smallestNoteLength == 0)
                         smallestNoteLength = note.EndTime - note.BeginTime;
-                    else if (smallestNoteLength > (note.EndTime - note.BeginTime))
+               else if (smallestNoteLength > (note.EndTime - note.BeginTime))
                         smallestNoteLength = (note.EndTime - note.BeginTime);
-                    if (note.EndTime > lastNote)
+               if (note.EndTime > lastNote)
                         lastNote = note.EndTime;
-                }
-                else
-                    System.Console.WriteLine(note.EndTime - note.BeginTime);
             }
             background.Width = lastNote;
-            if (smallestNoteLength < 300 && smallestNoteLength > 0) {
-                multiplier = 300 / smallestNoteLength;
+            if (smallestNoteLength < 180 && smallestNoteLength > 0) {
+                multiplier = 180 / smallestNoteLength;
                 if (multiplier > 3) {
                     debugConsole.AddText("Warning: shit's fast, multiplier = " + multiplier + ", shortest visible note is " + smallestNoteLength + "ms.");
                     multiplier = 3;
@@ -911,12 +918,8 @@ namespace Symphonary
             for (int i = 0; i < stringAllocator.Alloc.Length; i++) {
                 foreach (GuitarNote guitarNote in stringAllocator.Alloc[i]) {
                     if ((guitarNote.EndTime - guitarNote.BeginTime) > 30) {
-                     if (((guitarNote.EndTime - guitarNote.BeginTime) > 50))
                         Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
-                            guitarNote.FretNumber, guitarNote.StringNumber, false);
-                         else
-                        Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
-                            guitarNote.FretNumber, guitarNote.StringNumber, true);
+                            guitarNote.FretNumber, guitarNote.StringNumber);
                     }
                 }
             }

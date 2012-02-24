@@ -22,14 +22,14 @@ namespace Symphonary
                 Topmost = false;
                 WindowState = WindowState.Normal;
                 ResizeMode = ResizeMode.CanResizeWithGrip;
-                FullScreen.Header = "Full Screen    ";
+                FullScreen.Header = "Full Screen";
             }
             else {
                 WindowStyle = WindowStyle.None;
                 Topmost = true;
                 WindowState = WindowState.Maximized;
                 ResizeMode = ResizeMode.NoResize;
-                FullScreen.Header = "Undo Full Screen    ";
+                FullScreen.Header = "Undo Full Screen";
             }
             Size_Changed(this, e);
             isFullScreen = !isFullScreen;
