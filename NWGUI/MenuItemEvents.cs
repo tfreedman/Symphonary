@@ -287,6 +287,7 @@ namespace Symphonary
             try {
                 for (int i = 0; i < r_instrument.Length; i++) {
                     canv.Children.Remove(r_instrument[i]);
+                    canv.Children.Remove(tb_instrument[i]);
                 }
             } catch (NullReferenceException nr_e) { }
 

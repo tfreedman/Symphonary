@@ -645,7 +645,6 @@ namespace Symphonary
             NotifyPropertyChanged("LogoMargin");
             NotifyPropertyChanged("ProgressBarMargin");
             NotifyPropertyChanged("KeyLineMargin");
-
             //scaler.Margin = new Thickness(0, (window.ActualHeight / 2) - 360 - 35, 0, 0);
             //Canvas.SetTop(subcanv, (window.ActualHeight / 2) - 360 - 35);
             if (!isFullScreen) {
