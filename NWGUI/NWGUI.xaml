@@ -7,7 +7,7 @@
         xmlns:Symphonary="clr-namespace:Symphonary"
         Width="1280" Height="744" Closing="WindowClosing" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
 
-    <Grid Name="grid">
+    <Grid Name="grid" Height="Auto" Width="Auto">
         <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
             <Menu Name="MenuBar" IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left">
                 <Menu.ItemsPanel>

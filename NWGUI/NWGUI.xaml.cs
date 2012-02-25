@@ -645,15 +645,16 @@ namespace Symphonary
             NotifyPropertyChanged("LogoMargin");
             NotifyPropertyChanged("ProgressBarMargin");
             NotifyPropertyChanged("KeyLineMargin");
+
             //scaler.Margin = new Thickness(0, (window.ActualHeight / 2) - 360 - 35, 0, 0);
             //Canvas.SetTop(subcanv, (window.ActualHeight / 2) - 360 - 35);
             if (!isFullScreen) {
-                background.Height = window.Height;
-                r_HeaderBackground.Width = window.Width;
-                canv.Width = window.Width;
-                grid.Width = window.Width;
-                grid.Height = window.Height;
-                MenuBar.Width = window.Width - 16;
+                background.Height = window.ActualHeight;
+                r_HeaderBackground.Width = window.ActualWidth;
+                canv.Width = window.ActualWidth;
+                grid.Width = window.ActualWidth;
+                grid.Height = window.ActualHeight;
+                MenuBar.Width = window.ActualWidth - 16;
             }
             else {
                 grid.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;

@@ -17,6 +17,14 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Fullscreen_Clicked(object sender, RoutedEventArgs e)
         {
+            if (WindowState == WindowState.Maximized) {
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                Topmost = false;
+                WindowState = WindowState.Normal;
+                ResizeMode = ResizeMode.CanResizeWithGrip;
+                FullScreen.Header = "Full Screen";
+            }
+
             if (isFullScreen) {
                 WindowStyle = WindowStyle.SingleBorderWindow;
                 Topmost = false;
@@ -31,8 +39,8 @@ namespace Symphonary
                 ResizeMode = ResizeMode.NoResize;
                 FullScreen.Header = "Undo Full Screen";
             }
-            Size_Changed(this, e);
             isFullScreen = !isFullScreen;
+            Size_Changed(this, e);
         }
 
 
