@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Ports;
 using System.Windows;
@@ -50,6 +51,13 @@ namespace Symphonary
                         s_Status = "OFF"
                     });
                 }
+                catch (UnauthorizedAccessException e)
+                {
+                    _SerialPorts.Add(new SerialPortEntry {
+                        s_PortName = port,
+                        s_Status = "BUSY"
+                    });
+                }
             }
 
             for (int i = 0; i < serialPortsListView.Items.Count; i++) {
@@ -61,11 +69,12 @@ namespace Symphonary
         }
 
 
-        public string SelectedSerialPort
+        public string SelectedAvailableSerialPort
         {
             get
             {
-                if (serialPortsListView.SelectedIndex >= 0)
+                if (serialPortsListView.SelectedIndex >= 0 && 
+                    ((SerialPortEntry) serialPortsListView.Items[serialPortsListView.SelectedIndex]).s_Status == "ON")
                 {
                     return ((SerialPortEntry) serialPortsListView.Items[serialPortsListView.SelectedIndex]).s_PortName;
                 }

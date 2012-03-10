@@ -1,52 +1,39 @@
-﻿using Microsoft.Win32;
-using NAudio;
-using NAudio.CoreAudioApi;
-using NAudio.Midi;
-using Sanford.Collections;
-using Sanford.Multimedia;
+﻿using NAudio.Midi;
 using Sanford.Multimedia.Midi;
-using Sanford.Multimedia.Timers;
-using Sanford.Threading;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Windows.Threading;
-using WpfAnimatedControl;
 
 namespace Symphonary
 {
     public partial class NWGUI : Window, INotifyPropertyChanged
     {
-        private bool b_AnimationStarted = false;
+        private const bool USE_OLD_SERIAL_READ_METHOD = false;
+        
+        private bool b_AnimationStarted = true;
         private int i_CanvasMoveDirection = 1;
 
         private double i_InitialCanvasPosY;
 
         private DebugWindow debugConsole = new DebugWindow();
 
-        private long starterTime = 0;
+        Stopwatch playDuration = new Stopwatch();
+        private long startTime = 0;
 
         private int i_Channel = -1;
 
         private double scrollSpeed = 2.00000;
         private double multiplier = 1;
-        private MidiPlayer midiPlayer, midiPlayerForPreview;
+        private MidiPlayer midiPlayer;
         private MidiInfo midiInfo;
 
         private Rectangle[] r_instrument;
@@ -81,9 +68,12 @@ namespace Symphonary
                 Color.FromRgb(26, 14, 31), 
                 Color.FromRgb(24, 82, 148) };
 
-        string s_SelectedSerialPort = string.Empty;
-        SerialPort serialPort = new SerialPort();
-        Thread serialPortReadThread;
+        private string s_SelectedSerialPort = string.Empty;
+        private SerialPort serialPort = new SerialPort();
+        private Thread serialPortReadThread;
+
+        private MidiIn midiPort;
+
         int hInst = 1;
         int instrument = 0;
 
@@ -130,9 +120,16 @@ namespace Symphonary
             tb_ScoreDisplay.TextAlignment = TextAlignment.Right;
             HideCanvasChildren();
 
-            serialPort.ReadTimeout = 5;
-            serialPortReadThread = new Thread(new ThreadStart(GetSerialData));
-            serialPortReadThread.Start();
+            if (USE_OLD_SERIAL_READ_METHOD) {
+                serialPort.ReadTimeout = 5;
+                serialPortReadThread = new Thread(new ThreadStart(GetSerialData));
+                serialPortReadThread.Start();
+            }
+            else
+            {
+                serialPort.DataReceived += SerialPortDataReceived;
+            }
+
 
             channelSelector = new ChannelSelector(channelsListView, ChannelsListViewSelectionChanged);
             channelsListView.DataContext = channelSelector.Channels;
@@ -141,6 +138,8 @@ namespace Symphonary
 
             //System.Console.WriteLine("{0}, {1}", window.ActualWidth, window.ActualHeight);
             //System.Console.WriteLine("{0}, {1}", LogoPositionX, LogoPositionY);
+
+            
         }
 
 
@@ -242,6 +241,61 @@ namespace Symphonary
             }
         }
 
+        private int curCanvasLastNoteIndex;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="firstNoteIndex"></param>
+        /// <param name="lastNoteIndex"></param>
+        private void AddNotesToCanvas(int firstNoteIndex, int lastNoteIndex)
+        {
+            if (firstNoteIndex >= stringAllocator.AllocSingleArr.Length) return;
+            
+            GuitarNote guitarNote;
+            for (int i = firstNoteIndex; (i <= lastNoteIndex) && (i < stringAllocator.AllocSingleArr.Length); i++) {
+                guitarNote = stringAllocator.AllocSingleArr[i];
+                if ((guitarNote.EndTime - guitarNote.BeginTime) > 30) {
+                    Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
+                              guitarNote.FretNumber, guitarNote.StringNumber);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void CanvasNotesScheduledAdder(object sender, EventArgs e)
+        {
+            double percentagePlayed = (double) playDuration.ElapsedMilliseconds/midiInfo.Duration;
+            if (curCanvasLastNoteIndex < stringAllocator.AllocSingleArr.Length - 1)
+            {
+                double percentageAddedToCanvas =
+                    (double) stringAllocator.AllocSingleArr[curCanvasLastNoteIndex].BeginTime/midiInfo.Duration;
+                if (percentageAddedToCanvas < percentagePlayed + 0.20)
+                {
+                    System.Console.WriteLine("{0} {1}", percentageAddedToCanvas, percentagePlayed);
+                    int firstNoteIndex = curCanvasLastNoteIndex + 1;
+                    double percentage = -1;
+                    for (curCanvasLastNoteIndex = firstNoteIndex; curCanvasLastNoteIndex < stringAllocator.AllocSingleArr.Length; curCanvasLastNoteIndex++)
+                    {
+                        percentage = (double) stringAllocator.AllocSingleArr[curCanvasLastNoteIndex].BeginTime/midiInfo.Duration;
+                        if (percentage > percentagePlayed + 0.20)
+                        {
+                            break;
+                        }
+                    }
+
+                    System.Console.WriteLine("[CanvasNotesScheduledAdder] {0} {1}", curCanvasLastNoteIndex, percentage);
+                    Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                           new Action(delegate
+                                                          {
+                                                              AddNotesToCanvas(firstNoteIndex,
+                                                                               curCanvasLastNoteIndex);
+                                                          }));
+                }
+            }
+        }
+
 
         /// <summary>
         /// Produces the graphics for displaying fingering
@@ -295,32 +349,7 @@ namespace Symphonary
                 textBlock.Width = 50;
                 r.Height = 46;
                 int[,] guitar = new int[6, 2] { { 64, 80 }, { 59, 63 }, { 55, 58 }, { 50, 54 }, { 45, 49 }, { 40, 44 } };
-                int[] ctrl_guitar = { 1, 8, 9, 10, 0, 2, 6 }; // color data begins at index 1
-                /*
-                for (int i = guitar.GetLength(0); i > 0; i--)
-                {
-                    if (note >= guitar[i - 1, 0] && note <= guitar[i - 1, 1])
-                    {
-                        textBlock.Text = Convert.ToString(note - guitar[i - 1, 0]);
-                        r.Fill = new SolidColorBrush(color[ctrl_guitar[i]]);
-                        r.Stroke = new SolidColorBrush(border[ctrl_guitar[i]]);
-                        textBlock.SetValue(Canvas.TopProperty, (5 + margin + ((i - 1)*(r.Height + padding))));
-                        r.SetValue(Canvas.TopProperty, (double) (margin + ((i - 1)*(r.Height + padding))));
-                    }
-                }
-                */
-                /*
-                // index adjusted loop
-                for (int i = guitar.GetLength(0) - 1; i >= 0; i--) {
-                    if (note >= guitar[i, 0] && note <= guitar[i, 1]) {
-                        textBlock.Text = Convert.ToString(note - guitar[i, 0]);
-                        r.Fill = new SolidColorBrush(color[ctrl_guitar[i + 1]]);
-                        r.Stroke = new SolidColorBrush(border[ctrl_guitar[i + 1]]);
-                        textBlock.SetValue(Canvas.TopProperty, (5 + margin + (i * (r.Height + padding))));
-                        r.SetValue(Canvas.TopProperty, (margin + (i * (r.Height + padding))));
-                    }
-                }
-                */
+                int[] ctrl_guitar = { 1, 8, 9, 10, 0, 2, 6 }; // color data begins at index 1                
 
                 // replaces loop above, makes use of given string and fret numbers
                 textBlock.Text = fretNumber.ToString();
@@ -328,7 +357,6 @@ namespace Symphonary
                 r.Fill = new SolidColorBrush(color[ctrl_guitar[stringNumber + 1]]);
                 r.Stroke = new SolidColorBrush(border[ctrl_guitar[stringNumber + 1]]);
                 r.SetValue(Canvas.TopProperty, (margin + (stringNumber * (r.Height + padding))));
-
 
                 r.Width = (endTime - startTime) * multiplier;
                 textBlock.SetValue(Canvas.LeftProperty, (double)((startTime * multiplier) + 3));
@@ -467,7 +495,7 @@ namespace Symphonary
             ResetSubCanvas(true);
             InitializeSubCanvas();
 
-            s_SelectedSerialPort = serialPortSelector.SelectedSerialPort;
+            s_SelectedSerialPort = serialPortSelector.SelectedAvailableSerialPort;
             serialPort.Close();
 
             if (s_SelectedSerialPort != string.Empty) {
@@ -572,7 +600,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void SerialPortSelectorOkClicked(object sender, RoutedEventArgs e)
         {
-            s_SelectedSerialPort = serialPortSelector.SelectedSerialPort;
+            s_SelectedSerialPort = serialPortSelector.SelectedAvailableSerialPort;
             serialPort.Close();
 
             if (s_SelectedSerialPort == string.Empty) {
@@ -597,32 +625,31 @@ namespace Symphonary
         {
             while (true) {
                 //score.s_CurrentFingering = string.Empty;
-
+                
                 if (s_SelectedSerialPort != string.Empty && serialPort.IsOpen) {
                     try {
-                        score.s_CurrentFingering = serialPort.ReadLine().Trim();
-                    } catch (InvalidOperationException e) {
-                    } catch (TimeoutException e) {
+                        score.s_CurrentFingering = serialPort.ReadLine().Trim();                        
+                    }
+                    catch (InvalidOperationException e) {
+                    }
+                    catch (TimeoutException e) {
                         score.s_CurrentFingering = string.Empty;
                     }
                 }
 
                 score.UpdateScore(ref midiPlayer);
 
-                /*
-                if (debugConsole != null) {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
-                        delegate() {
-                            debugConsole.textbox1.Text = "DATA: " + data + Environment.NewLine;
-                        }));
-                    count++;
-                }*/
-
                 Thread.Sleep(5);
             }
         }
 
 
+        private void SerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            score.s_CurrentFingering = ((SerialPort) sender).ReadLine().Trim();
+
+            score.UpdateScore(ref midiPlayer);
+        }
 
         /// <summary>
         /// Event handler for when the window layout is updated
@@ -645,6 +672,7 @@ namespace Symphonary
             NotifyPropertyChanged("LogoMargin");
             NotifyPropertyChanged("ProgressBarMargin");
             NotifyPropertyChanged("KeyLineMargin");
+
             //scaler.Margin = new Thickness(0, (window.ActualHeight / 2) - 360 - 35, 0, 0);
             //Canvas.SetTop(subcanv, (window.ActualHeight / 2) - 360 - 35);
             if (!isFullScreen) {
@@ -656,12 +684,12 @@ namespace Symphonary
                 MenuBar.Width = window.ActualWidth - 16;
             }
             else {
-                grid.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
-                canv.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
-                r_HeaderBackground.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
-                background.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
-                grid.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
-                MenuBar.Width = System.Windows.SystemParameters.PrimaryScreenWidth + 2;
+                grid.Width = SystemParameters.PrimaryScreenWidth + 2;
+                canv.Width = SystemParameters.PrimaryScreenWidth + 2;
+                r_HeaderBackground.Width = SystemParameters.PrimaryScreenWidth + 2;
+                background.Height = SystemParameters.PrimaryScreenHeight;
+                grid.Height = SystemParameters.PrimaryScreenHeight;
+                MenuBar.Width = SystemParameters.PrimaryScreenWidth + 2;
             }
             //ScaleTransform sc;
             if (hInst == 1) {
@@ -754,7 +782,7 @@ namespace Symphonary
         /// <param name="e"></param>
         private void HandleMIDIChannelMessagePlayed(object sender, ChannelMessageEventArgs e)
         {
-            //i_NumNotesPlayed++;
+            
         }
 
         /// <summary>
@@ -765,7 +793,8 @@ namespace Symphonary
         private void HandleMIDIPlayingCompleted(object sender, EventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                                   new Action(delegate() {
+                                   new Action(delegate
+                                                  {
                                                       debugConsole.ChangeText("");
                                                       Stop.IsEnabled = false;
                                                       Instruments.IsEnabled = true;
@@ -773,8 +802,8 @@ namespace Symphonary
                                                       HideSubCanvas();
                                                       normal.Visibility = Visibility.Visible;
                                                       b_AnimationStarted = false;
-                                                      CompositionTarget.Rendering -=
-                                                          new EventHandler(MoveCanvas);
+                                                      CompositionTarget.Rendering -= MoveCanvas;
+                                                      CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
                                                   }));
         }
 
@@ -809,7 +838,10 @@ namespace Symphonary
         /// <param name="e"></param>
         protected override void OnClosing(CancelEventArgs e)
         {
-            serialPortReadThread.Abort();
+            if (USE_OLD_SERIAL_READ_METHOD)
+            {
+                serialPortReadThread.Abort();
+            }
 
             try {
                 midiPlayer.OnClosingOperations();
@@ -847,6 +879,7 @@ namespace Symphonary
         {
             if (i_Channel < 0)
                 return;
+
             long lastNote = 0;
             long smallestNoteLength = 0;
             foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
@@ -871,7 +904,7 @@ namespace Symphonary
             DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), midiInfo.i_TimeSignatureNumerator);
 
             Note[] notesTempArray = new Note[midiInfo.notesForAllChannels[i_Channel].Count];
-            //MessageBox.Show("1");
+
             {
                 int i = 0;
                 foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
@@ -896,33 +929,15 @@ namespace Symphonary
 
             // Allocate strings for guitar
             stringAllocator.Clear();
-            foreach (Note note in notesTempArray) {
-                stringAllocator.AddNote(note);
-            }
+            stringAllocator.AllocateNotes(midiInfo.notesForAllChannels[i_Channel]);
+            
 
             debugConsole.AddText(string.Format("StringAllocator # dropped notes: {0}\n", stringAllocator.NumDroppedNotes));
             debugConsole.AddText(string.Format("StringAllocator # out of range notes: {0}\n", stringAllocator.NumOutOfRangeNotes));
 
-
-            /*
-            Note noteTemp;
-            for (int i = notesTempArray.Length - 1; i >= 0; i--) {
-                noteTemp = notesTempArray[i];
-                if (i == notesTempArray.Length - 1) {
-                    firstStart = noteTemp.BeginTime / 10;
-                }
-                Fingering(noteTemp.NoteNumber, instrument, noteTemp.BeginTime / 10, noteTemp.EndTime / 10);
-            }
-            */
-
-            for (int i = 0; i < stringAllocator.Alloc.Length; i++) {
-                foreach (GuitarNote guitarNote in stringAllocator.Alloc[i]) {
-                    if ((guitarNote.EndTime - guitarNote.BeginTime) > 30) {
-                        Fingering(guitarNote.NoteNumber, instrument, guitarNote.BeginTime / 10, guitarNote.EndTime / 10,
-                            guitarNote.FretNumber, guitarNote.StringNumber);
-                    }
-                }
-            }
+            curCanvasLastNoteIndex = 20;
+            //AddNotesToCanvas(0, int.MaxValue);
+            AddNotesToCanvas(0, curCanvasLastNoteIndex);
         }
 
         /// <summary>
@@ -960,7 +975,7 @@ namespace Symphonary
 
             previousTime = currentTime;
 
-            long currentDelta = (milliseconds - starterTime) / 10;
+            long currentDelta = (milliseconds - startTime) / 10;
             if (hInst == 0) {
                 double mover = 625;
                 //Canvas.SetTop(background, (double)(currentDelta * multiplier) + mover);

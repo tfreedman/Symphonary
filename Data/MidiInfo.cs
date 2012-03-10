@@ -66,12 +66,13 @@ namespace Symphonary
         public List<MidiEvent> l_Metadata = new List<MidiEvent>();
         public MidiEventCollection midiEventCollection;
 
-        public List<Note>[] notesForAllChannels = new List<Note>[16]; 
+        public List<Note>[] notesForAllChannels = new List<Note>[16];
 
-        // these are for just one channel of choice
-        private long i_EndTime;
-        //public List<Note> l_Notes = new List<Note>();
-
+        /// <summary>
+        /// The play duration, in clock time, of the midi file 
+        /// </summary>
+        public long Duration { get; set; }
+        
 
         /// <summary>
         /// Constructor
@@ -105,6 +106,8 @@ namespace Symphonary
             GetUsedChannels();
 
             GetChannelInstruments();
+
+            Duration = 0;
 
             GetNotesForAllChannels();
 
@@ -277,6 +280,11 @@ namespace Symphonary
                         else {
                             debugConsole.AddText("Error: the NoteOff command at " + noteOff.AbsoluteTime + " does not match a previous NoteOn command");
                         }
+
+                        if (ActualTime(noteOff.AbsoluteTime) > Duration)
+                        {
+                            Duration = ActualTime(noteOff.AbsoluteTime);
+                        }
                     }
                     else if (midiEvent.CommandCode == MidiCommandCode.NoteOn) {
                         NoteOnEvent noteOn = (NoteOnEvent)midiEvent;
@@ -288,8 +296,9 @@ namespace Symphonary
                         }
                     }
                     else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent && ((MetaEvent)midiEvent).MetaEventType == MetaEventType.EndTrack) {
-                        i_EndTime = ActualTime(midiEvent.AbsoluteTime);
-                        break;
+                        if (ActualTime(midiEvent.AbsoluteTime) > Duration) {
+                            Duration = ActualTime(midiEvent.AbsoluteTime);
+                        }
                     }
                 }
 

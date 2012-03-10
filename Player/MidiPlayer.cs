@@ -74,8 +74,6 @@ namespace Symphonary
 
             PlayPersistentChannel = true;
             PlayOtherChannels = true;
-
-            
         }
 
         

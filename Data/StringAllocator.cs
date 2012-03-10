@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Symphonary
 {
-    class GuitarNote : Note
+    class GuitarNote : Note, IComparable
     {
         public int StringNumber;
         public int FretNumber;
@@ -12,6 +14,17 @@ namespace Symphonary
         {
             StringNumber = stringNumber;
             FretNumber = fretNumber;
+        }
+
+        // implement IComparable interface (this way you can do Array.Sort on a GuitarNote array
+        public int CompareTo(object obj)
+        {
+            GuitarNote otherGuitarNote = obj as GuitarNote;
+            if (otherGuitarNote != null)
+            {
+                return BeginTime.CompareTo(otherGuitarNote.BeginTime);
+            }
+            throw new Exception("[GuitarNote.CompareTo] Other object is not a GuitarNote");
         }
     }
     
@@ -25,6 +38,12 @@ namespace Symphonary
         public List<GuitarNote>[] Alloc
         {
             get { return alloc; }
+        }
+
+        private GuitarNote[] allocSingleArr;
+        public GuitarNote[] AllocSingleArr
+        {
+            get { return allocSingleArr; }
         }
 
         public int NumDroppedNotes;
@@ -48,9 +67,30 @@ namespace Symphonary
             {
                 alloc[i].Clear();
             }
+            allocSingleArr = null;
         }
 
-        public void AddNote(Note note)
+        public void AllocateNotes(List<Note> notes)
+        {
+            foreach (Note note in notes)
+            {
+                AddNote(note);
+            }
+
+            allocSingleArr = new GuitarNote[notes.Count - NumDroppedNotes];
+            int j = 0;
+            for (int i = 0; i < alloc.Length; i++)
+            {
+                foreach (GuitarNote guitarNote in alloc[i])
+                {
+                    allocSingleArr[j] = guitarNote;
+                    j++;
+                }
+            }
+            Array.Sort(allocSingleArr);
+        }
+
+        private void AddNote(Note note)
         {
             bool success = false;
             
@@ -61,7 +101,7 @@ namespace Symphonary
                     if (guitar[i, 0] < note.NoteNumber && note.NoteNumber < guitar[i, 1] &&
                         IsFree(i, note.BeginTime, note.EndTime))
                     {
-                        Allocate(i, note.NoteNumber - guitar[i, 0], note);
+                        AddNote_Helper(i, note.NoteNumber - guitar[i, 0], note);
                         success = true;
                         break;
                     }
@@ -79,12 +119,12 @@ namespace Symphonary
             }
         }
 
-        private void Allocate(int stringNumber, int fretNumber, Note note)
+        private void AddNote_Helper(int stringNumber, int fretNumber, Note note)
         {
             int i = 0;
             foreach (GuitarNote guitarNote in alloc[stringNumber])
             {
-                if (note.BeginTime > guitarNote.BeginTime)
+                if (note.BeginTime < guitarNote.BeginTime)
                 {
                     alloc[stringNumber].Insert(i, new GuitarNote(stringNumber, fretNumber, note));
                     break;

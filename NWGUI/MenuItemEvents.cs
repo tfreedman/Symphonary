@@ -78,10 +78,12 @@ namespace Symphonary
                 InitializeCanvas();
 
                 ShowSubCanvas();
+                playDuration.Restart();
                 CompositionTarget.Rendering += MoveCanvas;
+                CompositionTarget.Rendering += CanvasNotesScheduledAdder;
                 b_AnimationStarted = true;
                 midiPlayer.StartPlaying();
-                starterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                startTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
             } catch (NullReferenceException ex) {
                 MessageBox.Show(
@@ -129,9 +131,10 @@ namespace Symphonary
                 ResetSubCanvas(false);
 
                 b_AnimationStarted = false;
-                CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
+                CompositionTarget.Rendering -= MoveCanvas;
+                CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
 
-            } catch (NullReferenceException ex) { }
+            } catch (NullReferenceException) { }
         }
 
         /// <summary>
@@ -157,7 +160,8 @@ namespace Symphonary
                 HideCanvasChildren();
 
                 b_AnimationStarted = false;
-                CompositionTarget.Rendering -= new EventHandler(MoveCanvas);
+                CompositionTarget.Rendering -= MoveCanvas;
+                CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
                 normal.Visibility = Visibility.Hidden;
                 try {
                     loadingScreen.Visibility = Visibility.Hidden;
@@ -175,13 +179,11 @@ namespace Symphonary
                     HandleMIDIPlayingCompleted);
                 //midiPlayerForPreview = new MidiPlayer(midiPlayer.Sequence, midiPlayer.Sequencer);
 
-                //midiPlayer.b_PlayPersistentChannel = true; // make it so that the user's instrument's notes don't play
+                midiPlayer.PlayOtherChannels = false;
 
                 midiInfo.Refresh(openFileDialog.FileName, i_Channel);
                 tb_listViewTitle.Text = midiInfo.Title;
-                
             }
-
         }
 
 
