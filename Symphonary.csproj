@@ -95,10 +95,6 @@
     <Compile Include="NWGUI\NWGUI.xaml.cs">
       <DependentUpon>NWGUI.xaml</DependentUpon>
     </Compile>
-    <Page Include="ExpressionDark.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="NWGUI\DebugWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,10 +144,15 @@
     <Resource Include="Images\logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\mark.png" />
+    <Resource Include="Images\bg_light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\bg_light.png" />
+    <Resource Include="Images\g_left.png" />
+    <Resource Include="Images\g_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\g_bottom.png" />
+    <Resource Include="Images\g_top.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

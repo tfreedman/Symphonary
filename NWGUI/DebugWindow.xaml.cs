@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace Symphonary 
 {
@@ -9,6 +10,7 @@ namespace Symphonary
     public partial class DebugWindow : Window 
     {
         public delegate void ChangeTextDelegate(string text);
+        bool consoleNowCloseable = false;
 
         public DebugWindow() 
         {
@@ -32,5 +34,24 @@ namespace Symphonary
             this.Hide();
             e.Cancel = true;
         }
+
+
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.OemTilde) {
+                consoleNowCloseable = true;
+            }
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.OemTilde && consoleNowCloseable) {
+                    consoleNowCloseable = false;
+                    NWGUI.isConsoleOpen = false;
+                    this.Hide();
+            }
+        }
+
+
     }
 }

@@ -9,7 +9,7 @@
 
     <Grid Name="grid" Height="Auto" Width="Auto">
         <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
-            <Menu Name="MenuBar" IsMainMenu="True" Background="Black" Height="22" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left">
+            <Menu Name="MenuBar" IsMainMenu="True" Background="#00000000" Height="22" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left" Focusable="False">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -27,43 +27,25 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
 
-                <MenuItem Name="Stop" Header="_Stop" Click="Stop_Clicked" Grid.Column="0"/>
+                <MenuItem Name="Stop" Width="0" Header="STOP" Click="Stop_Clicked" Grid.Column="0" />
 
-                <MenuItem Header="_Options" Grid.Column="1">
-                    <MenuItem Background="Black" Header="_Mute Selected Channel" Name="muteSelectedChannel" IsCheckable="True" Click="MuteSelectedChannel_Clicked"/>
+                <MenuItem Name="muteSelectedChannel" Header="" IsCheckable="True" Click="MuteSelectedChannel_Clicked" Width="0" Grid.Column="1"/>
+
+                <MenuItem Name="Instruments" Header="" Grid.Column="2" Width="0">
+                    <MenuItem Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>
+                    <MenuItem Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="74"/>
+                    <MenuItem Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="30"/>
+                    <MenuItem Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
                 </MenuItem>
-
-                <MenuItem Name="Instruments" Header="_Instruments" Grid.Column="2">
-                    <MenuItem Background="Black" Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>
-                    <MenuItem Background="Black" Header="_Flute" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="74"/>
-                    <MenuItem Background="Black" Header="_Guitar" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="30"/>
-                    <MenuItem Background="Black" Header="_Bass" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="35"/>
-                </MenuItem>
-
                 <MenuItem Name="FPS" Header="" HorizontalAlignment="Right" Grid.Column="4" Focusable="False" IsHitTestVisible="False" />
-                <MenuItem Name="Console" Header="_Console" Click="Debug_Clicked" Grid.Column="5"/>
-                <MenuItem Name="FullScreen" Header="_Full Screen" Click="Fullscreen_Clicked" Grid.Column="6"/>
+                <MenuItem Name="Console" Header="CONSOLE" Click="Debug_Clicked" Grid.Column="5"/>
+                <MenuItem Name="FullScreen" Header="FULL SCREEN" Click="Fullscreen_Clicked" Grid.Column="6"/>
+                <MenuItem Name="ScoreDisplay" Width="0" Header="" Grid.Column="7" Focusable="False" FontWeight="Medium" IsHitTestVisible="False"/>
             </Menu>
         </StackPanel>
-        <DockPanel Name="r_HeaderBorder"  VerticalAlignment="Top" Height="1" Canvas.ZIndex="4" Margin="0,22,0,0" Background="#1a62b3">
-            
-        </DockPanel>
-        <DockPanel Name="r_HeaderBackground"  VerticalAlignment="Top" Height="49" Canvas.ZIndex="4" Margin="0,23,0,0">
-            <TextBlock Name="tb_SongTitle" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="10,0,0,0" />
-            <TextBlock Name="tb_ScoreDisplay" DockPanel.Dock="Right" Width="500" HorizontalAlignment="Right" Margin="0,0,25,0" />
-            <DockPanel.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                    <LinearGradientBrush.GradientStops>
-                        <GradientStop Offset="0.0" Color="#0b2a4c"/>
-                        <GradientStop Offset="0.5" Color="#1a62b3"/>
-                        <GradientStop Offset="1" Color="#0b2a4c"/>
-                    </LinearGradientBrush.GradientStops>
-                </LinearGradientBrush>
-            </DockPanel.Background>
-        </DockPanel>
-        <Grid Name="listViewGrid" Visibility="Hidden" Margin="0, 22, 0, 0">
-            <Button Click="Back_Clicked" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50, 50, 0, 0">Back</Button>
-            <TextBlock Name="tb_listViewTitle" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Foreground="#000000" FontStyle="Italic" FontSize="30" TextAlignment="Left" Margin="120, 40, 0, 0">$SONGTITLE</TextBlock>
+        <Grid Name="listViewGrid" Visibility="Hidden" Margin="0, 0, 0, 0">
+            <Image Source="../Images/bg.png" Width="665" Height="665" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
+            <TextBlock Name="tb_listViewTitle" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Foreground="#574d4f" FontStyle="Italic" FontSize="30" TextAlignment="Left" Margin="120, 100, 0, 0">$SONGTITLE</TextBlock>
             <Grid Name="listViewContent" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -74,8 +56,8 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Select channel:" Grid.Row="0" Grid.Column="0" Margin="10"/>
-                <TextBlock Text="Select serial port:" Grid.Row="0" Grid.Column="1" Margin="10"/>
+                <TextBlock Text="SELECT CHANNEL:" Grid.Row="0" Grid.Column="0" Margin="10" />
+                <TextBlock Text="SELECT SERIAL PORT:" Grid.Row="0" Grid.Column="1" Margin="10"/>
                 <ListView Name="channelsListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
@@ -94,62 +76,65 @@
                     </ListView.View>
                 </ListView>
                 <StackPanel Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Name="previewChannelButton" Width="200" Margin="10,0,0,0" Click="PreviewChannel_Clicked">Preview Channel</Button>
+                    <Button Click="Back_Clicked" Width="100" HorizontalAlignment="Left" Margin="10,0,200,0">Back</Button>
+                     <Button Name="previewChannelButton" Width="200" Margin="10,0,0,0" Click="PreviewChannel_Clicked">Preview Channel</Button>
                     <Button Width="100" Margin="10,0,0,0" Click="ListViewGridDone_Clicked">Done</Button>
                 </StackPanel>
             </Grid>
             <Grid.Background>
-                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
         </Grid>
-        <Grid Name="loadingScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
-            <Grid.Background>
-                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
-            </Grid.Background>
-            <!-- <Image Source="../Images/mark.png" Width="98" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18, 18, 0, 0"></Image> -->
-            <TextBlock Name="percentageText" FontSize="32" FontFamily="Segoe UI" VerticalAlignment="Center" HorizontalAlignment="Center">0% Complete</TextBlock>
+        <Grid Name="loadingScreen" Visibility="Hidden" Margin="0, 0, 0, 0">
             <Canvas>
+                <Image Source="../Images/bg.png" Width="665" Height="665" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
                 <Border Name="progressBar" Width="395"
                         Margin="{Binding Path=ProgressBarMargin, ElementName=window}"></Border>
             </Canvas>
-        </Grid>
-        <Grid Name="aboutScreen" Visibility="Hidden" Margin="0, 22, 0, 0">
-           <Canvas>
-                <Image Source="../Images/logo.png" 
-                       Width="620" Height="251" 
-                       Margin="{Binding Path=LogoMargin, ElementName=window}"
-                       Name="logo"></Image>
-                <Button Click="About_Clicked" Width="100" Margin="120, 210, 0, 0">Close</Button>
-           </Canvas>
             <Grid.Background>
-                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
         </Grid>
-        <Grid Name="normal" Visibility="Visible" Margin="0, 22, 0, 0">
+        <Grid Name="aboutScreen" Visibility="Hidden" Margin="0, 0, 0, 0">
+            <Image Source="../Images/bg.png" Width="665" Height="665" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
             <Canvas>
-                <Image Source="../Images/logo.png" 
-                       Width="620" Height="251" 
-                       Margin="{Binding Path=LogoMargin, ElementName=window}"
-                       Name="normalLogo"></Image>
+                <Image Source="../Images/logo.png" Width="620" Height="251" Margin="{Binding Path=LogoMargin, ElementName=window}"></Image>
             </Canvas>
-            <Button Click="Open_Clicked" Width="100" Margin="-120, 210, 0, 0">OPEN</Button>
-            <Button Click="About_Clicked" Width="100" Margin="120, 210, 0, 0">ABOUT</Button>
+            <Button Margin="620, 35, 0, 0">v1</Button>
+            <Button FontSize="20" Margin="50, 200, 0, 0">Developed by Travis Lu, Tyler Freedman, and Jonathan Koff</Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Click="About_Clicked" Width="100" Margin="50, 50, 0, 0">Back</Button>
             <Grid.Background>
-                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg.png" TileMode="Tile" Stretch="None"/>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
             </Grid.Background>
         </Grid>
-         <Canvas Canvas.ZIndex="1" Height="720" Margin="0,72,0,0" Name="background" Visibility="Hidden">
-            <Canvas.Background>
-                    <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
-                 </Canvas.Background>
-
-        </Canvas>
-        <Viewbox Grid.ZIndex="3" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,72,0,0">
+        <Grid Name="normal" Visibility="Visible" Margin="0, 0, 0, 0">
+            <Image Source="../Images/bg.png" Width="665" Height="665" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
+            <Canvas>
+                <Image Source="../Images/logo.png" Width="620" Height="251" Margin="{Binding Path=LogoMargin, ElementName=window}" Name="normalLogo"></Image>
+            </Canvas>
+            <Button Click="Open_Clicked" Width="100" Margin="-120, 150, 0, 0">OPEN</Button>
+            <Button Click="About_Clicked" Width="100" Margin="120, 150, 0, 0">ABOUT</Button>
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
+        </Grid>
+        <Grid Name="Background" Visibility="Hidden" Margin="0, 0, 0, 0">
+            <Grid.Background>
+                <ImageBrush ViewportUnits="Absolute" Viewport="0,0,630,630" ImageSource="../Images/bg_light.png" TileMode="Tile" Stretch="None"/>
+            </Grid.Background>
+        </Grid>
+        <Viewbox Grid.ZIndex="3" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0">
             <Canvas Name="canv" HorizontalAlignment="Stretch" Height="720" Margin="0">
                 <Rectangle Name="keyLine" Margin="0, 161, 0, 0"></Rectangle> 
                 <Canvas Name="gridlines"></Canvas>
                 <Canvas Name="subcanv"></Canvas>
             </Canvas>
         </Viewbox>
+        <Grid Name="Overlay" Visibility="Visible" IsHitTestVisible="False">
+            <Image Source="../Images/g_top.png" Height="76" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Fill"/>
+            <Image Source="../Images/g_left.png" Width="76" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Fill"/>
+            <Image Source="../Images/g_right.png" Width="76" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Fill"/>
+            <Image Source="../Images/g_bottom.png" Name="BottomGradient" Height="76" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Fill"/>
+        </Grid>
     </Grid>
 </Window>

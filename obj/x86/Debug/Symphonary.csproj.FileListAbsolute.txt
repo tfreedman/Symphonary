@@ -1,9 +1,3 @@
-C:\Users\Tyler\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Tyler\Symphonary\obj\x86\Debug\App.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
-C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.g.resources
-C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.pdb
 C:\Users\Tyler\Symphonary\bin\Debug\Symphonary.exe
 C:\Users\Tyler\Symphonary\bin\Debug\Symphonary.pdb
 C:\Users\Tyler\Symphonary\bin\Debug\NAudio.dll
@@ -12,126 +6,21 @@ C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
 C:\Users\Tyler\Symphonary\bin\Debug\Sanford.Threading.dll
+C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.dll
+C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.pdb
+C:\Users\Tyler\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\App.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\App.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
+C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
+C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
+C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.g.resources
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
 C:\Users\Tyler\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\Tyler\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.exe
-C:\Users\Tyler\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.exe
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.pdb
-F:\miditool\Symphonary\Symphonary\bin\Debug\Symphonary.exe
-F:\miditool\Symphonary\Symphonary\bin\Debug\Symphonary.pdb
-F:\miditool\Symphonary\Symphonary\bin\Debug\NAudio.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Collections.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Threading.dll
-F:\miditool\Symphonary\Symphonary\bin\Debug\WpfAnimatedControl.pdb
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\About.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\SerialPortSelector.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\ChannelSelector.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\MainWindow.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\About.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\SerialPortSelector.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\ChannelSelector.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\LoadingScreen.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\MainWindow.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\LoadingScreen.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI.baml
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.g.resources
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
-F:\miditool\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.exe
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.pdb
-E:\miditool\Symphonary\Symphonary\bin\Debug\Symphonary.exe
-E:\miditool\Symphonary\Symphonary\bin\Debug\Symphonary.pdb
-E:\miditool\Symphonary\Symphonary\bin\Debug\NAudio.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Collections.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Threading.dll
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.g.resources
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary.exe
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary.pdb
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Symphonary.exe
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Symphonary.pdb
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\NAudio.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Sanford.Collections.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Sanford.Multimedia.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\bin\Debug\Sanford.Threading.dll
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\App.g.cs
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary.g.resources
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\About.baml
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\SerialPortSelector.baml
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\About.g.cs
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\SerialPortSelector.g.cs
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
-C:\nxdata\xlu\Documents\New folder\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
-C:\Users\Tyler\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
-C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.dll
-C:\Users\Tyler\Symphonary\bin\Debug\WPFToolkit.pdb
-C:\Users\Tyler\Symphonary\obj\x86\Debug\App.baml
-C:\Users\Tyler\Symphonary\obj\x86\Debug\ExpressionDark.baml
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\ExpressionDark.baml
-E:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.baml
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary.exe
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary.pdb
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Symphonary.exe
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Symphonary.pdb
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\NAudio.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Sanford.Collections.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\Sanford.Threading.dll
-C:\Users\Tyler\Symphonary\Symphonary\bin\Debug\WPFToolkit.pdb
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\ExpressionDark.baml
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\App.baml
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.g.cs
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.g.cs
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\App.g.cs
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.cache
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary_MarkupCompile.lref
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\NWGUI\NWGUI.baml
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary.g.resources
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\Symphonary.Properties.Resources.resources
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.read.1.tlog
-C:\Users\Tyler\Symphonary\Symphonary\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Tyler\Symphonary\obj\x86\Debug\Symphonary.pdb

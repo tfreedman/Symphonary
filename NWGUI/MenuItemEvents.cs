@@ -22,7 +22,7 @@ namespace Symphonary
                 Topmost = false;
                 WindowState = WindowState.Normal;
                 ResizeMode = ResizeMode.CanResizeWithGrip;
-                FullScreen.Header = "Full Screen";
+                FullScreen.Header = "FULL SCREEN";
             }
 
             if (isFullScreen) {
@@ -30,14 +30,14 @@ namespace Symphonary
                 Topmost = false;
                 WindowState = WindowState.Normal;
                 ResizeMode = ResizeMode.CanResizeWithGrip;
-                FullScreen.Header = "Full Screen";
+                FullScreen.Header = "FULL SCREEN";
             }
             else {
                 WindowStyle = WindowStyle.None;
                 Topmost = true;
                 WindowState = WindowState.Maximized;
                 ResizeMode = ResizeMode.NoResize;
-                FullScreen.Header = "Undo Full Screen";
+                FullScreen.Header = "UNDO FULL SCREEN";
             }
             isFullScreen = !isFullScreen;
             Size_Changed(this, e);
@@ -70,13 +70,15 @@ namespace Symphonary
                 }
 
                 Stop.IsEnabled = true;
+                Stop.Width = Double.NaN;
                 Instruments.IsEnabled = false;
+                Instruments.Width = 0;
 
                 midiPlayer.PersistentChannel = i_Channel;
 
                 score.ResetScore();
                 InitializeCanvas();
-
+                Background.Visibility = Visibility.Visible;
                 ShowSubCanvas();
                 playDuration.Restart();
                 CompositionTarget.Rendering += MoveCanvas;
@@ -99,6 +101,10 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Back_Clicked(object sender, RoutedEventArgs e)
         {
+            muteSelectedChannel.Width = 0;
+            muteSelectedChannel.Header = "";
+            Instruments.Width = 0;
+            Instruments.Header = "";
             listViewGrid.Visibility = Visibility.Hidden;
             MidiPlayerExitPreviewMode();
             midiPlayer.StopPlaying();
@@ -116,7 +122,13 @@ namespace Symphonary
             FPS.Header = "";
             debugConsole.ChangeText("");
             Stop.IsEnabled = false;
+            Stop.Width = 0;
+            ScoreDisplay.Width = 0;
             Instruments.IsEnabled = true;
+            Instruments.Width = Double.NaN;
+            muteSelectedChannel.Width = Double.NaN;
+            muteSelectedChannel.Header = "MUTE";
+            Background.Visibility = Visibility.Hidden;
             Instrument_Clicked(instrument);
             HideCanvasChildren();
 
@@ -290,29 +302,39 @@ namespace Symphonary
                 for (int i = 0; i < r_instrument.Length; i++) {
                     canv.Children.Remove(r_instrument[i]);
                     canv.Children.Remove(tb_instrument[i]);
+                    canv.Children.Remove(r_separators[i]);
                 }
+                canv.Children.Remove(r_separators[r_separators.Length - 1]);
             } catch (NullReferenceException nr_e) { }
 
             if (num == 35 || num == 41) {
-                r_instrument = new Rectangle[4];
+                r_instrument = new Border[4];
                 tb_instrument = new TextBlock[4];
+                r_separators = new Rectangle[5];
             }
             else if (num == 74) {
-                r_instrument = new Rectangle[11];
+                r_instrument = new Border[11];
                 tb_instrument = new TextBlock[11];
+                r_separators = new Rectangle[12];
             }
             else if (num == 30) {
-                r_instrument = new Rectangle[6];
+                r_instrument = new Border[6];
                 tb_instrument = new TextBlock[6];
+                r_separators = new Rectangle[7];
             }
 
 
             for (int i = 0; i < r_instrument.Length; i++) {
-                r_instrument[i] = new Rectangle { };
+                r_instrument[i] = new Border{ };
+                r_separators[i] = new Rectangle { };
                 tb_instrument[i] = new TextBlock { };
                 r_instrument[i].Visibility = Visibility.Hidden;
+                r_separators[i].Visibility = Visibility.Hidden;
                 tb_instrument[i].Visibility = Visibility.Hidden;
             }
+            r_separators[r_separators.Length - 1] = new Rectangle { };
+            r_separators[r_separators.Length - 1].Visibility = Visibility.Hidden;
+
             keyLine.Fill = new SolidColorBrush(Color.FromRgb(51, 51, 51));
             canv.Children.Add(keyLine);
 
@@ -336,20 +358,20 @@ namespace Symphonary
 
                     switch (i) {
                         case 0:
-                            r_instrument[i].Fill = new SolidColorBrush(color[6]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[6]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[6]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[6]);
                             break;
                         case 1:
-                            r_instrument[i].Fill = new SolidColorBrush(color[2]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[2]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[2]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[2]);
                             break;
                         case 2:
-                            r_instrument[i].Fill = new SolidColorBrush(color[0]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[0]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[0]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[0]);
                             break;
                         case 3:
-                            r_instrument[i].Fill = new SolidColorBrush(color[10]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[10]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[10]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[10]);
                             break;
                     }
 
@@ -359,55 +381,67 @@ namespace Symphonary
             // if guitar
             else if (num >= 25 && num <= 32) {
                 int margin = 170;
-                int padding = 20;
+                int padding = 10;
                 for (int i = 0; i < r_instrument.Length; i++) {
                     tb_instrument[i].Height = 50;
                     tb_instrument[i].Width = 50;
                     r_instrument[i].Height = 46;
                     r_instrument[i].Width = 60;
-
-                    tb_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
+                    
+                    tb_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding)) - 7));
+                    tb_instrument[i].SetValue(Canvas.LeftProperty, (double)5);
                     r_instrument[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[i].Height + padding))));
 
                     switch (i) {
                         case 5:
-                            r_instrument[i].Fill = new SolidColorBrush(color[6]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[6]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[6]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[6]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[6]);
                             break;
                         case 4:
-                            r_instrument[i].Fill = new SolidColorBrush(color[2]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[2]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[2]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[2]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[2]);
                             break;
                         case 3:
-                            r_instrument[i].Fill = new SolidColorBrush(color[0]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[0]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[0]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[0]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[0]);
                             break;
                         case 2:
-                            r_instrument[i].Fill = new SolidColorBrush(color[10]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[10]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[10]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[10]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[10]);
                             break;
                         case 1:
-                            r_instrument[i].Fill = new SolidColorBrush(color[9]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[9]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[9]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[9]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[9]);
                             break;
                         case 0:
-                            r_instrument[i].Fill = new SolidColorBrush(color[8]);
-                            r_instrument[i].Stroke = new SolidColorBrush(border[8]);
+                            r_instrument[i].Background = new SolidColorBrush(tint[8]);
+                            r_instrument[i].BorderBrush = new SolidColorBrush(border[8]);
+                            tb_instrument[i].Foreground = new SolidColorBrush(border[8]);
                             break;
                     }
+                }
+                for (int i = 0; i < r_separators.Length; i++) {
+                    r_separators[i].Height = 8;
+                    r_separators[i].Width = 8;
+                    r_separators[i].Fill = new SolidColorBrush(Color.FromRgb(250, 250, 250));
+                    r_separators[i].SetValue(Canvas.TopProperty, (double)(margin + (i * (r_instrument[1].Height + padding))) - 9);
                 }
             } // end else if (num >= 25 && num <= 32) 
             // -------------------------------------------------------
 
-
-            // this has been moved from the NWGUI constructor --------------------------
             for (int i = 0; i < r_instrument.Length; i++) {
                 canv.Children.Add(tb_instrument[i]);
                 canv.Children.Add(r_instrument[i]);
+                canv.Children.Add(r_separators[i]);
                 Canvas.SetZIndex(tb_instrument[i], (int)99);
                 Canvas.SetZIndex(r_instrument[i], (int)98);
             }
-            // ------------------------------------------------------
+            canv.Children.Add(r_separators[r_separators.Length - 1]);
         }
 
         /// <summary>
@@ -437,19 +471,6 @@ namespace Symphonary
                 aboutScreen.Visibility = Visibility.Visible;
                 normal.Visibility = Visibility.Hidden;
             }
-            /*Border[] myRect = new Border[10000];
-            Random random = new Random();
-            for (int i = 0; i < 10000; i++) {
-                myRect[i] = new System.Windows.Controls.Border();
-                myRect[i].BorderBrush = new SolidColorBrush(Color.FromRgb(150, 150, 150));
-                myRect[i].BorderThickness = new Thickness(1, 1, 0, 0);
-                byte a = (byte)random.Next(30, 90);
-                myRect[i].Background = new SolidColorBrush(Color.FromRgb(a, a, a));
-                myRect[i].Height = 9;
-                myRect[i].Width = 9;
-                aboutScreen.Children.Add(myRect[i]);
-            }*/
-
         }
 
     }

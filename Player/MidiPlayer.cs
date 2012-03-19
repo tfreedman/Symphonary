@@ -201,7 +201,7 @@ namespace Symphonary
         }
 
         /// <summary>
-        /// Sets the program closing flag value to true. This stops the player from performing some opertions that may cause
+        /// Sets the program closing flag value to true. This stops teh player from performing some opertions that may cause
         /// an exception when the program is closing
         /// </summary>
         public void OnClosingOperations()
