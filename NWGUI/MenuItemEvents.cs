@@ -43,6 +43,34 @@ namespace Symphonary
             Size_Changed(this, e);
         }
 
+        /// <summary>
+        /// Event handler for clicking the "Pause" menu item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Pause_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (midiPlayer == null)
+                return;
+            
+            if (midiPlayer.IsPlaying)
+            {
+                midiPlayer.StopPlaying();
+                pause.Header = "RESUME";
+                playDuration.Stop();
+                CompositionTarget.Rendering -= MoveCanvas;
+                CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
+            }
+            else
+            {
+                midiPlayer.ResumePlaying();
+                pause.Header = "PAUSE";
+                playDuration.Start();
+                CompositionTarget.Rendering += MoveCanvas;
+                CompositionTarget.Rendering += CanvasNotesScheduledAdder;
+            }
+        }
+
 
         /// <summary>
         /// Event handler for clicking the "Start" menu item
@@ -51,7 +79,6 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Start_Clicked(object sender, RoutedEventArgs e)
         {
-
             Instrument_Clicked(instrument);
             try {
                 if (midiPlayer.IsPlaying) {
@@ -77,9 +104,12 @@ namespace Symphonary
                 midiPlayer.PersistentChannel = i_Channel;
 
                 score.ResetScore();
+                
                 InitializeCanvas();
                 Background.Visibility = Visibility.Visible;
                 ShowSubCanvas();
+                pause.Visibility = Visibility.Visible;
+                
                 playDuration.Restart();
                 CompositionTarget.Rendering += MoveCanvas;
                 CompositionTarget.Rendering += CanvasNotesScheduledAdder;
@@ -129,8 +159,10 @@ namespace Symphonary
             muteSelectedChannel.Width = Double.NaN;
             muteSelectedChannel.Header = "MUTE";
             Background.Visibility = Visibility.Hidden;
-            Instrument_Clicked(instrument);
+            pause.Visibility = Visibility.Collapsed;
             HideCanvasChildren();
+
+            Instrument_Clicked(instrument);
 
             try {
                 //midiPlayer.OnClosingOperations();
@@ -191,7 +223,7 @@ namespace Symphonary
                     HandleMIDIPlayingCompleted);
                 //midiPlayerForPreview = new MidiPlayer(midiPlayer.Sequence, midiPlayer.Sequencer);
 
-                midiPlayer.PlayOtherChannels = false;
+                midiPlayer.PlayOtherChannels = true;
 
                 midiInfo.Refresh(openFileDialog.FileName, i_Channel);
                 tb_listViewTitle.Text = midiInfo.Title;

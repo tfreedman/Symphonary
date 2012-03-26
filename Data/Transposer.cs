@@ -11,6 +11,11 @@ namespace Symphonary
             TransposeSuccessful,
             TransposeUnsuccessful
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int Offset { get; set; }
         
         /// <summary>
         /// 
@@ -23,6 +28,7 @@ namespace Symphonary
         {
             int highestNote = int.MaxValue;
             int lowestNote = int.MinValue;
+            Offset = 0;
 
             foreach (Note note in notes)
             {
@@ -36,7 +42,7 @@ namespace Symphonary
                 }
             }
 
-            Console.WriteLine("[Transpose] highestNote={0}, lowestNote={1}", highestNote, lowestNote);
+            //Console.WriteLine("[Transpose] highestNote={0}, lowestNote={1}", highestNote, lowestNote);
 
             // we don't need to transpose
             if (highestNote >= deviceNoteUpperBound && lowestNote <= deviceNoteLowerBound)
@@ -55,16 +61,18 @@ namespace Symphonary
             }
 
             // get minimum offset required to have the highest note be in range
-            int offset = 12*((deviceNoteUpperBound - highestNote + 11)/12);
-            
-            if (lowestNote + offset > deviceNoteLowerBound)
+            int offsetTry = 12*((deviceNoteUpperBound - highestNote + 11)/12);
+
+            if (lowestNote + offsetTry > deviceNoteLowerBound)
             {
                 return TransposeReturnStatus.TransposeUnsuccessful;
             }
 
+            Offset = offsetTry;
+
             foreach (Note note in notes)
             {
-                note.NoteNumber += offset;
+                note.NoteNumber += Offset;
                 Debug.Assert(note.NoteNumber >= deviceNoteUpperBound && note.NoteNumber <= deviceNoteLowerBound);
             }
 

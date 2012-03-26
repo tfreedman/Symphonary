@@ -4,47 +4,48 @@
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:DebugWindow.xaml" caret="437" fromTop="8" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemExtensions.cs" caret="452" fromTop="8" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:NoteMatcher.cs" caret="0" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="305" fromTop="11" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:DebugWindow.xaml.cs" caret="536" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="10311" fromTop="31" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:MidiInfo.cs" caret="0" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="263" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Score.cs" caret="1176" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4105" fromTop="26" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="1334" fromTop="0" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="637" fromTop="17" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="3773" fromTop="24" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:SerialPortSelector.cs" caret="1532" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2162" fromTop="11" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2852" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="10314" fromTop="16" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:MidiInfo.cs" caret="0" fromTop="0" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="3600" fromTop="65" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Score.cs" caret="814" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37256" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10667" fromTop="25" />
   </RecentFiles>
   <RecentEdits>
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="905" fromTop="22" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="38033" fromTop="22" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="35331" fromTop="9" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37710" fromTop="32" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2712" fromTop="25" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37729" fromTop="7" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="38033" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="9119" fromTop="10" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="9660" fromTop="24" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="75" fromTop="2" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2385" fromTop="25" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2580" fromTop="22" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="31251" fromTop="16" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="38115" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="9746" fromTop="29" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="15376" fromTop="26" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="13126" fromTop="1" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="13670" fromTop="3" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="9464" fromTop="13" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="30875" fromTop="15" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="31226" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="9494" fromTop="21" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8582" fromTop="3" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="9119" fromTop="29" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8582" fromTop="3" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8582" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="5358" fromTop="22" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="6578" fromTop="26" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2853" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="10295" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="229" fromTop="3" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="8451" fromTop="16" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="1650" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="3128" fromTop="29" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8783" fromTop="23" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="1873" fromTop="10" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8921" fromTop="21" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="3935" fromTop="23" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="5966" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="1964" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2089" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2397" fromTop="25" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="39866" fromTop="18" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4109" fromTop="11" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="21123" fromTop="17" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="34122" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="6457" fromTop="29" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="36716" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2847" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="320" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="960" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2501" fromTop="26" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2241" fromTop="17" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2398" fromTop="22" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="1334" fromTop="14" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="4857" fromTop="27" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37377" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10206" fromTop="22" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10493" fromTop="17" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10713" fromTop="15" />
   </RecentEdits>
 </RecentFiles>

@@ -288,7 +288,6 @@ namespace Symphonary
                         }
                     }
 
-                    System.Console.WriteLine("[CanvasNotesScheduledAdder] {0} {1}", curCanvasLastNoteIndex, percentage);
                     Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                                            new Action(delegate
                                                           {
@@ -486,6 +485,12 @@ namespace Symphonary
         /// <param name="e"></param>
         private void ListViewGridDone_Clicked(object sender, RoutedEventArgs e)
         {
+            if (channelSelector.SelectedChannel < 0)
+            {
+                selectorError.Text = "You must select a MIDI channel to play";
+                return;
+            }
+            
             i_Channel = channelSelector.SelectedChannel;
             midiPlayer.PersistentChannel = i_Channel;
 
@@ -708,54 +713,7 @@ namespace Symphonary
             //gridlines.LayoutTransform = sc;
             //gridlines.UpdateLayout();
 
-        }
-
-        /// <summary>
-        /// Event hander for when a key is pressed down
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NWGUI_KeyUp(object sender, KeyEventArgs e)
-        {
-            try {
-                if (!midiPlayer.IsPlaying)
-                    return;
-
-                if (e.Key.ToString() == "M") {
-                    midiPlayer.UnmuteOtherChannels();
-                }
-            } catch (NullReferenceException ex) { }
-        }
-
-        /// <summary>
-        /// Event hander for when a key is restored up
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NWGUI_KeyDown(object sender, KeyEventArgs e)
-        {
-
-            if (e.Key == Key.OemTilde && !isConsoleOpen) {
-                isConsoleOpen = !isConsoleOpen;
-                Debug_Clicked(sender, e);
-            }
-
-            else if (e.Key == Key.OemTilde && isConsoleOpen) {
-                isConsoleOpen = !isConsoleOpen;
-                debugConsole.Hide();
-            }
-
-            try {
-                if (!midiPlayer.IsPlaying)
-                    return;
-
-                if (e.Key.ToString() == "M") {
-                    midiPlayer.MuteOtherChannels();
-                }
-
-
-            } catch (NullReferenceException ex) { }
-        }
+        }        
 
         /// <summary>
         /// Event handler for when MIDI file loading has updated its progress (Sanford)
@@ -856,6 +814,8 @@ namespace Symphonary
         {
             midiPlayer.StopPlaying();
             previewChannelButton.Foreground = Brushes.Black;
+
+            selectorError.Text = string.Empty;
         }
 
         /// <summary>
@@ -923,7 +883,9 @@ namespace Symphonary
                 }
             }
             if (midiInfo.i_TimeSignatureNumerator == 0)
+            {
                 midiInfo.i_TimeSignatureNumerator = 4;
+            }
 
             //DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), midiInfo.i_TimeSignatureNumerator);
 
@@ -939,6 +901,7 @@ namespace Symphonary
 
             // Transpose for guitar
             Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(notesTempArray, 40, 80);
+            midiPlayer.NoteOffset = Transposer.Offset;
 
             if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange) {
                 debugConsole.AddText("All channel notes in range, no need to transpose.\n");
@@ -998,7 +961,8 @@ namespace Symphonary
 
             previousTime = currentTime;
 
-            long currentDelta = (milliseconds - startTime) / 10;
+            long currentDelta = playDuration.ElapsedMilliseconds / 10;
+
             if (hInst == 0) {
                 double mover = 625;
                 Canvas.SetTop(subcanv, (double)(currentDelta * multiplier) + mover);

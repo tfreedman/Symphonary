@@ -124,6 +124,11 @@ namespace Symphonary
             get { return i_NumChannelNotesPlayed; }
         }
 
+        /// <summary>
+        /// Gets the offset selected by the transposer 
+        /// </summary>
+        public int NoteOffset { get; set; }
+
 
         private bool playPersistentChannelStashed, playOtherChannelsStashed; 
 
@@ -243,6 +248,15 @@ namespace Symphonary
         }
 
         /// <summary>
+        /// Pause playing the MIDI file
+        /// </summary>
+        public void ResumePlaying()
+        {
+            b_Playing = true;
+            sequencer.Continue();
+        }
+
+        /// <summary>
         /// Internal event handler for channel message played
         /// </summary>
         /// <param name="sender"></param>
@@ -267,15 +281,17 @@ namespace Symphonary
                 if (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 > 0)
                 {
                     i_NumChannelNotesPlayed++;
-                    al_CurrentPlayingChannelNotes.Add(e.Message.Data1);
+                    al_CurrentPlayingChannelNotes.Add(e.Message.Data1 + NoteOffset);
+                    e = new ChannelMessageEventArgs(new ChannelMessage(e.Message.Command, e.Message.MidiChannel, e.Message.Data1 + NoteOffset, e.Message.Data2));
                 }
                 else if (e.Message.Command == ChannelCommand.NoteOn || e.Message.Command == ChannelCommand.NoteOff)
                 {
-                    al_CurrentPlayingChannelNotes.Remove(e.Message.Data1);
+                    al_CurrentPlayingChannelNotes.Remove(e.Message.Data1 + NoteOffset);
+                    e = new ChannelMessageEventArgs(new ChannelMessage(e.Message.Command, e.Message.MidiChannel, e.Message.Data1 + NoteOffset, e.Message.Data2));
                 }
             }
 
-            outputDevice.Send(e.Message);              
+            outputDevice.Send(e.Message); 
         }
 
         /// <summary>
