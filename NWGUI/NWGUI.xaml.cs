@@ -786,6 +786,7 @@ namespace Symphonary
                                                       normal.Visibility = Visibility.Visible;
                                                       b_AnimationStarted = false;
                                                       Background.Visibility = Visibility.Hidden;
+                                                      pause.Visibility = Visibility.Collapsed;
                                                       CompositionTarget.Rendering -= MoveCanvas;
                                                       CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
                                                   }));
@@ -888,36 +889,29 @@ namespace Symphonary
             }
 
             //DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), midiInfo.i_TimeSignatureNumerator);
-
-            Note[] notesTempArray = new Note[midiInfo.notesForAllChannels[i_Channel].Count];
-
-            {
-                int i = 0;
-                foreach (Note note in midiInfo.notesForAllChannels[i_Channel]) {
-                    notesTempArray[i] = note;
-                    i++;
-                }
-            }
-
-            // Transpose for guitar
-            Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(notesTempArray, 40, 80);
-            midiPlayer.NoteOffset = Transposer.Offset;
-
-            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange) {
-                debugConsole.AddText("All channel notes in range, no need to transpose.\n");
-            }
-            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful) {
-                debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
-            }
-            else {
-                debugConsole.AddText("Transpose was successful.\n");
-            }
-
+            
 
             // Allocate strings for guitar
             stringAllocator.Clear();
             stringAllocator.AllocateNotes(midiInfo.notesForAllChannels[i_Channel]);
-            
+
+
+            // Transpose for guitar
+            Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(stringAllocator.AllocSingleArr, 40, 80);
+            midiPlayer.NoteOffset = Transposer.Offset;
+            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange)
+            {
+              debugConsole.AddText("All channel notes in range, no need to transpose.\n");
+            }
+            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful)
+            {
+              debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
+            }
+            else
+            {
+              debugConsole.AddText("Transpose was successful.\n");
+            }
+
 
             debugConsole.AddText(string.Format("StringAllocator # dropped notes: {0}\n", stringAllocator.NumDroppedNotes));
             debugConsole.AddText(string.Format("StringAllocator # out of range notes: {0}\n", stringAllocator.NumOutOfRangeNotes));

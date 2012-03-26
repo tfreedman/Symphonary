@@ -35,10 +35,6 @@ namespace Symphonary
         private int lowerNoteBound = 80;
         
         private List<GuitarNote>[] alloc = new List<GuitarNote>[6];
-        public List<GuitarNote>[] Alloc
-        {
-            get { return alloc; }
-        }
 
         private GuitarNote[] allocSingleArr;
         public GuitarNote[] AllocSingleArr
