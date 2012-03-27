@@ -34,7 +34,6 @@ E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.dll
 E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Midi.dll
 E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Multimedia.Timers.dll
 E:\miditool\Symphonary\Symphonary\bin\Debug\Sanford.Threading.dll
-E:\miditool\Symphonary\Symphonary\bin\Debug\WPFToolkit.pdb
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\ResolveAssemblyReference.cache
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\NWGUI\DebugWindow.baml
 E:\miditool\Symphonary\Symphonary\obj\x86\Debug\App.baml

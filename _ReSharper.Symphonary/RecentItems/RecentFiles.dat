@@ -5,47 +5,47 @@
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemExtensions.cs" caret="452" fromTop="8" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:NoteMatcher.cs" caret="0" fromTop="0" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:DebugWindow.xaml.cs" caret="536" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4105" fromTop="26" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="1334" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="637" fromTop="17" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="3773" fromTop="24" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="760" fromTop="19" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:SerialPortSelector.cs" caret="1532" fromTop="0" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:ChannelSelector.cs" caret="637" fromTop="17" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:MidiInfo.cs" caret="0" fromTop="0" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="3600" fromTop="65" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2052" fromTop="9" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Score.cs" caret="814" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37256" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10667" fromTop="25" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="6171" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="21328" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="6820" fromTop="27" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="6777" fromTop="22" />
   </RecentFiles>
   <RecentEdits>
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="229" fromTop="3" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="8451" fromTop="16" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="1650" fromTop="13" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="3128" fromTop="29" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8783" fromTop="23" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="1873" fromTop="10" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="8921" fromTop="21" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="3935" fromTop="23" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="5966" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="1964" fromTop="19" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2089" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2397" fromTop="25" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="39866" fromTop="18" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="4109" fromTop="11" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="21123" fromTop="17" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="34122" fromTop="15" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="6457" fromTop="29" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="36716" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="2847" fromTop="13" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="320" fromTop="15" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="960" fromTop="15" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2501" fromTop="26" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2241" fromTop="17" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="2398" fromTop="22" />
     <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:Transposer.cs" caret="1334" fromTop="14" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="4857" fromTop="27" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37377" fromTop="20" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10206" fromTop="22" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10493" fromTop="17" />
-    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10713" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="5006" fromTop="27" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10355" fromTop="22" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10642" fromTop="17" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="10862" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37665" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37083" fromTop="24" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2266" fromTop="27" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="365" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Data/f:StringAllocator.cs" caret="2052" fromTop="9" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="37832" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="32668" fromTop="25" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="5108" fromTop="20" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="6186" fromTop="22" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml" caret="1831" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="12589" fromTop="4" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="20988" fromTop="22" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="4130" fromTop="18" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="23463" fromTop="28" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="3438" fromTop="8" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:Player/f:MidiPlayer.cs" caret="3706" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="20387" fromTop="13" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="30681" fromTop="29" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="5286" fromTop="19" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:NWGUI.xaml.cs" caret="22046" fromTop="27" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="6361" fromTop="15" />
+    <File id="0E1A9773-7893-439D-9ABE-2B5DC7C73CEF/d:NWGUI/f:MenuItemEvents.cs" caret="6820" fromTop="30" />
   </RecentEdits>
 </RecentFiles>

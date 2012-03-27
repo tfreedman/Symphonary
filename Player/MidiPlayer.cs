@@ -76,7 +76,7 @@ namespace Symphonary
             PlayOtherChannels = true;
         }
 
-        
+
         /// <summary>
         /// Gets or sets whether to play the persistent channel
         /// </summary>

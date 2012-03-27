@@ -28,7 +28,7 @@
 
                 <MenuItem Name="Stop" Width="0" Header="STOP" Click="Stop_Clicked" Grid.Column="0" />
 
-                <MenuItem Name="muteSelectedChannel" Header="" IsCheckable="True" Click="MuteSelectedChannel_Clicked" Width="0" Grid.Column="1"/>
+                <MenuItem Name="muteSelectedChannel" Header="MUTE" IsCheckable="True" Click="MuteSelectedChannel_Clicked" Grid.Column="1" Visibility="Collapsed"/>
                 <MenuItem Name="pause" Header="PAUSE" Click="Pause_Clicked" Grid.Column="2" Visibility="Collapsed"/>                
                 <MenuItem Name="Instruments" Header="" Grid.Column="3" Width="0">
                     <MenuItem Header="_Violin" Symphonary:MenuItemExtensions.GroupName="Instruments" Click="Instrument_Clicked" IsCheckable="True" Tag="41"/>

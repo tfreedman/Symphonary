@@ -108,7 +108,10 @@ namespace Symphonary
                 InitializeCanvas();
                 Background.Visibility = Visibility.Visible;
                 ShowSubCanvas();
+                muteSelectedChannel.Visibility = Visibility.Visible;
+                muteSelectedChannel.IsChecked = !midiPlayer.PlayPersistentChannel;
                 pause.Visibility = Visibility.Visible;
+                pause.Header = "PAUSE";
                 
                 playDuration.Restart();
                 CompositionTarget.Rendering += MoveCanvas;
@@ -131,14 +134,15 @@ namespace Symphonary
         /// <param name="e"></param>
         private void Back_Clicked(object sender, RoutedEventArgs e)
         {
-            muteSelectedChannel.Width = 0;
-            muteSelectedChannel.Header = "";
+            //muteSelectedChannel.Width = 0;
+            //muteSelectedChannel.Header = "";
             Instruments.Width = 0;
             Instruments.Header = "";
             listViewGrid.Visibility = Visibility.Hidden;
-            MidiPlayerExitPreviewMode();
             midiPlayer.StopPlaying();
             normal.Visibility = Visibility.Visible;
+
+            MidiPlayerExitPreviewMode();
         }
 
 
@@ -156,18 +160,16 @@ namespace Symphonary
             ScoreDisplay.Width = 0;
             Instruments.IsEnabled = true;
             Instruments.Width = Double.NaN;
-            muteSelectedChannel.Width = Double.NaN;
-            muteSelectedChannel.Header = "MUTE";
+            //muteSelectedChannel.Width = Double.NaN;
+            //muteSelectedChannel.Header = "MUTE";
             Background.Visibility = Visibility.Hidden;
+            muteSelectedChannel.Visibility = Visibility.Collapsed;
             pause.Visibility = Visibility.Collapsed;
             HideCanvasChildren();
 
             Instrument_Clicked(instrument);
 
             try {
-                //midiPlayer.OnClosingOperations();
-                //midiPlayer.OnClosedOperations();
-               
                 listViewGrid.Visibility = Visibility.Visible;
                 midiPlayer.StopPlaying();
                 
@@ -179,6 +181,8 @@ namespace Symphonary
                 CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
 
             } catch (NullReferenceException) { }
+
+            MidiPlayerEnterPreviewMode();
         }
 
         /// <summary>
@@ -483,9 +487,11 @@ namespace Symphonary
         /// <param name="e"></param>
         private void MuteSelectedChannel_Clicked(object sender, RoutedEventArgs e)
         {
-            try {
-                midiPlayer.PlayPersistentChannel = !(muteSelectedChannel.IsChecked);
-            } catch (NullReferenceException ex) { }
+            if (midiPlayer == null)
+                return;
+
+            midiPlayer.PlayPersistentChannel = !midiPlayer.PlayPersistentChannel;   
+            muteSelectedChannel.IsChecked = !midiPlayer.PlayPersistentChannel;
         }
 
         /// <summary>

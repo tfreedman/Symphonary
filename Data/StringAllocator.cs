@@ -66,14 +66,14 @@ namespace Symphonary
             allocSingleArr = null;
         }
 
-        public void AllocateNotes(List<Note> notes)
+        public void AllocateNotes(Note[] notes)
         {
             foreach (Note note in notes)
             {
                 AddNote(note);
             }
 
-            allocSingleArr = new GuitarNote[notes.Count - NumDroppedNotes];
+            allocSingleArr = new GuitarNote[notes.Length - NumDroppedNotes];
             int j = 0;
             for (int i = 0; i < alloc.Length; i++)
             {

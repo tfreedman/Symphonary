@@ -515,9 +515,7 @@ namespace Symphonary
 
             listViewGrid.Visibility = Visibility.Hidden;
             Start_Clicked(sender, e);
-            //MessageBox.Show(i_Channel.ToString());
         }
-
 
 
         /// <summary>
@@ -552,9 +550,7 @@ namespace Symphonary
         private void MidiPlayerExitPreviewMode()
         {
             midiPlayer.RecoverChannelPlaySettings();
-            midiPlayer.ReattachExternalPlaybackEventHandles();
-            //midiPlayer.Sequencer.ChannelMessagePlayed += HandleMIDIChannelMessagePlayed;
-            //midiPlayer.Sequencer.PlayingCompleted += HandleMIDIPlayingCompleted;
+            midiPlayer.ReattachExternalPlaybackEventHandles();            
             midiPlayer.Sequencer.PlayingCompleted -= HandleMIDIPreviewPlayingCompleted;
         }
 
@@ -745,8 +741,8 @@ namespace Symphonary
             serialPort.Close();
             serialPortSelector.Refresh(s_SelectedSerialPort);
             Instruments.Header = "INSTRUMENTS";
-            muteSelectedChannel.Width = Double.NaN;
-            muteSelectedChannel.Header = "MUTE";
+            //muteSelectedChannel.Width = Double.NaN;
+            //muteSelectedChannel.Header = "MUTE";
             Instruments.Width = Double.NaN;
             listViewGrid.Visibility = Visibility.Visible;
 
@@ -780,12 +776,13 @@ namespace Symphonary
                                                       FPS.Header = "";
                                                       Instruments.IsEnabled = true;
                                                       Instrument_Clicked(instrument);
-                                                      muteSelectedChannel.Width = 0;
-                                                      muteSelectedChannel.Header = "";
+                                                      //muteSelectedChannel.Width = 0;
+                                                      //muteSelectedChannel.Header = "";
                                                       HideSubCanvas();
                                                       normal.Visibility = Visibility.Visible;
                                                       b_AnimationStarted = false;
                                                       Background.Visibility = Visibility.Hidden;
+                                                      muteSelectedChannel.Visibility = Visibility.Collapsed;
                                                       pause.Visibility = Visibility.Collapsed;
                                                       CompositionTarget.Rendering -= MoveCanvas;
                                                       CompositionTarget.Rendering -= CanvasNotesScheduledAdder;
@@ -889,30 +886,26 @@ namespace Symphonary
             }
 
             //DrawGridLines(lastNote, (int)(midiInfo.i_TempoInBPM * multiplier), midiInfo.i_TimeSignatureNumerator);
-            
+
+            Note[] notesForSelectedChannel = midiInfo.notesForAllChannels[i_Channel].ToArray();
+
+            // Transpose for guitar
+            Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(notesForSelectedChannel, 40, 80);
+            midiPlayer.NoteOffset = Transposer.Offset;
+            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange) {
+                debugConsole.AddText("All channel notes in range, no need to transpose.\n");
+            }
+            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful) {
+                debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
+            }
+            else {
+                debugConsole.AddText("Transpose was successful.\n");
+            }
 
             // Allocate strings for guitar
             stringAllocator.Clear();
-            stringAllocator.AllocateNotes(midiInfo.notesForAllChannels[i_Channel]);
-
-
-            // Transpose for guitar
-            Transposer.TransposeReturnStatus transposeReturnStatus = Transposer.Transpose(stringAllocator.AllocSingleArr, 40, 80);
-            midiPlayer.NoteOffset = Transposer.Offset;
-            if (transposeReturnStatus == Transposer.TransposeReturnStatus.AllNotesAlreadyInRange)
-            {
-              debugConsole.AddText("All channel notes in range, no need to transpose.\n");
-            }
-            else if (transposeReturnStatus == Transposer.TransposeReturnStatus.TransposeUnsuccessful)
-            {
-              debugConsole.AddText("WARNING: Transpose was unsuccessful.\n");
-            }
-            else
-            {
-              debugConsole.AddText("Transpose was successful.\n");
-            }
-
-
+            stringAllocator.AllocateNotes(notesForSelectedChannel);
+            
             debugConsole.AddText(string.Format("StringAllocator # dropped notes: {0}\n", stringAllocator.NumDroppedNotes));
             debugConsole.AddText(string.Format("StringAllocator # out of range notes: {0}\n", stringAllocator.NumOutOfRangeNotes));
 
