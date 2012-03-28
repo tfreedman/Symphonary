@@ -5,6 +5,7 @@
         xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"             
         xmlns:Symphonary="clr-namespace:Symphonary"
         KeyDown="NWGUI_KeyDown"
+        Icon="..\Symphonary_Icon.ico"
         Width="1280" Height="744" Closing="WindowClosing" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
     <Grid Name="grid" Height="Auto" Width="Auto">
         <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
