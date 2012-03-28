@@ -199,7 +199,6 @@ namespace Symphonary
             }
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -494,7 +493,7 @@ namespace Symphonary
             i_Channel = channelSelector.SelectedChannel;
             midiPlayer.PersistentChannel = i_Channel;
 
-            MidiPlayerExitPreviewMode();
+            midiPlayer.ExitPreviewMode(HandleMIDIPreviewPlayingCompleted);
             midiPlayer.StopPlaying();
 
             HideSubCanvas();
@@ -528,32 +527,6 @@ namespace Symphonary
             MenuItem sender = new MenuItem { Tag = num };
             Instrument_Clicked(sender, e);
         }
-
-
-        /// <summary>
-        /// Configure player for preview mode, stashes settings for which channels are played,
-        /// detaches event handlers related to gameplay, attaches preview completion event handler
-        /// </summary>
-        private void MidiPlayerEnterPreviewMode()
-        {
-            midiPlayer.StashChannelPlaySettings();
-            midiPlayer.UnHookExternalPlaybackEventHandles();
-            midiPlayer.PlayPersistentChannel = true;
-            midiPlayer.PlayOtherChannels = false;
-            midiPlayer.Sequencer.PlayingCompleted += HandleMIDIPreviewPlayingCompleted;
-        }
-
-        /// <summary>
-        /// Resets player configuration from preview mode, restores settings for which channels are played,
-        /// re-attaches event handlers related to gameplay, detaches preview completion event handler
-        /// </summary>
-        private void MidiPlayerExitPreviewMode()
-        {
-            midiPlayer.RecoverChannelPlaySettings();
-            midiPlayer.ReattachExternalPlaybackEventHandles();            
-            midiPlayer.Sequencer.PlayingCompleted -= HandleMIDIPreviewPlayingCompleted;
-        }
-
 
         /// <summary>
         /// 
@@ -709,7 +682,29 @@ namespace Symphonary
             //gridlines.LayoutTransform = sc;
             //gridlines.UpdateLayout();
 
-        }        
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NWGUI_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (midiPlayer == null || midiPlayer.IsInPreviewMode)
+            {
+                return;
+            }
+            
+            if (e.Key == Key.Space)
+            {
+                Pause_Clicked(sender, e);
+            }
+            else if (e.Key == Key.M)
+            {
+                midiPlayer.PlayOtherChannels = !midiPlayer.PlayOtherChannels;
+            }
+        }
 
         /// <summary>
         /// Event handler for when MIDI file loading has updated its progress (Sanford)
@@ -746,7 +741,7 @@ namespace Symphonary
             Instruments.Width = Double.NaN;
             listViewGrid.Visibility = Visibility.Visible;
 
-            MidiPlayerEnterPreviewMode();
+            midiPlayer.EnterPreviewMode(HandleMIDIPreviewPlayingCompleted);
         }
 
         /// <summary>

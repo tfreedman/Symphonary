@@ -4,8 +4,8 @@
         Title="Symphonary" ResizeMode="CanResizeWithGrip"
         xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"             
         xmlns:Symphonary="clr-namespace:Symphonary"
+        KeyDown="NWGUI_KeyDown"
         Width="1280" Height="744" Closing="WindowClosing" Name="window" LayoutUpdated="Layout_Updated" SizeChanged="Size_Changed">
-
     <Grid Name="grid" Height="Auto" Width="Auto">
         <StackPanel Orientation="Vertical" StackPanel.ZIndex="5" Margin="0" VerticalAlignment="Top">
             <Menu Name="MenuBar" IsMainMenu="True" Background="#00000000" Height="22" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left" Focusable="False">

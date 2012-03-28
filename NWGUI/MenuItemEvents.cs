@@ -51,8 +51,10 @@ namespace Symphonary
         private void Pause_Clicked(object sender, RoutedEventArgs e)
         {
             if (midiPlayer == null)
+            {
                 return;
-            
+            }
+
             if (midiPlayer.IsPlaying)
             {
                 midiPlayer.StopPlaying();
@@ -142,9 +144,8 @@ namespace Symphonary
             midiPlayer.StopPlaying();
             normal.Visibility = Visibility.Visible;
 
-            MidiPlayerExitPreviewMode();
+            midiPlayer.ExitPreviewMode(HandleMIDIPreviewPlayingCompleted);
         }
-
 
         /// <summary>
         /// Event handler for clicking the "Stop" menu item
@@ -182,7 +183,7 @@ namespace Symphonary
 
             } catch (NullReferenceException) { }
 
-            MidiPlayerEnterPreviewMode();
+            midiPlayer.EnterPreviewMode(HandleMIDIPreviewPlayingCompleted);
         }
 
         /// <summary>
@@ -488,7 +489,9 @@ namespace Symphonary
         private void MuteSelectedChannel_Clicked(object sender, RoutedEventArgs e)
         {
             if (midiPlayer == null)
+            {
                 return;
+            }
 
             midiPlayer.PlayPersistentChannel = !midiPlayer.PlayPersistentChannel;   
             muteSelectedChannel.IsChecked = !midiPlayer.PlayPersistentChannel;

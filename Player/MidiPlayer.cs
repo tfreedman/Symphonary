@@ -41,6 +41,8 @@ namespace Symphonary
         private EventHandler<ChannelMessageEventArgs> extHandleChannelMessagePlayed;
         private EventHandler extHandlePlayingCompleted;
 
+        public bool IsInPreviewMode { get; private set; }
+
         /// <summary>
         /// Constructor for the class. Several additional event handlers are hooked up, these are for driving changes in the UI
         /// </summary>
@@ -82,10 +84,22 @@ namespace Symphonary
         /// </summary>
         public bool PlayPersistentChannel { get; set; }
 
+        private bool playOtherChannels;
         /// <summary>
         /// Gets or sets whether to play the other non-persistent channels
         /// </summary>
-        public bool PlayOtherChannels { get; set; }
+        public bool PlayOtherChannels
+        {
+            get { return playOtherChannels; }
+            set
+            {
+                playOtherChannels = value;
+                if (!playOtherChannels)
+                {
+                    MuteOtherChannels();
+                }
+            }
+        }
 
         /// <summary>
         /// Property to indicate whether file has finished loading
@@ -132,10 +146,38 @@ namespace Symphonary
 
         private bool playPersistentChannelStashed, playOtherChannelsStashed; 
 
+        
+
+        /// <summary>
+        /// Configure player for preview mode, stashes settings for which channels are played,
+        /// detaches event handlers related to gameplay, attaches preview completion event handler
+        /// </summary>
+        public void EnterPreviewMode(EventHandler extHandlePreviewPlayingCompleted)
+        {
+            IsInPreviewMode = true;
+            StashChannelPlaySettings();
+            UnHookExternalPlaybackEventHandles();
+            PlayPersistentChannel = true;
+            PlayOtherChannels = false;
+            Sequencer.PlayingCompleted += extHandlePreviewPlayingCompleted;
+        }
+
+        /// <summary>
+        /// Resets player configuration from preview mode, restores settings for which channels are played,
+        /// re-attaches event handlers related to gameplay, detaches preview completion event handler
+        /// </summary>
+        public void ExitPreviewMode(EventHandler extHandlePreviewPlayingCompleted)
+        {
+            RecoverChannelPlaySettings();
+            ReattachExternalPlaybackEventHandles();
+            Sequencer.PlayingCompleted -= extHandlePreviewPlayingCompleted;
+            IsInPreviewMode = false;
+        }
+
         /// <summary>
         /// Used by preview mode
         /// </summary>
-        public void StashChannelPlaySettings()
+        private void StashChannelPlaySettings()
         {
             playPersistentChannelStashed = PlayPersistentChannel;
             playOtherChannelsStashed = PlayOtherChannels;
@@ -144,7 +186,7 @@ namespace Symphonary
         /// <summary>
         /// Used by preview mode
         /// </summary>
-        public void RecoverChannelPlaySettings()
+        private void RecoverChannelPlaySettings()
         {
             PlayPersistentChannel = playPersistentChannelStashed;
             PlayOtherChannels = playOtherChannelsStashed;
@@ -153,7 +195,7 @@ namespace Symphonary
         /// <summary>
         /// Used by preview mode
         /// </summary>
-        public void UnHookExternalPlaybackEventHandles()
+        private void UnHookExternalPlaybackEventHandles()
         {
             sequencer.ChannelMessagePlayed -= extHandleChannelMessagePlayed;
             sequencer.PlayingCompleted -= extHandlePlayingCompleted;
@@ -162,7 +204,7 @@ namespace Symphonary
         /// <summary>
         /// Used by preview mode
         /// </summary>
-        public void ReattachExternalPlaybackEventHandles()
+        private void ReattachExternalPlaybackEventHandles()
         {
             sequencer.ChannelMessagePlayed += extHandleChannelMessagePlayed;
             sequencer.PlayingCompleted += extHandlePlayingCompleted;
@@ -183,9 +225,8 @@ namespace Symphonary
         /// <summary>
         /// Mutes all channels except the persistent channel
         /// </summary>
-        public void MuteOtherChannels()
+        private void MuteOtherChannels()
         {
-            PlayOtherChannels = false;
             for (int i = 0; i < 16; i++)
             {
                 if (i != i_PersistentChannel)
