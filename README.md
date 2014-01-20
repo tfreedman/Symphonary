@@ -46,19 +46,19 @@ Symphonary is easy to build - just open it in Visual Studio 2010 or higher and p
 Screenshots
 -----------
 
-[Main title screen]: /Screenshots/1.png "Main title screen"
+![Main title screen](/Screenshots/1.png)
 Here's the title screen, before any songs have been loaded.
 
-[Screenshot after a song has been loaded]: /Screenshots/2.png "Screen after loading a song"
+![Screenshot after a song has been loaded](/Screenshots/2.png)
 This is what it looks like after a MIDI has been loaded. COM3 represents the guitar plugged in to the serial port, although exact numbers will vary based on machine details. The specific part of the song that you want to play is selected (in this case, the electric guitar). Note that you don't have to select a guitar track just because you happen to have a guitar, though the guitar track in this case contains the most straightforward part.
 
-[Game screenshot]: /Screenshots/3.png "Game screenshot"
+![Game screenshot](/Screenshots/3.png)
 This is what playback looks like. The area on the left shows the current status of your instrument. If no instrument is plugged in, no numbers will be displayed on the left-hand side. In this case, we have a guitar with all open strings, except the lowest note is held at the fifth fret. If the player wanted to score points here, they'd move their fingers on the second-lowest string to the fourth fret pretty quickly, before the notes pass under the left side.
 
-[Full screen screenshot]: /Screenshots/4.png "Full screen screenshot"
+![Full screen screenshot](/Screenshots/4.png)
 I've since switched to OS X, so here's what full screen looks like running in Windows 8.1 on VMware Fusion. The software was originally developed on Windows 7 though, but appears to be fully compatible. We had primitive support for flute, guitar, and bass in an earlier build, though after the GUI was rewritten, effort was only spent repairing guitar support. However, fixing support for existing instruments is trivial, as is adding a new instrument.
 
-[More difficult screenshot]: /Screenshots/5.png "More difficult screenshot"
+![More difficult screenshot](/Screenshots/5.png)
 Here's another example of a song, at a much higher level of difficulty. Note the score in the upper right hand corner, which shows that the person playing right now probably has no business ever performing publicly.
 
 
