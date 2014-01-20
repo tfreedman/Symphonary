@@ -5,7 +5,7 @@ Symphonary is a program designed to teach people how to play a musical instrumen
 
 -- Not showing sheet music. The game is played in the style of Guitar Hero / DDR, where notes fall down the screen. No knowledge of sheet music is needed.
 
--- Music is automatically to / from any instrument, wherever possible. For example, all flute music can be played on a piano, though not all piano music can be played on a flute (as a piano can play any number of notes simultaneously). Music is transposed on-the-fly if it isn't compatible with what you're playing with. Note that this doesn't mean that you have the skill to play a given song, or that a given song will still sound nice when played on a certain instrument. However, the software shouldn't stop you from trying.
+-- Music is automatically converted to / from any instrument, wherever possible. For example, all flute music can be played on a piano, though not all piano music can be played on a flute (as a piano can play any number of notes simultaneously). Music is transposed on-the-fly if it isn't compatible with what you're playing with. Note that this doesn't mean that you have the skill to play a given song, or that a given song will still sound nice when played on a certain instrument. However, the software shouldn't stop you from trying.
 
 -- You can play any MIDI song you can find, not just sheets belonging to your instrument. This includes popular songs, which may be more desirable to some people.
 
